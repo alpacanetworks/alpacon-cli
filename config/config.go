@@ -2,10 +2,7 @@ package config
 
 import (
 	"encoding/json"
-	"errors"
 	"fmt"
-	"net/http"
-	"net/url"
 	"os"
 	"path/filepath"
 )
@@ -13,8 +10,8 @@ import (
 // Config describes the configuration for Alpacon-CLI
 type Config struct {
 	ServerAddress string `json:"server_address"`
-	CSRFToken     string `json:"csrf_token"`
-	SessionID     string `json:"session_id"`
+	Token         string `json:"token"`
+	ExpiresAt     string `json:"expires_at"`
 }
 
 const (
@@ -22,35 +19,11 @@ const (
 	ConfigFileDir  = ".alpacon"
 )
 
-func CreateConfig(serverAddress string, httpClient *http.Client) error {
-	u, err := url.Parse(serverAddress)
-	if err != nil {
-		return err
-	}
-
-	cookies := httpClient.Jar.Cookies(u)
-
-	var csrfToken, sessionID string
-	for _, cookie := range cookies {
-		switch cookie.Name {
-		case "csrftoken":
-			csrfToken = cookie.Value
-		case "sessionid":
-			sessionID = cookie.Value
-		}
-	}
-
-	if csrfToken == "" {
-		return errors.New("CSRF token not found")
-	}
-	if sessionID == "" {
-		return errors.New("session ID not found")
-	}
-
+func CreateConfig(serverAddress string, token string, expiresAt string) error {
 	config := Config{
 		ServerAddress: serverAddress,
-		CSRFToken:     csrfToken,
-		SessionID:     sessionID,
+		Token:         token,
+		ExpiresAt:     expiresAt,
 	}
 
 	return saveConfig(&config)

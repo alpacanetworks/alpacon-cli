@@ -3,7 +3,7 @@ package cmd
 import (
 	"bufio"
 	"fmt"
-	"github.com/alpacanetworks/alpacon-cli/api/iam"
+	"github.com/alpacanetworks/alpacon-cli/api/auth"
 	"github.com/alpacanetworks/alpacon-cli/client"
 	"github.com/spf13/cobra"
 	"golang.org/x/term"
@@ -12,7 +12,7 @@ import (
 )
 
 var (
-	loginRequest iam.LoginRequest
+	loginRequest auth.LoginRequest
 )
 
 var loginCmd = &cobra.Command{
@@ -35,7 +35,7 @@ func performLogin() {
 		promptForCredentials()
 	}
 
-	err := iam.LoginAndSaveCredentials(&loginRequest)
+	err := auth.LoginAndSaveCredentials(&loginRequest)
 	if err != nil {
 		fmt.Printf("Login failed: %v. Please check your credentials and try again.\n", err)
 		os.Exit(1)

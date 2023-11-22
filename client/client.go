@@ -9,12 +9,19 @@ import (
 	"net/http"
 )
 
+var (
+	checkAuthURL = "/api/auth/is_authenticated/"
+)
+
 type AlpaconClient struct {
 	HTTPClient *http.Client
 	BaseURL    string
 	UserAgent  string
-	CSRFToken  string
-	SessionID  string
+	Token      string
+}
+
+type CheckAuthResponse struct {
+	Authenticated bool `json:"authenticated"`
 }
 
 func NewAlpaconAPIClient() (*AlpaconClient, error) {
@@ -24,16 +31,39 @@ func NewAlpaconAPIClient() (*AlpaconClient, error) {
 	}
 
 	client := &AlpaconClient{
-		BaseURL:    config.ServerAddress,
-		CSRFToken:  config.CSRFToken,
-		SessionID:  config.SessionID,
 		HTTPClient: &http.Client{},
+		BaseURL:    config.ServerAddress,
+		Token:      config.Token,
 	}
 
-	// TODO version check
+	err = client.checkAuth()
+	if err != nil {
+		return nil, err
+	}
+
+	// TODO CLI version check
 	// res, err := utils.VersionCheck()
 
 	return client, nil
+}
+
+func (ac *AlpaconClient) checkAuth() error {
+	body, err := ac.SendGetRequest(checkAuthURL)
+	if err != nil {
+		return err
+	}
+
+	var checkAuthResponse CheckAuthResponse
+
+	err = json.Unmarshal(body, &checkAuthResponse)
+	if err != nil {
+		return err
+	}
+	if checkAuthResponse.Authenticated != true {
+		return err
+	}
+
+	return nil
 }
 
 func (ac *AlpaconClient) createRequest(method, url string, body io.Reader) (*http.Request, error) {
@@ -42,10 +72,9 @@ func (ac *AlpaconClient) createRequest(method, url string, body io.Reader) (*htt
 		return nil, err
 	}
 
-	req.AddCookie(&http.Cookie{Name: "csrftoken", Value: ac.CSRFToken})
-	req.AddCookie(&http.Cookie{Name: "sessionid", Value: ac.SessionID})
-	req.Header.Add("X-CSRFToken", ac.CSRFToken)
-	req.Header.Add("Content-Type", "application/x-www-form-urlencoded")
+	authHeaderValue := fmt.Sprintf("token=\"%s\"", ac.Token)
+	req.Header.Add("Authorization", authHeaderValue)
+	req.Header.Add("Content-Type", "application/json")
 
 	return req, nil
 }
