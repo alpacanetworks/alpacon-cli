@@ -16,7 +16,6 @@ var (
 type AlpaconClient struct {
 	HTTPClient *http.Client
 	BaseURL    string
-	UserAgent  string
 	Token      string
 }
 
@@ -74,7 +73,9 @@ func (ac *AlpaconClient) createRequest(method, url string, body io.Reader) (*htt
 
 	authHeaderValue := fmt.Sprintf("token=\"%s\"", ac.Token)
 	req.Header.Add("Authorization", authHeaderValue)
-	req.Header.Add("Content-Type", "application/json")
+	if method == "POST" {
+		req.Header.Add("Content-Type", "application/json")
+	}
 
 	return req, nil
 }
@@ -91,8 +92,8 @@ func (ac *AlpaconClient) sendRequest(req *http.Request) ([]byte, error) {
 		return nil, err
 	}
 
-	if resp.StatusCode >= 300 {
-		return nil, fmt.Errorf("server error: %d %s", resp.StatusCode, resp.Status)
+	if resp.StatusCode < 200 || resp.StatusCode >= 300 {
+		return nil, fmt.Errorf(resp.Status)
 	}
 
 	return body, nil

@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/alpacanetworks/alpacon-cli/api/auth"
 	"github.com/alpacanetworks/alpacon-cli/client"
+	"github.com/alpacanetworks/alpacon-cli/utils"
 	"github.com/spf13/cobra"
 	"golang.org/x/term"
 	"os"
@@ -37,38 +38,44 @@ func performLogin() {
 
 	err := auth.LoginAndSaveCredentials(&loginRequest)
 	if err != nil {
-		fmt.Printf("Login failed: %v. Please check your credentials and try again.\n", err)
-		os.Exit(1)
+		utils.CliError("Login failed: %v. Please check your credentials and try again.\n", err)
 	}
 
 	_, err = client.NewAlpaconAPIClient()
 	if err != nil {
-		fmt.Printf("Error creating Alpacon client: %v. Please retry the login process.\n", err)
-		os.Exit(1)
+		utils.CliError("Failed to create a connection to the Alpacon API: %s", err)
 	}
 	fmt.Println("Login succeeded!")
 }
 
-// promptForCredentials
 func promptForCredentials() {
-	reader := bufio.NewReader(os.Stdin)
-
-	if loginRequest.Username == "" || loginRequest.Password == "" || loginRequest.ServerAddress == "" {
-		if loginRequest.Username == "" {
-			fmt.Print("Username: ")
-			username, _ := reader.ReadString('\n')
-			loginRequest.Username = strings.TrimSpace(username)
-		}
-		if loginRequest.Password == "" {
-			fmt.Print("Password: ")
-			bytePassword, _ := term.ReadPassword(0)
-			loginRequest.Password = strings.TrimSpace(string(bytePassword))
-			fmt.Println()
-		}
-		if loginRequest.ServerAddress == "" {
-			fmt.Print("Server Address: ")
-			serverAddress, _ := reader.ReadString('\n')
-			loginRequest.ServerAddress = strings.TrimSpace(serverAddress)
-		}
+	if loginRequest.Username == "" {
+		loginRequest.Username = promptForInput("Username: ")
 	}
+	if loginRequest.Password == "" {
+		loginRequest.Password = promptForPassword("Password: ")
+	}
+	if loginRequest.ServerAddress == "" {
+		loginRequest.ServerAddress = promptForInput("Server Address: ")
+	}
+}
+
+func promptForInput(promptText string) string {
+	reader := bufio.NewReader(os.Stdin)
+	fmt.Print(promptText)
+	input, err := reader.ReadString('\n')
+	if err != nil {
+		return ""
+	}
+	return strings.TrimSpace(input)
+}
+
+func promptForPassword(promptText string) string {
+	fmt.Print(promptText)
+	bytePassword, err := term.ReadPassword(0)
+	if err != nil {
+		return ""
+	}
+	fmt.Println()
+	return strings.TrimSpace(string(bytePassword))
 }

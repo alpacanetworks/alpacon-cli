@@ -2,8 +2,8 @@ package cmd
 
 import (
 	"fmt"
+	"github.com/alpacanetworks/alpacon-cli/utils"
 	"github.com/spf13/cobra"
-	"os"
 )
 
 func showLogo() {
@@ -32,8 +32,7 @@ var rootCmd = &cobra.Command{
 
 func Execute() {
 	if err := rootCmd.Execute(); err != nil {
-		fmt.Println(err)
-		os.Exit(1)
+		utils.CliError("While executing the command: %s", err)
 	}
 }
 

@@ -48,8 +48,8 @@ func LoginAndSaveCredentials(loginReq *LoginRequest) error {
 	}
 	defer resp.Body.Close()
 
-	if resp.StatusCode >= 300 {
-		return fmt.Errorf("server error: %d %s", resp.StatusCode, resp.Status)
+	if resp.StatusCode < 200 || resp.StatusCode >= 300 {
+		return fmt.Errorf(resp.Status)
 	}
 
 	body, err := io.ReadAll(resp.Body)
@@ -65,7 +65,7 @@ func LoginAndSaveCredentials(loginReq *LoginRequest) error {
 
 	err = config.CreateConfig(serverAddress, loginResponse.Token, loginResponse.ExpiresAt)
 	if err != nil {
-		return fmt.Errorf("failed to create credential config file : %s", err)
+		return err
 	}
 
 	return nil
