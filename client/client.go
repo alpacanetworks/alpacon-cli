@@ -3,6 +3,7 @@ package client
 import (
 	"bytes"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"github.com/alpacanetworks/alpacon-cli/config"
 	"io"
@@ -58,8 +59,8 @@ func (ac *AlpaconClient) checkAuth() error {
 	if err != nil {
 		return err
 	}
-	if checkAuthResponse.Authenticated != true {
-		return err
+	if !checkAuthResponse.Authenticated {
+		return errors.New("authenticated failed")
 	}
 
 	return nil
@@ -92,8 +93,13 @@ func (ac *AlpaconClient) sendRequest(req *http.Request) ([]byte, error) {
 		return nil, err
 	}
 
-	if resp.StatusCode < 200 || resp.StatusCode >= 300 {
-		return nil, fmt.Errorf(resp.Status)
+	// Alpacon API Server always return 201 on POST request
+	if req.Method == "POST" {
+		if resp.StatusCode != http.StatusCreated {
+			return nil, fmt.Errorf("expected status 201 for POST, got %s", resp.Status)
+		}
+	} else if resp.StatusCode < http.StatusOK || resp.StatusCode >= http.StatusMultipleChoices {
+		return nil, fmt.Errorf("unexpected status code: %s", resp.Status)
 	}
 
 	return body, nil

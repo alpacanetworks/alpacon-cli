@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"fmt"
+	"github.com/alpacanetworks/alpacon-cli/cmd/server"
 	"github.com/alpacanetworks/alpacon-cli/utils"
 	"github.com/spf13/cobra"
 )
@@ -39,4 +40,8 @@ func Execute() {
 func init() {
 	// login
 	rootCmd.AddCommand(loginCmd)
+
+	// server
+	rootCmd.AddCommand(server.ServerCmd)
+
 }

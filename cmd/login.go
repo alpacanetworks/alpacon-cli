@@ -38,7 +38,7 @@ func performLogin() {
 
 	err := auth.LoginAndSaveCredentials(&loginRequest)
 	if err != nil {
-		utils.CliError("Login failed: %v. Please check your credentials and try again.\n", err)
+		utils.CliError("Login failed %v. Please check your credentials and try again.\n", err)
 	}
 
 	_, err = client.NewAlpaconAPIClient()
