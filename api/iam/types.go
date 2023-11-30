@@ -1,0 +1,148 @@
+package iam
+
+import "time"
+
+type UserAttributes struct {
+	Username   string `json:"username"`
+	Name       string `json:"name"`
+	Email      string `json:"email"`
+	Tags       string `json:"tags"`
+	Groups     int    `json:"groups"`
+	UID        int    `json:"uid"`
+	Status     string `json:"status"`
+	LDAPStatus string `json:"ldap_status"`
+}
+
+type UserDetailAttributes struct {
+	Username      string   `json:"username"`
+	Name          string   `json:"name"`
+	Description   string   `json:"description"`
+	Email         string   `json:"email"`
+	Phone         string   `json:"phone"`
+	UID           int      `json:"uid"`
+	Shell         string   `json:"shell"`
+	HomeDirectory string   `json:"home_directory"`
+	NumGroups     int      `json:"num_groups"`
+	Groups        []string `json:"groups"`
+	Tags          string   `json:"tags"`
+	Status        string   `json:"status"`
+	LDAPStatus    string   `json:"ldap_status"`
+}
+
+type UserListResponse struct {
+	Count    int            `json:"count"`
+	Current  int            `json:"current"`
+	Next     int            `json:"next"`
+	Previous string         `json:"previous"`
+	Last     int            `json:"last"`
+	Results  []UserResponse `json:"results"`
+}
+
+type UserResponse struct {
+	ID          string    `json:"id"`
+	Username    string    `json:"username"`
+	FirstName   string    `json:"first_name"`
+	LastName    string    `json:"last_name"`
+	Email       string    `json:"email"`
+	Phone       string    `json:"phone"`
+	Tags        string    `json:"tags"`
+	NumGroups   int       `json:"num_groups"`
+	UID         int       `json:"uid"`
+	IsActive    bool      `json:"is_active"`
+	IsStaff     bool      `json:"is_staff"`
+	IsSuperuser bool      `json:"is_superuser"`
+	IsLDAPUser  bool      `json:"is_ldap_user"`
+	DateJoined  time.Time `json:"date_joined"`
+}
+
+type UserDetails struct {
+	ID            string `json:"id"`
+	Username      string `json:"username"`
+	FirstName     string `json:"first_name"`
+	LastName      string `json:"last_name"`
+	Email         string `json:"email"`
+	Phone         string `json:"phone"`
+	Tags          string `json:"tags"`
+	Description   string `json:"description"`
+	NumGroups     int    `json:"num_groups"`
+	UID           int    `json:"uid"`
+	Shell         string `json:"shell"`
+	HomeDirectory string `json:"home_directory"`
+	IsActive      bool   `json:"is_active"`
+	IsStaff       bool   `json:"is_staff"`
+	IsSuperuser   bool   `json:"is_superuser"`
+	IsLDAPUser    bool   `json:"is_ldap_user"`
+	DateJoined    string `json:"date_joined"`
+	LastLogin     string `json:"last_login"`
+	LastLoginIP   string `json:"last_login_ip"`
+	AddedAt       string `json:"added_at"`
+	UpdatedAt     string `json:"updated_at"`
+}
+
+type GroupAttributes struct {
+	Name        string `json:"name"`
+	DisplayName string `json:"display_name"`
+	Tags        string `json:"tags"`
+	Members     int    `json:"members"`
+	Servers     int    `json:"servers"`
+	GID         int    `json:"gid"`
+	LDAPStatus  string `json:"ldap_status"`
+}
+
+type GroupDetailAttributes struct {
+	Name         string   `json:"name"`
+	DisplayName  string   `json:"display_name"`
+	Tags         string   `json:"tags"`
+	Description  string   `json:"description"`
+	NumMembers   int      `json:"num_members"`
+	Members      []string `json:"members"`
+	GID          int      `json:"gid"`
+	LDAPStatus   string   `json:"ldap_status"`
+	Servers      int      `json:"servers"`
+	ServersNames []string `json:"servers_names"`
+}
+
+type GroupListResponse struct {
+	Count    int             `json:"count"`
+	Current  int             `json:"current"`
+	Next     int             `json:"next"`
+	Previous string          `json:"previous"`
+	Last     int             `json:"last"`
+	Results  []GroupResponse `json:"results"`
+}
+
+type GroupResponse struct {
+	ID           string   `json:"id"`
+	Name         string   `json:"name"`
+	DisplayName  string   `json:"display_name"`
+	Tags         string   `json:"tags"`
+	NumMembers   int      `json:"num_members"`
+	GID          int      `json:"gid"`
+	IsLDAPGroup  bool     `json:"is_ldap_group"`
+	Servers      []string `json:"servers"`
+	ServersNames []string `json:"servers_names"`
+}
+
+type GroupDetails struct {
+	ID           string   `json:"id"`
+	Name         string   `json:"name"`
+	DisplayName  string   `json:"display_name"`
+	Tags         string   `json:"tags"`
+	Description  string   `json:"description"`
+	NumMembers   int      `json:"num_members"`
+	GID          int      `json:"gid"`
+	IsLDAPGroup  bool     `json:"is_ldap_group"`
+	Servers      []string `json:"servers"`
+	ServersNames []string `json:"servers_names"`
+	AddedAt      string   `json:"added_at"`
+	UpdatedAt    string   `json:"updated_at"`
+}
+
+type Membership struct {
+	ID        string `json:"id"`
+	Group     string `json:"group"`
+	GroupName string `json:"group_name"`
+	User      string `json:"user"`
+	UserName  string `json:"user_name"`
+	Role      string `json:"role"`
+}
