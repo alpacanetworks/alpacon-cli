@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/alpacanetworks/alpacon-cli/cmd/iam"
 	"github.com/alpacanetworks/alpacon-cli/cmd/server"
+	"github.com/alpacanetworks/alpacon-cli/cmd/websh"
 	"github.com/alpacanetworks/alpacon-cli/utils"
 	"github.com/spf13/cobra"
 )
@@ -49,4 +50,6 @@ func init() {
 	// server
 	rootCmd.AddCommand(server.ServerCmd)
 
+	// websh
+	rootCmd.AddCommand(websh.WebshCmd)
 }
