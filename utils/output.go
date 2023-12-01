@@ -7,6 +7,7 @@ import (
 	"github.com/olekukonko/tablewriter"
 	"os"
 	"reflect"
+	"strings"
 )
 
 func PrintTable(slice interface{}) {
@@ -57,8 +58,15 @@ func PrintJson(body []byte) {
 	var prettyJSON bytes.Buffer
 	err := json.Indent(&prettyJSON, body, "", "    ")
 	if err != nil {
-		CliError("Parsing data: Expected a json format: %s", err)
+		CliError("Parsing data: Expected a json format")
 	}
 
-	fmt.Println(prettyJSON.String())
+	formattedJson := strings.Replace(prettyJSON.String(), "\\n", "\n", -1)
+	formattedJson = strings.Replace(formattedJson, "\\t", "\t", -1)
+
+	fmt.Println(formattedJson)
+}
+
+func PrintHeader(header string) {
+	fmt.Println(Blue(header))
 }

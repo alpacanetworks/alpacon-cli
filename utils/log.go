@@ -2,7 +2,6 @@ package utils
 
 import (
 	"fmt"
-	"github.com/gookit/color"
 	"github.com/savioxavier/termlink"
 	"os"
 )
@@ -20,17 +19,20 @@ func reportCLIError() {
 
 // CliError handles all error messages in the CLI.
 func CliError(msg string, args ...interface{}) {
-	fmt.Fprintf(os.Stderr, "%s: %s\n", color.Red.Sprintf("Error"), fmt.Sprintf(msg, args...))
+	errorMessage := fmt.Sprintf(msg, args...)
+	fmt.Fprintf(os.Stderr, "%s: %s\n", Red("Error"), errorMessage)
 	reportCLIError()
 	os.Exit(1)
 }
 
 // CliInfo handles all informational messages in the CLI.
 func CliInfo(msg string, args ...interface{}) {
-	fmt.Fprintf(os.Stderr, "%s: %s\n", color.Blue.Sprintf("Info"), fmt.Sprintf(msg, args...))
+	infoMessage := fmt.Sprintf(msg, args...)
+	fmt.Fprintf(os.Stderr, "%s: %s\n", Blue("Info"), infoMessage)
 }
 
 // CliWarning handles all warning messages in the CLI.
 func CliWarning(msg string, args ...interface{}) {
-	fmt.Fprintf(os.Stderr, "%s: %s\n", color.Yellow.Sprintf("Warning"), fmt.Sprintf(msg, args...))
+	warningMessage := fmt.Sprintf(msg, args...)
+	fmt.Fprintf(os.Stderr, "%s: %s\n", Yellow("Warning"), warningMessage)
 }
