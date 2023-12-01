@@ -8,12 +8,12 @@ import (
 )
 
 var (
-	getServerURL   = "/api/servers/servers/"
+	serverURL      = "/api/servers/servers/"
 	getServerIDURL = "/api/servers/servers/?name="
 )
 
 func GetServerList(ac *client.AlpaconClient) ([]ServerAttributes, error) {
-	responseBody, err := ac.SendGetRequest(getServerURL)
+	responseBody, err := ac.SendGetRequest(serverURL)
 	if err != nil {
 		return nil, err
 	}
@@ -43,7 +43,7 @@ func GetServerDetail(ac *client.AlpaconClient, serverName string) ([]byte, error
 		return nil, err
 	}
 
-	body, err := ac.SendGetRequest(getServerURL + serverID)
+	body, err := ac.SendGetRequest(serverURL + serverID)
 	if err != nil {
 		return nil, err
 	}
@@ -51,21 +51,37 @@ func GetServerDetail(ac *client.AlpaconClient, serverName string) ([]byte, error
 	return body, nil
 }
 
-func GetServerIDByName(ac *client.AlpaconClient, name string) (string, error) {
-	body, err := ac.SendGetRequest(getServerIDURL + name)
+func GetServerIDByName(ac *client.AlpaconClient, serverName string) (string, error) {
+	body, err := ac.SendGetRequest(getServerIDURL + serverName)
 	if err != nil {
 		return "", err
 	}
 
-	var serverListResponse ServerListResponse
-	err = json.Unmarshal(body, &serverListResponse)
+	var response ServerListResponse
+	err = json.Unmarshal(body, &response)
 	if err != nil {
 		return "", err
 	}
 
-	if serverListResponse.Count == 0 {
+	if response.Count == 0 {
 		return "", errors.New("no server found with the given name")
 	}
 
-	return serverListResponse.Results[0].ID, nil
+	return response.Results[0].ID, nil
+}
+
+func CreateServer(ac *client.AlpaconClient, serverReuqest ServerRequest) (ServerCreatedResponse, error) {
+	var response ServerCreatedResponse
+
+	responseBody, err := ac.SendPostRequest(serverURL, serverReuqest)
+	if err != nil {
+		return ServerCreatedResponse{}, err
+	}
+
+	err = json.Unmarshal(responseBody, &response)
+	if err != nil {
+		return ServerCreatedResponse{}, err
+	}
+
+	return response, nil
 }

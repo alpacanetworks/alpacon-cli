@@ -3,6 +3,7 @@ package websh
 import (
 	"bufio"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"github.com/alpacanetworks/alpacon-cli/api/server"
 	"github.com/alpacanetworks/alpacon-cli/client"
@@ -82,7 +83,7 @@ func openNewTerminal(ac *client.AlpaconClient, sessionResponse SessionResponse) 
 
 func websocketClient(conn *websocket.Conn) error {
 	if !term.IsTerminal(int(os.Stdin.Fd())) {
-		return fmt.Errorf("websh command should be a terminal")
+		return errors.New("websh command should be a terminal")
 	}
 
 	oldState, err := term.MakeRaw(int(os.Stdin.Fd()))

@@ -123,7 +123,7 @@ func GetUserDetail(ac *client.AlpaconClient, userName string) ([]byte, error) {
 func GetGroupDetail(ac *client.AlpaconClient, groupName string) ([]byte, error) {
 	var groupDetails GroupDetails
 
-	groupID, err := getGroupIDByName(ac, groupName)
+	groupID, err := GetGroupIDByName(ac, groupName)
 	if err != nil {
 		return nil, err
 	}
@@ -183,7 +183,7 @@ func getUserIDByName(ac *client.AlpaconClient, userName string) (string, error) 
 	return response.Results[0].ID, nil
 }
 
-func getGroupIDByName(ac *client.AlpaconClient, groupName string) (string, error) {
+func GetGroupIDByName(ac *client.AlpaconClient, groupName string) (string, error) {
 	responseBody, err := ac.SendGetRequest(getGroupIDURL + groupName)
 	if err != nil {
 		return "", err

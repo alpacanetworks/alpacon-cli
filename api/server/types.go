@@ -10,6 +10,21 @@ type ServerAttributes struct {
 	Owner     string `json:"owner"`
 }
 
+type ServerRequest struct {
+	Name     string `json:"name"`
+	Platform string `json:"platform"`
+	//	Key      string `json:"key"`
+	Groups []string `json:"groups"`
+}
+
+type ServerCreatedResponse struct {
+	Name         string   `json:"name"`
+	ID           string   `json:"id"`
+	Instruction1 string   `json:"instruction_1"`
+	Instruction2 string   `json:"instruction_2"`
+	Groups       []string `json:"groups"`
+}
+
 type ServerListResponse struct {
 	Count    int             `json:"count"`
 	Current  int             `json:"current"`
