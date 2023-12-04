@@ -23,7 +23,7 @@ var userListCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		alpaconClient, err := client.NewAlpaconAPIClient()
 		if err != nil {
-			utils.CliError("Failed to create a connection to the Alpacon API %s", err)
+			utils.CliError("Connection to Alpacon API failed: %s. Consider re-logging.", err)
 		}
 
 		userList, err := iam.GetUserList(alpaconClient)

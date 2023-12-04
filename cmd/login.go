@@ -43,7 +43,7 @@ func performLogin() {
 
 	_, err = client.NewAlpaconAPIClient()
 	if err != nil {
-		utils.CliError("Failed to create a connection to the Alpacon API: %s", err)
+		utils.CliError("Connection to Alpacon API failed: %s. Consider re-logging.", err)
 	}
 	fmt.Println("Login succeeded!")
 }

@@ -70,10 +70,10 @@ func GetServerIDByName(ac *client.AlpaconClient, serverName string) (string, err
 	return response.Results[0].ID, nil
 }
 
-func CreateServer(ac *client.AlpaconClient, serverReuqest ServerRequest) (ServerCreatedResponse, error) {
+func CreateServer(ac *client.AlpaconClient, serverRequest ServerRequest) (ServerCreatedResponse, error) {
 	var response ServerCreatedResponse
 
-	responseBody, err := ac.SendPostRequest(serverURL, serverReuqest)
+	responseBody, err := ac.SendPostRequest(serverURL, serverRequest)
 	if err != nil {
 		return ServerCreatedResponse{}, err
 	}
