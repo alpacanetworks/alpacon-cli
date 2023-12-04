@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"fmt"
+	"github.com/alpacanetworks/alpacon-cli/cmd/ftp"
 	"github.com/alpacanetworks/alpacon-cli/cmd/iam"
 	"github.com/alpacanetworks/alpacon-cli/cmd/server"
 	"github.com/alpacanetworks/alpacon-cli/cmd/websh"
@@ -52,4 +53,8 @@ func init() {
 
 	// websh
 	rootCmd.AddCommand(websh.WebshCmd)
+
+	// ftp
+	rootCmd.AddCommand(ftp.UploadCmd)
+	rootCmd.AddCommand(ftp.DownloadCmd)
 }

@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"github.com/alpacanetworks/alpacon-cli/config"
 	"io"
+	"mime/multipart"
 	"net/http"
 )
 
@@ -129,3 +130,28 @@ func (ac *AlpaconClient) SendPostRequest(url string, params interface{}) ([]byte
 }
 
 // TODO DELETE, PUT, PATCH
+
+func (ac *AlpaconClient) SendMultipartRequest(url string, multiPartWriter *multipart.Writer, body bytes.Buffer) error {
+	req, err := ac.createRequest("POST", url, &body)
+	if err != nil {
+		return err
+	}
+	req.Header.Set("Content-Type", multiPartWriter.FormDataContentType())
+
+	resp, err := ac.HTTPClient.Do(req)
+	if err != nil {
+		return err
+	}
+	defer resp.Body.Close()
+
+	respBody, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return err
+	}
+
+	if resp.StatusCode != http.StatusCreated {
+		return errors.New(resp.Status + string(respBody))
+	}
+
+	return nil
+}

@@ -4,9 +4,24 @@ import (
 	"bufio"
 	"fmt"
 	"os"
+	"path/filepath"
 	"strconv"
 	"strings"
 )
+
+func ReadFileFromPath(filePath string) ([]byte, error) {
+	absolutePath, err := filepath.Abs(filePath)
+	if err != nil {
+		return nil, err
+	}
+
+	content, err := os.ReadFile(absolutePath)
+	if err != nil {
+		return nil, err
+	}
+
+	return content, nil
+}
 
 func PromptForInput(promptText string) string {
 	reader := bufio.NewReader(os.Stdin)
