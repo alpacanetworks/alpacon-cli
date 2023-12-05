@@ -3,6 +3,7 @@ package utils
 import (
 	"bufio"
 	"fmt"
+	"net/url"
 	"os"
 	"path/filepath"
 	"strconv"
@@ -49,4 +50,11 @@ func SplitAndParseInts(input string) []int {
 	}
 
 	return intValues
+}
+
+func CreatePaginationParams(page, pageSize int) string {
+	params := url.Values{}
+	params.Add("page", strconv.Itoa(page))
+	params.Add("page_size", strconv.Itoa(pageSize))
+	return params.Encode()
 }

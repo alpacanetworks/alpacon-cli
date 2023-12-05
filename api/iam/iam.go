@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"github.com/alpacanetworks/alpacon-cli/client"
+	"github.com/alpacanetworks/alpacon-cli/utils"
 )
 
 var (
@@ -19,57 +20,78 @@ var (
 )
 
 func GetUserList(ac *client.AlpaconClient) ([]UserAttributes, error) {
-	responseBody, err := ac.SendGetRequest(getUserURL)
-	if err != nil {
-		return nil, err
-	}
-
-	var response UserListResponse
-	if err = json.Unmarshal(responseBody, &response); err != nil {
-		return nil, err
-	}
-
 	var userList []UserAttributes
-	for _, user := range response.Results {
-		userList = append(userList, UserAttributes{
-			Username:   user.Username,
-			Name:       fmt.Sprintf("%s %s", user.LastName, user.FirstName),
-			Email:      user.Email,
-			Tags:       user.Tags,
-			Groups:     user.NumGroups,
-			UID:        user.UID,
-			Status:     getUserStatus(user.IsActive, user.IsStaff, user.IsSuperuser),
-			LDAPStatus: getLDAPStatus(user.IsLDAPUser),
-		})
-	}
+	page := 1
+	const pageSize = 100
 
+	for {
+		params := utils.CreatePaginationParams(page, pageSize)
+		responseBody, err := ac.SendGetRequest(getUserURL + "?" + params)
+
+		if err != nil {
+			return nil, err
+		}
+
+		var response UserListResponse
+		if err = json.Unmarshal(responseBody, &response); err != nil {
+			return nil, err
+		}
+
+		for _, user := range response.Results {
+			userList = append(userList, UserAttributes{
+				Username:   user.Username,
+				Name:       fmt.Sprintf("%s %s", user.LastName, user.FirstName),
+				Email:      user.Email,
+				Tags:       user.Tags,
+				Groups:     user.NumGroups,
+				UID:        user.UID,
+				Status:     getUserStatus(user.IsActive, user.IsStaff, user.IsSuperuser),
+				LDAPStatus: getLDAPStatus(user.IsLDAPUser),
+			})
+		}
+
+		if len(response.Results) < pageSize {
+			break
+		}
+		page++
+	}
 	return userList, nil
 }
 
 func GetGroupList(ac *client.AlpaconClient) ([]GroupAttributes, error) {
-	responseBody, err := ac.SendGetRequest(getGroupURL)
-	if err != nil {
-		return nil, err
-	}
-
-	var response GroupListResponse
-	if err = json.Unmarshal(responseBody, &response); err != nil {
-		return nil, err
-	}
-
 	var groupList []GroupAttributes
-	for _, group := range response.Results {
-		groupList = append(groupList, GroupAttributes{
-			Name:        group.Name,
-			DisplayName: group.DisplayName,
-			Tags:        group.Tags,
-			Members:     group.NumMembers,
-			Servers:     len(group.Servers),
-			GID:         group.GID,
-			LDAPStatus:  getLDAPStatus(group.IsLDAPGroup),
-		})
-	}
+	page := 1
+	const pageSize = 100
 
+	for {
+		params := utils.CreatePaginationParams(page, pageSize)
+		responseBody, err := ac.SendGetRequest(getGroupURL + "?" + params)
+		if err != nil {
+			return nil, err
+		}
+
+		var response GroupListResponse
+		if err = json.Unmarshal(responseBody, &response); err != nil {
+			return nil, err
+		}
+
+		for _, group := range response.Results {
+			groupList = append(groupList, GroupAttributes{
+				Name:        group.Name,
+				DisplayName: group.DisplayName,
+				Tags:        group.Tags,
+				Members:     group.NumMembers,
+				Servers:     len(group.Servers),
+				GID:         group.GID,
+				LDAPStatus:  getLDAPStatus(group.IsLDAPGroup),
+			})
+		}
+
+		if len(response.Results) < pageSize {
+			break
+		}
+		page++
+	}
 	return groupList, nil
 }
 

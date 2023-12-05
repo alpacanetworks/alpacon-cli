@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"github.com/alpacanetworks/alpacon-cli/client"
+	"github.com/alpacanetworks/alpacon-cli/utils"
 )
 
 var (
@@ -13,25 +14,36 @@ var (
 )
 
 func GetServerList(ac *client.AlpaconClient) ([]ServerAttributes, error) {
-	responseBody, err := ac.SendGetRequest(serverURL)
-	if err != nil {
-		return nil, err
-	}
-
-	var response ServerListResponse
-	if err = json.Unmarshal(responseBody, &response); err != nil {
-		return nil, err
-	}
-
 	var serverList []ServerAttributes
-	for _, server := range response.Results {
-		serverList = append(serverList, ServerAttributes{
-			Name:      server.Name,
-			IP:        server.RemoteIP,
-			OS:        fmt.Sprintf("%s %s", server.OSName, server.OSVersion),
-			Connected: server.IsConnected,
-			Owner:     server.OwnerName,
-		})
+	page := 1
+	const pageSize = 100
+
+	for {
+		params := utils.CreatePaginationParams(page, pageSize)
+		responseBody, err := ac.SendGetRequest(serverURL + "?" + params)
+		if err != nil {
+			return nil, err
+		}
+
+		var response ServerListResponse
+		if err = json.Unmarshal(responseBody, &response); err != nil {
+			return nil, err
+		}
+
+		for _, server := range response.Results {
+			serverList = append(serverList, ServerAttributes{
+				Name:      server.Name,
+				IP:        server.RemoteIP,
+				OS:        fmt.Sprintf("%s %s", server.OSName, server.OSVersion),
+				Connected: server.IsConnected,
+				Owner:     server.OwnerName,
+			})
+		}
+
+		if len(response.Results) < pageSize {
+			break
+		}
+		page++
 	}
 
 	return serverList, nil
