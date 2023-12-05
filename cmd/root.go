@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/alpacanetworks/alpacon-cli/cmd/ftp"
 	"github.com/alpacanetworks/alpacon-cli/cmd/iam"
+	"github.com/alpacanetworks/alpacon-cli/cmd/log"
 	"github.com/alpacanetworks/alpacon-cli/cmd/server"
 	"github.com/alpacanetworks/alpacon-cli/cmd/websh"
 	"github.com/alpacanetworks/alpacon-cli/utils"
@@ -57,4 +58,7 @@ func init() {
 	// ftp
 	rootCmd.AddCommand(ftp.UploadCmd)
 	rootCmd.AddCommand(ftp.DownloadCmd)
+
+	// log
+	rootCmd.AddCommand(log.LogCmd)
 }
