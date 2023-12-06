@@ -2,7 +2,6 @@ package utils
 
 import (
 	"fmt"
-	"github.com/savioxavier/termlink"
 	"os"
 )
 
@@ -13,8 +12,7 @@ var (
 // TODO VersionCheck()
 
 func reportCLIError() {
-	gitIssueLink := termlink.ColorLink("", gitIssueURL, "blue")
-	fmt.Println("For issues, check the latest version or report on", gitIssueLink)
+	fmt.Println("For issues, check the latest version or report on", gitIssueURL)
 }
 
 // CliError handles all error messages in the CLI.
