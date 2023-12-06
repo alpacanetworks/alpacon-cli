@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"fmt"
+	"github.com/alpacanetworks/alpacon-cli/cmd/agent"
 	"github.com/alpacanetworks/alpacon-cli/cmd/ftp"
 	"github.com/alpacanetworks/alpacon-cli/cmd/iam"
 	"github.com/alpacanetworks/alpacon-cli/cmd/log"
@@ -51,6 +52,9 @@ func init() {
 
 	// server
 	rootCmd.AddCommand(server.ServerCmd)
+
+	// agent
+	rootCmd.AddCommand(agent.AgentCmd)
 
 	// websh
 	rootCmd.AddCommand(websh.WebshCmd)
