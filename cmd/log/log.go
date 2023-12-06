@@ -12,6 +12,7 @@ var pageSize int
 var LogCmd = &cobra.Command{
 	Use:     "log [SERVER NAME]",
 	Aliases: []string{"logs"},
+	Short:   "Retrieve and display server logs",
 	Long: `Retrieve and display logs for a specified server. This command allows you 
 	to view logs of different levels and types associated with a server. Use the '--tail' flag 
 	to limit the output to the last N log entries. Suitable for debugging and monitoring 
