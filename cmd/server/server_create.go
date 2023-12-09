@@ -108,6 +108,6 @@ func printIntro() {
 
 func printMethod(header, instruction string) {
 	fmt.Println(utils.Green(header))
-	fmt.Println("`")
-	fmt.Println(instruction + "`\n")
+	fmt.Println()
+	fmt.Println(instruction + "\n")
 }
