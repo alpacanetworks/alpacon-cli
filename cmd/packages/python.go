@@ -19,4 +19,5 @@ var pythonCmd = &cobra.Command{
 
 func init() {
 	pythonCmd.AddCommand(pythonPackageListCmd)
+	pythonCmd.AddCommand(pythonPackageUploadCmd)
 }

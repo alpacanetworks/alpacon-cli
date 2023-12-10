@@ -19,4 +19,5 @@ var systemCmd = &cobra.Command{
 
 func init() {
 	systemCmd.AddCommand(systemPackageListCmd)
+	systemCmd.AddCommand(systemPackageUploadCmd)
 }
