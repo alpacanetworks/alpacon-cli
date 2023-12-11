@@ -7,7 +7,7 @@ import (
 
 var GroupCmd = &cobra.Command{
 	Use:   "group",
-	Short: "Manage Group (Identity and Access Management) resources",
+	Short: "Manage Group resources",
 	Long: `
 	The 'group' command is used to manage IAM group resources,
 	including groups, and permissions within the Alpacon.
