@@ -7,6 +7,9 @@ import (
 	"github.com/alpacanetworks/alpacon-cli/client"
 	"github.com/alpacanetworks/alpacon-cli/utils"
 	"mime/multipart"
+	"os"
+	"path/filepath"
+	"time"
 )
 
 var (
@@ -67,13 +70,33 @@ func DownloadFile(ac *client.AlpaconClient, serverName string, path string) (str
 		Server: serverID,
 	}
 
-	body, err := ac.SendPostRequest(downloadAPIURL, downloadRequest)
+	postBody, err := ac.SendPostRequest(downloadAPIURL, downloadRequest)
 	if err != nil {
 		return "", err
 	}
 
 	var downloadResponse DownloadResponse
-	err = json.Unmarshal(body, &downloadResponse)
+	err = json.Unmarshal(postBody, &downloadResponse)
+	if err != nil {
+		return "", err
+	}
+
+	var data []byte
+	maxAttempts := 100
+
+	utils.CliWarning("Awaiting file transfer completion from Alpacon server. Transfer may timeout if it exceeds 100 seconds.")
+
+	for count := 0; count < maxAttempts; count++ {
+		data, err = ac.SendGetRequest(utils.RemovePrefixBeforeAPI(downloadResponse.DownloadURL))
+		if err != nil {
+			time.Sleep(1 * time.Second)
+			continue
+		}
+
+		break
+	}
+
+	err = os.WriteFile(filepath.Base(path), data, 0666)
 	if err != nil {
 		return "", err
 	}

@@ -58,3 +58,11 @@ func CreatePaginationParams(page, pageSize int) string {
 	params.Add("page_size", strconv.Itoa(pageSize))
 	return params.Encode()
 }
+
+func RemovePrefixBeforeAPI(url string) string {
+	apiIndex := strings.Index(url, "/api/")
+	if apiIndex == -1 {
+		return url
+	}
+	return url[apiIndex:]
+}

@@ -6,7 +6,6 @@ require (
 	github.com/gookit/color v1.5.4
 	github.com/gorilla/websocket v1.5.1
 	github.com/olekukonko/tablewriter v0.0.5
-	github.com/savioxavier/termlink v1.3.0
 	github.com/spf13/cobra v1.8.0
 	golang.org/x/term v0.14.0
 )
