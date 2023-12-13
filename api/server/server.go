@@ -63,6 +63,20 @@ func GetServerDetail(ac *client.AlpaconClient, serverName string) ([]byte, error
 	return body, nil
 }
 
+func DeleteServer(ac *client.AlpaconClient, serverName string) error {
+	serverID, err := GetServerIDByName(ac, serverName)
+	if err != nil {
+		return err
+	}
+
+	_, err = ac.SendDeleteRequest(serverURL + serverID)
+	if err != nil {
+		return err
+	}
+
+	return err
+}
+
 func GetServerIDByName(ac *client.AlpaconClient, serverName string) (string, error) {
 	body, err := ac.SendGetRequest(getServerIDURL + serverName)
 	if err != nil {

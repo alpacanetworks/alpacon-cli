@@ -129,7 +129,15 @@ func (ac *AlpaconClient) SendPostRequest(url string, params interface{}) ([]byte
 	return ac.sendRequest(req)
 }
 
-// TODO DELETE, PUT, PATCH
+func (ac *AlpaconClient) SendDeleteRequest(url string) ([]byte, error) {
+	req, err := ac.createRequest("DELETE", url, nil)
+	if err != nil {
+		return nil, err
+	}
+	return ac.sendRequest(req)
+}
+
+// TODO PUT, PATCH
 
 func (ac *AlpaconClient) SendMultipartRequest(url string, multiPartWriter *multipart.Writer, body bytes.Buffer) error {
 	req, err := ac.createRequest("POST", url, &body)
