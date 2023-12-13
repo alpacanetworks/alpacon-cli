@@ -8,6 +8,7 @@ import (
 	"path/filepath"
 	"strconv"
 	"strings"
+	"time"
 )
 
 func ReadFileFromPath(filePath string) ([]byte, error) {
@@ -57,6 +58,31 @@ func CreatePaginationParams(page, pageSize int) string {
 	params.Add("page", strconv.Itoa(page))
 	params.Add("page_size", strconv.Itoa(pageSize))
 	return params.Encode()
+}
+
+func TimeAgo(t time.Time) string {
+	now := time.Now()
+	diff := now.Sub(t)
+
+	switch {
+	case diff < time.Minute:
+		return "just now"
+	case diff < time.Hour:
+		return fmt.Sprintf("%d minutes ago", diff/time.Minute)
+	case diff < 24*time.Hour:
+		return fmt.Sprintf("%d hours ago", diff/time.Hour)
+	case diff < 48*time.Hour:
+		return "yesterday"
+	default:
+		return fmt.Sprintf("%d days ago", diff/(24*time.Hour))
+	}
+}
+
+func TruncateString(str string, num int) string {
+	if len(str) > num {
+		return str[:num] + "..."
+	}
+	return str
 }
 
 func RemovePrefixBeforeAPI(url string) string {

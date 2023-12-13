@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/alpacanetworks/alpacon-cli/api/server"
 	"github.com/alpacanetworks/alpacon-cli/client"
+	"github.com/alpacanetworks/alpacon-cli/utils"
 	"net/url"
 )
 
@@ -37,7 +38,8 @@ func GetSystemLogList(ac *client.AlpaconClient, serverName string, pageSize int)
 			Program: log.Program,
 			Level:   getLogLevel(log.Level),
 			Message: fmt.Sprintf("[%s] %s", log.Process, log.Msg),
-			Date:    log.Date.Format("2006-01-02 15:04:05 MST"),
+			//	Date:    log.Date.Format("2006-01-02 15:04:05 MST"),
+			Date: utils.TimeAgo(log.Date),
 		})
 	}
 
