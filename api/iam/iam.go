@@ -10,7 +10,7 @@ import (
 
 var (
 	getUserURL   = "/api/iam/users/"
-	getUserIDURL = "/api/iam/users/?name="
+	getUserIDURL = "/api/iam/users/?username="
 
 	getGroupURL   = "/api/iam/groups/"
 	getGroupIDURL = "/api/iam/groups/?name="
@@ -98,7 +98,7 @@ func GetGroupList(ac *client.AlpaconClient) ([]GroupAttributes, error) {
 func GetUserDetail(ac *client.AlpaconClient, userName string) ([]byte, error) {
 	var userDetails UserDetails
 
-	userID, err := getUserIDByName(ac, userName)
+	userID, err := GetUserIDByName(ac, userName)
 	if err != nil {
 		return nil, err
 	}
@@ -186,7 +186,7 @@ func GetGroupDetail(ac *client.AlpaconClient, groupName string) ([]byte, error) 
 	return groupDetailJson, nil
 }
 
-func getUserIDByName(ac *client.AlpaconClient, userName string) (string, error) {
+func GetUserIDByName(ac *client.AlpaconClient, userName string) (string, error) {
 	responseBody, err := ac.SendGetRequest(getUserIDURL + userName)
 	if err != nil {
 		return "", err
