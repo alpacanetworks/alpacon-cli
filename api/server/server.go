@@ -69,7 +69,7 @@ func DeleteServer(ac *client.AlpaconClient, serverName string) error {
 		return err
 	}
 
-	_, err = ac.SendDeleteRequest(serverURL + serverID)
+	_, err = ac.SendDeleteRequest(serverURL + serverID + "/")
 	if err != nil {
 		return err
 	}
