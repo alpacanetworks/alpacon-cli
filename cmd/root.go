@@ -3,6 +3,7 @@ package cmd
 import (
 	"fmt"
 	"github.com/alpacanetworks/alpacon-cli/cmd/agent"
+	"github.com/alpacanetworks/alpacon-cli/cmd/event"
 	"github.com/alpacanetworks/alpacon-cli/cmd/ftp"
 	"github.com/alpacanetworks/alpacon-cli/cmd/iam"
 	"github.com/alpacanetworks/alpacon-cli/cmd/log"
@@ -44,6 +45,9 @@ func Execute() {
 }
 
 func init() {
+	// version
+	rootCmd.AddCommand(versionCmd)
+
 	// login
 	rootCmd.AddCommand(loginCmd)
 
@@ -69,4 +73,7 @@ func init() {
 
 	// log
 	rootCmd.AddCommand(log.LogCmd)
+
+	// event
+	rootCmd.AddCommand(event.EventCmd)
 }
