@@ -20,18 +20,18 @@ This ensures quick access to the most up-to-date version.
 
 ### macOS
 ```bash
-wget https://github.com/alpacanetworks/alpacon-cli/releases/download/v0.0.1/alpacon-cli-0.0.1-darwin-arm64.tar.gz
-tar -xvf alpacon-cli-0.0.1-darwin-arm64.tar.gz
-chmod +x alpacon-cli
-sudo mv alpacon-cli /usr/local/bin/alpacon
+wget https://github.com/alpacanetworks/alpacon-cli/releases/download/v0.0.2/alpacon-0.0.2-darwin-arm64.tar.gz
+tar -xvf alpacon-0.0.2-darwin-arm64.tar.gz
+chmod +x alpacon
+sudo mv alpacon /usr/local/bin
 ```
 
 ### Linux
 ```bash
-wget https://github.com/alpacanetworks/alpacon-cli/releases/download/v0.0.1/alpacon-cli-0.0.1-linux-amd64.tar.gz
-tar -xvf alpacon-cli-0.0.1-linux-amd64.tar.gz
-chmod +x alpacon-cli
-sudo mv alpacon-cli /usr/local/bin/alpacon
+wget https://github.com/alpacanetworks/alpacon-cli/releases/download/v0.0.2/alpacon-0.0.2-linux-amd64.tar.gz
+tar -xvf alpacon-0.0.2-linux-amd64.tar.gz
+chmod +x alpacon
+sudo mv alpacon /usr/local/bin
 ```
 
 ### Windows
@@ -65,7 +65,7 @@ Available Commands:
   agent       Commands to manage server's agent
   completion  Generate the autocompletion script for the specified shell
   download    Transfer a file from a remote server
-  group       Manage Group (Identity and Access Management) resources
+  group       Manage Group resources
   help        Help about any command
   log         Retrieve and display server logs
   login       Log in to Alpacon Server
@@ -73,6 +73,7 @@ Available Commands:
   server      Commands to manage and interact with servers
   upload      Transfer a file to a remote server
   user        Manage User resources
+  version     Displays the current CLI version.
   websh       Open a websh terminal for a server
 ```
 
@@ -90,6 +91,9 @@ $ alpacon server describe [SERVER NAME]
 
 # Interactive server creation process.
 $ alpacon server create
+
+# Delete server
+$ alpacon server delete
 
 Server Name: 
 Platform(debian, rhel): 
@@ -141,6 +145,7 @@ $ alpacon cp /Users/alpacon.txt myserver:/home/alpacon/
 $ alpacon download myserver:/home/alpacon/alpacon.txt
 $ alpacon cp myserver:/home/alpacon/alpacon.txt
 ```
+- Download command: This command downloads the specified file to the **current directory** and also provides its **download URL**
 
 #### Package Management
 Handle Python and system packages effortlessly:
