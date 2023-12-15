@@ -12,18 +12,9 @@ import (
 )
 
 var (
-	checkAuthURL = "/api/auth/is_authenticated/"
+	checkAuthURL       = "/api/auth/is_authenticated/"
+	checkPrivilegesURL = "/api/iam/users/-"
 )
-
-type AlpaconClient struct {
-	HTTPClient *http.Client
-	BaseURL    string
-	Token      string
-}
-
-type CheckAuthResponse struct {
-	Authenticated bool `json:"authenticated"`
-}
 
 func NewAlpaconAPIClient() (*AlpaconClient, error) {
 	config, err := config.LoadConfig()
@@ -38,6 +29,11 @@ func NewAlpaconAPIClient() (*AlpaconClient, error) {
 	}
 
 	err = client.checkAuth()
+	if err != nil {
+		return nil, err
+	}
+
+	err = client.checkPrivileges()
 	if err != nil {
 		return nil, err
 	}
@@ -65,6 +61,34 @@ func (ac *AlpaconClient) checkAuth() error {
 	}
 
 	return nil
+}
+
+func (ac *AlpaconClient) checkPrivileges() error {
+	body, err := ac.SendGetRequest(checkPrivilegesURL)
+	if err != nil {
+		return err
+	}
+
+	var checkPrivilegesResponse CheckPrivilegesResponse
+
+	err = json.Unmarshal(body, &checkPrivilegesResponse)
+	if err != nil {
+		return err
+	}
+
+	ac.Privileges = getUserPrivileges(checkPrivilegesResponse.IsStaff, checkPrivilegesResponse.IsSuperuser)
+
+	return nil
+}
+
+func getUserPrivileges(isStaff, isSuperuser bool) string {
+	if isSuperuser {
+		return "superuser"
+	}
+	if isStaff {
+		return "staff"
+	}
+	return "general"
 }
 
 func (ac *AlpaconClient) createRequest(method, url string, body io.Reader) (*http.Request, error) {
