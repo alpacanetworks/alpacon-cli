@@ -6,8 +6,6 @@ import (
 	"github.com/alpacanetworks/alpacon-cli/client"
 	"github.com/alpacanetworks/alpacon-cli/utils"
 	"github.com/spf13/cobra"
-	"golang.org/x/term"
-	"strings"
 )
 
 var (
@@ -47,19 +45,9 @@ func promptForCredentials() {
 		loginRequest.Username = utils.PromptForInput("Username: ")
 	}
 	if loginRequest.Password == "" {
-		loginRequest.Password = promptForPassword("Password: ")
+		loginRequest.Password = utils.PromptForPassword("Password: ")
 	}
 	if loginRequest.ServerAddress == "" {
 		loginRequest.ServerAddress = utils.PromptForInput("Server Address: ")
 	}
-}
-
-func promptForPassword(promptText string) string {
-	fmt.Print(promptText)
-	bytePassword, err := term.ReadPassword(0)
-	if err != nil {
-		return ""
-	}
-	fmt.Println()
-	return strings.TrimSpace(string(bytePassword))
 }

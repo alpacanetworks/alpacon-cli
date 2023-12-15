@@ -3,6 +3,7 @@ package utils
 import (
 	"bufio"
 	"fmt"
+	"golang.org/x/term"
 	"net/url"
 	"os"
 	"path/filepath"
@@ -25,6 +26,16 @@ func ReadFileFromPath(filePath string) ([]byte, error) {
 	return content, nil
 }
 
+func PromptForPassword(promptText string) string {
+	fmt.Print(promptText)
+	bytePassword, err := term.ReadPassword(0)
+	if err != nil {
+		return ""
+	}
+	fmt.Println()
+	return strings.TrimSpace(string(bytePassword))
+}
+
 func PromptForInput(promptText string) string {
 	reader := bufio.NewReader(os.Stdin)
 	fmt.Print(promptText)
@@ -33,6 +44,35 @@ func PromptForInput(promptText string) string {
 		CliError("Error during input. Please try again.")
 	}
 	return strings.TrimSpace(input)
+}
+
+func PromptForRequiredInput(prompt string) string {
+	for {
+		input := PromptForInput(prompt)
+		if input != "" {
+			return input
+		}
+		fmt.Println("This field is required. Please enter a value.")
+	}
+}
+
+func PromptForBool(prompt string) bool {
+	reader := bufio.NewReader(os.Stdin)
+
+	for {
+		fmt.Printf("%s [y/n]: ", prompt)
+		input, _ := reader.ReadString('\n')
+		input = strings.TrimSpace(strings.ToLower(input))
+
+		switch input {
+		case "y", "yes":
+			return true
+		case "n", "no":
+			return false
+		default:
+			fmt.Println("Invalid input. Please enter 'y' (yes) or 'n' (no).")
+		}
+	}
 }
 
 func SplitAndParseInts(input string) []int {
