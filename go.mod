@@ -3,6 +3,7 @@ module github.com/alpacanetworks/alpacon-cli
 go 1.20
 
 require (
+	github.com/google/go-github v17.0.0+incompatible
 	github.com/gookit/color v1.5.4
 	github.com/gorilla/websocket v1.5.1
 	github.com/olekukonko/tablewriter v0.0.5
@@ -11,6 +12,7 @@ require (
 )
 
 require (
+	github.com/google/go-querystring v1.1.0 // indirect
 	github.com/inconshreveable/mousetrap v1.1.0 // indirect
 	github.com/mattn/go-runewidth v0.0.9 // indirect
 	github.com/spf13/pflag v1.0.5 // indirect
