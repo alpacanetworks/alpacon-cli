@@ -1,0 +1,8 @@
+/bin
+
+# Goland
+.idea
+
+dist/
+
+vendor/
