@@ -63,7 +63,7 @@ func GetEventList(ac *client.AlpaconClient, pageSize int, serverName string, use
 func buildURL(serverID, userID string, pageSize int) string {
 	params := url.Values{}
 	params.Add("server", serverID)
-	params.Add("requeste_by", userID)
+	params.Add("requested_by", userID)
 	params.Add("page_size", fmt.Sprintf("%d", pageSize))
 	return getEventURL + "?" + params.Encode()
 }
