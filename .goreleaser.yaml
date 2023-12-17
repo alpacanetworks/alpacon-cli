@@ -1,0 +1,50 @@
+project_name: alpacon
+
+before:
+  hooks:
+    - go mod tidy
+    - go generate ./...
+
+builds:
+  - env:
+      - CGO_ENABLED=0
+    goos:
+      - linux
+      - darwin
+      - windows
+    goarch:
+      - 386
+      - amd64
+      - arm
+      - arm64
+    ignore:
+      - goos: darwin
+        goarch: 386
+      - goos: windows
+        goarch: 386
+
+checksum:
+  name_template: "{{ .ProjectName }}-{{ .Version }}-checksums.sha256"
+
+archives:
+  - name_template: "{{ .ProjectName }}-{{ .Version }}-{{ .Os }}-{{ .Arch }}"
+    format_overrides:
+      - goos: windows
+        format: zip
+
+nfpms:
+  - maintainer: Younghwan Kim <kim131325@naver.com>
+    description: Alpacon-CLI
+    homepage: https://github.com/alpacanetworks/alpacon-cli
+    license: MIT
+    vendor: Alpaca Networks
+    formats:
+      - deb
+      - rpm
+
+changelog:
+  sort: asc
+  filters:
+    exclude:
+      - "^docs:"
+      - "^test:"
