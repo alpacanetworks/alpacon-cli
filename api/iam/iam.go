@@ -9,10 +9,10 @@ import (
 )
 
 var (
-	getUserURL   = "/api/iam/users/"
+	userURL      = "/api/iam/users/"
 	getUserIDURL = "/api/iam/users/?username="
 
-	getGroupURL   = "/api/iam/groups/"
+	groupURL      = "/api/iam/groups/"
 	getGroupIDURL = "/api/iam/groups/?name="
 
 	getUserMembershipURL  = "/api/iam/memberships/?user="
@@ -26,8 +26,7 @@ func GetUserList(ac *client.AlpaconClient) ([]UserAttributes, error) {
 
 	for {
 		params := utils.CreatePaginationParams(page, pageSize)
-		responseBody, err := ac.SendGetRequest(getUserURL + "?" + params)
-
+		responseBody, err := ac.SendGetRequest(userURL + "?" + params)
 		if err != nil {
 			return nil, err
 		}
@@ -65,7 +64,7 @@ func GetGroupList(ac *client.AlpaconClient) ([]GroupAttributes, error) {
 
 	for {
 		params := utils.CreatePaginationParams(page, pageSize)
-		responseBody, err := ac.SendGetRequest(getGroupURL + "?" + params)
+		responseBody, err := ac.SendGetRequest(groupURL + "?" + params)
 		if err != nil {
 			return nil, err
 		}
@@ -103,7 +102,7 @@ func GetUserDetail(ac *client.AlpaconClient, userName string) ([]byte, error) {
 		return nil, err
 	}
 
-	responseBody, err := ac.SendGetRequest(getUserURL + userID)
+	responseBody, err := ac.SendGetRequest(userURL + userID)
 	if err != nil {
 		return nil, err
 	}
@@ -150,7 +149,7 @@ func GetGroupDetail(ac *client.AlpaconClient, groupName string) ([]byte, error) 
 		return nil, err
 	}
 
-	responseBody, err := ac.SendGetRequest(getGroupURL + groupID)
+	responseBody, err := ac.SendGetRequest(groupURL + groupID)
 	if err != nil {
 		return nil, err
 	}
@@ -184,6 +183,34 @@ func GetGroupDetail(ac *client.AlpaconClient, groupName string) ([]byte, error) 
 	}
 
 	return groupDetailJson, nil
+}
+
+func DeleteUser(ac *client.AlpaconClient, userName string) error {
+	userID, err := GetUserIDByName(ac, userName)
+	if err != nil {
+		return err
+	}
+
+	_, err = ac.SendDeleteRequest(userURL + userID + "/")
+	if err != nil {
+		return err
+	}
+
+	return err
+}
+
+func DeleteGroup(ac *client.AlpaconClient, groupName string) error {
+	groupID, err := GetGroupIDByName(ac, groupName)
+	if err != nil {
+		return err
+	}
+
+	_, err = ac.SendDeleteRequest(groupURL + groupID + "/")
+	if err != nil {
+		return err
+	}
+
+	return err
 }
 
 func GetUserIDByName(ac *client.AlpaconClient, userName string) (string, error) {

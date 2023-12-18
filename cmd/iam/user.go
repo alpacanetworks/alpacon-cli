@@ -24,4 +24,5 @@ var UserCmd = &cobra.Command{
 func init() {
 	UserCmd.AddCommand(userListCmd)
 	UserCmd.AddCommand(userDetailCmd)
+	UserCmd.AddCommand(userDeleteCmd)
 }
