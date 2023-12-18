@@ -42,12 +42,12 @@ func init() {
 
 func promptForCredentials() {
 	if loginRequest.Username == "" {
-		loginRequest.Username = utils.PromptForInput("Username: ")
+		loginRequest.Username = utils.PromptForRequiredInput("Username: ")
 	}
 	if loginRequest.Password == "" {
 		loginRequest.Password = utils.PromptForPassword("Password: ")
 	}
 	if loginRequest.ServerAddress == "" {
-		loginRequest.ServerAddress = utils.PromptForInput("Server Address: ")
+		loginRequest.ServerAddress = utils.PromptForRequiredInput("Server Address: ")
 	}
 }

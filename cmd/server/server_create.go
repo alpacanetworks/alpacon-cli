@@ -28,12 +28,12 @@ var serverCreateCmd = &cobra.Command{
 			utils.CliError("Connection to Alpacon API failed: %s. Consider re-logging.", err)
 		}
 
-		groups, err := iam.GetGroupList(alpaconClient)
+		groupList, err := iam.GetGroupList(alpaconClient)
 		if err != nil {
 			utils.CliError("Failed to retrieve the group list %s", err)
 		}
 
-		promptForServer(alpaconClient, groups)
+		promptForServer(alpaconClient, groupList)
 
 		response, err := server.CreateServer(alpaconClient, serverRequest)
 		if err != nil {
@@ -45,7 +45,7 @@ var serverCreateCmd = &cobra.Command{
 }
 
 func promptForServer(ac *client.AlpaconClient, groupList []iam.GroupAttributes) {
-	serverRequest.Name = utils.PromptForInput("Server Name: ")
+	serverRequest.Name = utils.PromptForRequiredInput("Server Name: ")
 	serverRequest.Platform = promptForPlatform()
 
 	displayGroups(groupList)
@@ -71,7 +71,7 @@ func displayGroups(groupList []iam.GroupAttributes) {
 }
 
 func selectAndConvertGroups(ac *client.AlpaconClient, groupList []iam.GroupAttributes) []string {
-	chosenGroups := utils.PromptForInput("Select groups that are authorized to access this server. (e.g., 1,2):")
+	chosenGroups := utils.PromptForRequiredInput("Select groups that are authorized to access this server. (e.g., 1,2):")
 	intGroups := utils.SplitAndParseInts(chosenGroups)
 
 	var groupIDs []string
