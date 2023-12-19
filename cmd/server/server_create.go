@@ -7,6 +7,7 @@ import (
 	"github.com/alpacanetworks/alpacon-cli/client"
 	"github.com/alpacanetworks/alpacon-cli/utils"
 	"github.com/spf13/cobra"
+	"strings"
 )
 
 var (
@@ -56,7 +57,7 @@ func promptForServer(ac *client.AlpaconClient, groupList []iam.GroupAttributes) 
 func promptForPlatform() string {
 	for {
 		platform := utils.PromptForInput("Platform(debian, rhel): ")
-		if platform == "debian" || platform == "rhel" {
+		if strings.ToLower(platform) == "debian" || strings.ToLower(platform) == "rhel" {
 			return platform
 		}
 		fmt.Println("Invalid platform. Please choose 'debian' or 'rhel'.")
