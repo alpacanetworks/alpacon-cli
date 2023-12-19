@@ -13,10 +13,7 @@ These components are integral for the CLI to function effectively.
 **Note**: Detailed documentation, including usage guides and best practices, is in progress and will be available soon.
 
 ## Installation
-Download `Alpacon CLI` as a binary directly from our [releases page](https://github.com/alpacanetworks/alpacon-cli/releases).
-This ensures quick access to the most up-to-date version.
-
-**Coming Soon**: Plans are in motion to provide Alpacon CLI through Homebrew for macOS users and as a native package for Linux distributions.
+Download the latest `Alpacon CLI` directly from our releases page or install it using package managers on Linux.
 
 ### macOS
 ```bash
@@ -27,6 +24,22 @@ sudo mv alpacon /usr/local/bin
 ```
 
 ### Linux
+
+#### Debian and Ubuntu
+```bash
+curl -s https://packagecloud.io/install/repositories/alpacanetworks/alpacon/script.deb.sh?any=true | sudo bash
+
+sudo apt-get install alpacon
+```
+
+#### CentOS and RHEL
+```bash
+curl -s https://packagecloud.io/install/repositories/alpacanetworks/alpacon/script.rpm.sh?any=true | sudo bash
+
+sudo yum install alpacon
+```
+
+#### Download from GitHub Releases:
 ```bash
 wget https://github.com/alpacanetworks/alpacon-cli/releases/download/v0.0.2/alpacon-0.0.2-linux-amd64.tar.gz
 tar -xvf alpacon-0.0.2-linux-amd64.tar.gz
@@ -93,7 +106,7 @@ $ alpacon server describe [SERVER NAME]
 $ alpacon server create
 
 # Delete server
-$ alpacon server delete
+$ alpacon server delete [SERVER NAME]
 
 Server Name: 
 Platform(debian, rhel): 
