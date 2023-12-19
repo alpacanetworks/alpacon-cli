@@ -25,6 +25,6 @@ var shutdownAgentCmd = &cobra.Command{
 			utils.CliError("Failed to shutdown the agent %s", err)
 		}
 
-		utils.CliInfo("Agent shutdown request successful. Verify in logs.(alpacon logs [SERVER NAME])")
+		utils.CliInfo("Agent shutdown request successful. Verify in events.(alpacon events)")
 	},
 }

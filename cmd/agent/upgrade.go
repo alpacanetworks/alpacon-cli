@@ -25,6 +25,6 @@ var upgradeAgentCmd = &cobra.Command{
 			utils.CliError("Failed to upgrade the agent %s", err)
 		}
 
-		utils.CliInfo("Agent upgrade request successful. Verify in logs.(alpacon logs [SERVER NAME])")
+		utils.CliInfo("Agent upgrade request successful. Verify in events.(alpacon events)")
 	},
 }
