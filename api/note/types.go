@@ -18,3 +18,10 @@ type NoteDetails struct {
 	//	Pinned    bool   `json:"pinned"`
 	//	UpdatedAt string `json:"updated_at"`
 }
+
+type NoteCreateRequest struct {
+	Server  string `json:"server"`
+	Content string `json:"content"`
+	Private bool   `json:"private"`
+	Pinned  bool   `json:"pinned"`
+}

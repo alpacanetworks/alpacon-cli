@@ -38,11 +38,9 @@ func GetNoteList(ac *client.AlpaconClient, serverName string, pageSize int) ([]N
 	}
 
 	for _, note := range response.Results {
-		if serverName == "" {
-			serverName, err = server.GetServerNameByID(ac, note.Server)
-			if err != nil {
-				return nil, err
-			}
+		serverName, err = server.GetServerNameByID(ac, note.Server)
+		if err != nil {
+			return nil, err
 		}
 
 		userName, err := iam.GetUserNameByID(ac, note.Author)
@@ -55,10 +53,28 @@ func GetNoteList(ac *client.AlpaconClient, serverName string, pageSize int) ([]N
 			Server:  serverName,
 			Author:  userName,
 			Content: note.Content,
+			Private: note.Private,
 		})
 	}
 
 	return noteList, nil
+}
+
+func CreateNote(ac *client.AlpaconClient, noteRequest NoteCreateRequest) error {
+	serverID, err := server.GetServerIDByName(ac, noteRequest.Server)
+	if err != nil {
+		return err
+	}
+
+	noteRequest.Server = serverID
+	noteRequest.Pinned = false // The default value for the alpacon API server is currently false
+
+	_, err = ac.SendPostRequest(noteURL, noteRequest)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
 
 func DeleteNote(ac *client.AlpaconClient, noteID string) error {

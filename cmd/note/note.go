@@ -25,6 +25,6 @@ var NoteCmd = &cobra.Command{
 
 func init() {
 	NoteCmd.AddCommand(noteListCmd)
-	// NoteCmd.AddCommand(noteCreateCmd)
+	NoteCmd.AddCommand(noteCreateCmd)
 	NoteCmd.AddCommand(noteDeleteCmd)
 }
