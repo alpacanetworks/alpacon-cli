@@ -7,6 +7,7 @@ import (
 	"github.com/alpacanetworks/alpacon-cli/cmd/ftp"
 	"github.com/alpacanetworks/alpacon-cli/cmd/iam"
 	"github.com/alpacanetworks/alpacon-cli/cmd/log"
+	"github.com/alpacanetworks/alpacon-cli/cmd/note"
 	"github.com/alpacanetworks/alpacon-cli/cmd/packages"
 	"github.com/alpacanetworks/alpacon-cli/cmd/server"
 	"github.com/alpacanetworks/alpacon-cli/cmd/websh"
@@ -76,5 +77,8 @@ func init() {
 
 	// event
 	rootCmd.AddCommand(event.EventCmd)
+
+	// note
+	rootCmd.AddCommand(note.NoteCmd)
 
 }

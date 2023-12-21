@@ -96,6 +96,21 @@ func GetServerIDByName(ac *client.AlpaconClient, serverName string) (string, err
 	return response.Results[0].ID, nil
 }
 
+func GetServerNameByID(ac *client.AlpaconClient, serverID string) (string, error) {
+	body, err := ac.SendGetRequest(serverURL + serverID)
+	if err != nil {
+		return "", err
+	}
+
+	var response ServerDetails
+	err = json.Unmarshal(body, &response)
+	if err != nil {
+		return "", err
+	}
+
+	return response.Name, nil
+}
+
 func CreateServer(ac *client.AlpaconClient, serverRequest ServerRequest) (ServerCreatedResponse, error) {
 	var response ServerCreatedResponse
 
