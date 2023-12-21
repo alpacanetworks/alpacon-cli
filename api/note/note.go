@@ -38,6 +38,13 @@ func GetNoteList(ac *client.AlpaconClient, serverName string, pageSize int) ([]N
 	}
 
 	for _, note := range response.Results {
+		if serverName == "" {
+			serverName, err = server.GetServerNameByID(ac, note.Server)
+			if err != nil {
+				return nil, err
+			}
+		}
+
 		userName, err := iam.GetUserNameByID(ac, note.Author)
 		if err != nil {
 			return nil, err
