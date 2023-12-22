@@ -43,46 +43,46 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GORELEASER_GITHUB_TOKEN }}
 
-      - name: Upload AMD64 DEB artifacts
-        uses: actions/upload-artifact@v3
-        with:
-          name: alpacon_${{ github.ref_name }}_linux_amd64.deb
-          path: dist/alpacon_${{ github.ref_name }}_linux_amd64.deb
-
-      - name: Upload AMD64 RPM artifacts
-        uses: actions/upload-artifact@v3
-        with:
-          name: alpacon_${{ github.ref_name }}_linux_amd64.rpm
-          path: dist/alpacon_${{ github.ref_name }}_linux_amd64.rpm
-
-  packagecloud-deploy:
-    needs: goreleaser
-    runs-on: ubuntu-latest
-    steps:
-      - name: Download AMD64 DEB Artifacts
-        uses: actions/download-artifact@v3
-        with:
-          name: alpacon_${{ github.ref_name }}_linux_amd64.deb
-
-      - name: Download AMD64 RPM Artifacts
-        uses: actions/download-artifact@v3
-        with:
-          name: alpacon_${{ github.ref_name }}_linux_amd64.rpm
-
-      - name: Upload AMD64 DEB to PackageCloud
-        uses: danielmundi/upload-packagecloud@v1
-        with:
-          PACKAGE-NAME: alpacon_${{ github.ref_name }}_linux_amd64.deb
-          PACKAGECLOUD-USERNAME: alpacanetworks
-          PACKAGECLOUD-REPO: alpacon
-          PACKAGECLOUD-DISTRIB: any/any
-          PACKAGECLOUD-TOKEN: ${{ secrets.PACKAGECLOUD_TOKEN }}
-
-      - name: Upload AMD64 RPM to PackageCloud
-        uses: danielmundi/upload-packagecloud@v1
-        with:
-          PACKAGE-NAME: alpacon_${{ github.ref_name }}_linux_amd64.rpm
-          PACKAGECLOUD-USERNAME: alpacanetworks
-          PACKAGECLOUD-REPO: alpacon
-          PACKAGECLOUD-DISTRIB: any/any
-          PACKAGECLOUD-TOKEN: ${{ secrets.PACKAGECLOUD_TOKEN }}
+#      - name: Upload AMD64 DEB artifacts
+#        uses: actions/upload-artifact@v3
+#        with:
+#          name: alpacon_${{ github.ref_name }}_linux_amd64.deb
+#          path: dist/alpacon_${{ github.ref_name }}_linux_amd64.deb
+#
+#      - name: Upload AMD64 RPM artifacts
+#        uses: actions/upload-artifact@v3
+#        with:
+#          name: alpacon_${{ github.ref_name }}_linux_amd64.rpm
+#          path: dist/alpacon_${{ github.ref_name }}_linux_amd64.rpm
+#
+#  packagecloud-deploy:
+#    needs: goreleaser
+#    runs-on: ubuntu-latest
+#    steps:
+#      - name: Download AMD64 DEB Artifacts
+#        uses: actions/download-artifact@v3
+#        with:
+#          name: alpacon_${{ github.ref_name }}_linux_amd64.deb
+#
+#      - name: Download AMD64 RPM Artifacts
+#        uses: actions/download-artifact@v3
+#        with:
+#          name: alpacon_${{ github.ref_name }}_linux_amd64.rpm
+#
+#      - name: Upload AMD64 DEB to PackageCloud
+#        uses: danielmundi/upload-packagecloud@v1
+#        with:
+#          PACKAGE-NAME: alpacon_${{ github.ref_name }}_linux_amd64.deb
+#          PACKAGECLOUD-USERNAME: alpacanetworks
+#          PACKAGECLOUD-REPO: alpacon
+#          PACKAGECLOUD-DISTRIB: any/any
+#          PACKAGECLOUD-TOKEN: ${{ secrets.PACKAGECLOUD_TOKEN }}
+#
+#      - name: Upload AMD64 RPM to PackageCloud
+#        uses: danielmundi/upload-packagecloud@v1
+#        with:
+#          PACKAGE-NAME: alpacon_${{ github.ref_name }}_linux_amd64.rpm
+#          PACKAGECLOUD-USERNAME: alpacanetworks
+#          PACKAGECLOUD-REPO: alpacon
+#          PACKAGECLOUD-DISTRIB: any/any
+#          PACKAGECLOUD-TOKEN: ${{ secrets.PACKAGECLOUD_TOKEN }}
