@@ -30,10 +30,12 @@ var WebshCmd = &cobra.Command{
 			utils.CliError("Connection to Alpacon API failed: %s. Consider re-logging.", err)
 		}
 
-		err = websh.CreateWebshConnection(alpaconClient, serverName, root)
+		session, err := websh.CreateWebshConnection(alpaconClient, serverName, root)
 		if err != nil {
-			utils.CliError("Failed to create the websh connection %s", err)
+			utils.CliError("Failed to create the websh connection: %s", err)
 		}
+
+		websh.OpenNewTerminal(alpaconClient, session)
 	},
 }
 

@@ -18,23 +18,14 @@ var (
 	createSessionURL = "/api/websh/sessions/"
 )
 
-func CreateWebshConnection(ac *client.AlpaconClient, serverName string, root bool) error {
+func CreateWebshConnection(ac *client.AlpaconClient, serverName string, root bool) (SessionResponse, error) {
+	var sessionResponse SessionResponse
 	serverID, err := server.GetServerIDByName(ac, serverName)
 	if err != nil {
-		return err
+		return sessionResponse, err
 	}
 
-	sessionResponse, err := createWebshSession(ac, serverID, root)
-	if err != nil {
-		return err
-	}
-
-	err = openNewTerminal(ac, sessionResponse)
-	if err != nil {
-		return err
-	}
-
-	return nil
+	return createWebshSession(ac, serverID, root)
 }
 
 // Create new websh session
@@ -66,7 +57,7 @@ func createWebshSession(ac *client.AlpaconClient, serverID string, root bool) (S
 }
 
 // Open terminal
-func openNewTerminal(ac *client.AlpaconClient, sessionResponse SessionResponse) error {
+func OpenNewTerminal(ac *client.AlpaconClient, sessionResponse SessionResponse) error {
 	headers := http.Header{"Origin": []string{ac.BaseURL}}
 
 	conn, _, err := websocket.DefaultDialer.Dial(sessionResponse.WebsocketURL, headers)
