@@ -43,20 +43,58 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GORELEASER_GITHUB_TOKEN }}
 
-      - name: Upload AMD64 DEB to PackageCloud
+      - name: Upload AMD64 DEB to PackageCloud for Ubuntu 18.04
         uses: danielmundi/upload-packagecloud@v1
         with:
           PACKAGE-NAME: dist/*.amd64.deb
           PACKAGECLOUD-USERNAME: alpacanetworks
           PACKAGECLOUD-REPO: alpacon
-          PACKAGECLOUD-DISTRIB: deb/any
+          PACKAGECLOUD-DISTRIB: ubuntu/bionic
           PACKAGECLOUD-TOKEN: ${{ secrets.PACKAGECLOUD_TOKEN }}
 
-      - name: Upload AMD64 RPM to PackageCloud
+      - name: Upload AMD64 DEB to PackageCloud for Ubuntu 20.04
+        uses: danielmundi/upload-packagecloud@v1
+        with:
+          PACKAGE-NAME: dist/*.amd64.deb
+          PACKAGECLOUD-USERNAME: alpacanetworks
+          PACKAGECLOUD-REPO: alpacon
+          PACKAGECLOUD-DISTRIB: ubuntu/focal
+          PACKAGECLOUD-TOKEN: ${{ secrets.PACKAGECLOUD_TOKEN }
+
+
+      - name: Upload AMD64 DEB to PackageCloud for Ubuntu 22.04
+        uses: danielmundi/upload-packagecloud@v1
+        with:
+          PACKAGE-NAME: dist/*.amd64.deb
+          PACKAGECLOUD-USERNAME: alpacanetworks
+          PACKAGECLOUD-REPO: alpacon
+          PACKAGECLOUD-DISTRIB: ubuntu/jammy
+          PACKAGECLOUD-TOKEN: ${{ secrets.PACKAGECLOUD_TOKEN }
+
+      - name: Upload AMD64 RPM to PackageCloud for CentOS7
         uses: danielmundi/upload-packagecloud@v1
         with:
           PACKAGE-NAME: dist/*.amd64.rpm
           PACKAGECLOUD-USERNAME: alpacanetworks
           PACKAGECLOUD-REPO: alpacon
-          PACKAGECLOUD-DISTRIB: rpm/any
+          PACKAGECLOUD-DISTRIB: el/7
+          PACKAGECLOUD-TOKEN: ${{ secrets.PACKAGECLOUD_TOKEN }}
+
+      - name: Upload AMD64 RPM to PackageCloud for CentOS8
+        uses: danielmundi/upload-packagecloud@v1
+        with:
+          PACKAGE-NAME: dist/*.amd64.rpm
+          PACKAGECLOUD-USERNAME: alpacanetworks
+          PACKAGECLOUD-REPO: alpacon
+          PACKAGECLOUD-DISTRIB: el/8
+          PACKAGECLOUD-TOKEN: ${{ secrets.PACKAGECLOUD_TOKEN }}
+
+
+      - name: Upload AMD64 RPM to PackageCloud for CentOS9
+        uses: danielmundi/upload-packagecloud@v1
+        with:
+          PACKAGE-NAME: dist/*.amd64.rpm
+          PACKAGECLOUD-USERNAME: alpacanetworks
+          PACKAGECLOUD-REPO: alpacon
+          PACKAGECLOUD-DISTRIB: el/9
           PACKAGECLOUD-TOKEN: ${{ secrets.PACKAGECLOUD_TOKEN }}
