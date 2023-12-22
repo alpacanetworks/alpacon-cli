@@ -46,13 +46,13 @@ jobs:
       - name: Upload AMD64 DEB artifacts
         uses: actions/upload-artifact@v3
         with:
-          name: alpacon_${{ github.ref_name }}_linux_amd64.deb
+          name: alpacon_${{ github.ref_name[1:] }}_linux_amd64.deb
           path: dist/alpacon_${{ github.ref_name }}_linux_amd64.deb
 
       - name: Upload AMD64 RPM artifacts
         uses: actions/upload-artifact@v3
         with:
-          name: alpacon_${{ github.ref_name }}_linux_amd64.rpm
+          name: alpacon_${{ github.ref_name[1:] }}_linux_amd64.rpm
           path: dist/alpacon_${{ github.ref_name }}_linux_amd64.rpm
 
   packagecloud-deploy:
