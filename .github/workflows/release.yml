@@ -49,7 +49,7 @@ jobs:
           PACKAGE-NAME: dist/*.amd64.deb
           PACKAGECLOUD-USERNAME: alpacanetworks
           PACKAGECLOUD-REPO: alpacon
-          PACKAGECLOUD-DISTRIB: debian/amd64
+          PACKAGECLOUD-DISTRIB: any/any
           PACKAGECLOUD-TOKEN: ${{ secrets.PACKAGECLOUD_TOKEN }}
 
       - name: Upload AMD64 RPM to PackageCloud
@@ -58,5 +58,5 @@ jobs:
           PACKAGE-NAME: dist/*.amd64.rpm
           PACKAGECLOUD-USERNAME: alpacanetworks
           PACKAGECLOUD-REPO: alpacon
-          PACKAGECLOUD-DISTRIB: el/7
+          PACKAGECLOUD-DISTRIB: any/any
           PACKAGECLOUD-TOKEN: ${{ secrets.PACKAGECLOUD_TOKEN }}
