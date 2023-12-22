@@ -9,7 +9,8 @@ import (
 )
 
 var (
-	loginRequest auth.LoginRequest
+	loginRequest     auth.LoginRequest
+	defaultServerURL = "https://alpacon.io"
 )
 
 var loginCmd = &cobra.Command{
@@ -35,7 +36,7 @@ var loginCmd = &cobra.Command{
 }
 
 func init() {
-	loginCmd.Flags().StringVarP(&loginRequest.ServerAddress, "server", "s", "", "URL of the server to login")
+	loginCmd.Flags().StringVarP(&loginRequest.ServerAddress, "server", "s", "defaultServerURL", "URL of the server to login, default: https://alpacon.io")
 	loginCmd.Flags().StringVarP(&loginRequest.Username, "username", "u", "", "Username for login")
 	loginCmd.Flags().StringVarP(&loginRequest.Password, "password", "p", "", "Password for login")
 }
@@ -47,7 +48,9 @@ func promptForCredentials() {
 	if loginRequest.Password == "" {
 		loginRequest.Password = utils.PromptForPassword("Password: ")
 	}
+
+	loginRequest.ServerAddress = utils.PromptForInput("Server Address[https://alpacon.io]: ")
 	if loginRequest.ServerAddress == "" {
-		loginRequest.ServerAddress = utils.PromptForRequiredInput("Server Address: ")
+		loginRequest.ServerAddress = defaultServerURL
 	}
 }
