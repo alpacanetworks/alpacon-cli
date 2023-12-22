@@ -63,13 +63,13 @@ jobs:
         uses: actions/download-artifact@v3
         with:
           name: alpacon_${{ github.ref_name }}_linux_amd64.deb
-          path: dist/alpacon_${{ github.ref_name }}_linux_amd64.deb
 
       - name: Download AMD64 RPM Artifacts
         uses: actions/download-artifact@v3
         with:
           name: alpacon_${{ github.ref_name }}_linux_amd64.rpm
-          path: dist/alpacon_${{ github.ref_name }}_linux_amd64.rpm
+
+      - run: ls
 
       - name: Upload AMD64 DEB to PackageCloud
         uses: danielmundi/upload-packagecloud@v1
@@ -86,5 +86,5 @@ jobs:
           PACKAGE-NAME: alpacon_${{ github.ref_name }}_linux_amd64.rpm
           PACKAGECLOUD-USERNAME: alpacanetworks
           PACKAGECLOUD-REPO: alpacon
-          PACKAGECLOUD-DISTRIB: any/any
+          PACKAGECLOUD-DISTRIB: rpm_any/rpm_any
           PACKAGECLOUD-TOKEN: ${{ secrets.PACKAGECLOUD_TOKEN }}
