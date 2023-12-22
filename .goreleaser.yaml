@@ -27,7 +27,7 @@ checksum:
   name_template: "{{ .ProjectName }}-{{ .Version }}-checksums.sha256"
 
 archives:
-  - name_template: "{{ .ProjectName }}-{{ .Version }}-{{ .Os }}-{{ .Arch }}"
+  - name_template: "{{ .ProjectName }}-{{ .Tag }}-{{ .Os }}-{{ .Arch }}"
     format_overrides:
       - goos: windows
         format: zip
