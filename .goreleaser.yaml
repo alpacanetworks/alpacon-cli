@@ -32,6 +32,16 @@ archives:
       - goos: windows
         format: zip
 
+dockers:
+  - goos: linux
+    goarch: amd64
+    ids:
+      - alpacon
+    image_templates:
+      - "alpacanetworks/alpacon-cli:latest"
+      - "alpacanetworks/alpacon-cli:{{ .Tag }}"
+    dockerfile: Dockerfile
+
 nfpms:
   - maintainer: Younghwan Kim <kim131325@naver.com>
     description: Alpacon-CLI
