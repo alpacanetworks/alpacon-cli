@@ -59,7 +59,7 @@ jobs:
           PACKAGECLOUD-USERNAME: alpacanetworks
           PACKAGECLOUD-REPO: alpacon
           PACKAGECLOUD-DISTRIB: ubuntu/focal
-          PACKAGECLOUD-TOKEN: ${{ secrets.PACKAGECLOUD_TOKEN }
+          PACKAGECLOUD-TOKEN: ${{ secrets.PACKAGECLOUD_TOKEN }}
 
 
       - name: Upload AMD64 DEB to PackageCloud for Ubuntu 22.04
@@ -69,7 +69,7 @@ jobs:
           PACKAGECLOUD-USERNAME: alpacanetworks
           PACKAGECLOUD-REPO: alpacon
           PACKAGECLOUD-DISTRIB: ubuntu/jammy
-          PACKAGECLOUD-TOKEN: ${{ secrets.PACKAGECLOUD_TOKEN }
+          PACKAGECLOUD-TOKEN: ${{ secrets.PACKAGECLOUD_TOKEN }}
 
       - name: Upload AMD64 RPM to PackageCloud for CentOS7
         uses: danielmundi/upload-packagecloud@v1
