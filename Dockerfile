@@ -1,5 +1,5 @@
 FROM alpine:latest
-COPY alpacon-cli /usr/local/bin/alpacon
+COPY alpacon /usr/local/bin/alpacon
 ENTRYPOINT ["alpacon"]
 CMD [ "version" ]
 
