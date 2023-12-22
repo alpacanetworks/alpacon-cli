@@ -15,10 +15,18 @@ These components are integral for the CLI to function effectively.
 ## Installation
 Download the latest `Alpacon CLI` directly from our releases page or install it using package managers on Linux.
 
+### Docker
+For every release and Release Candidate (RC), we push a corresponding container image to our Docker Hub repository at `alpacanetworks/alpacon-cli`. For example:
+
+```bash
+docker run --rm -it alpacanetworks/alpacon-cli version  
+```
+
 ### macOS
 ```bash
-wget https://github.com/alpacanetworks/alpacon-cli/releases/download/v0.0.2/alpacon-0.0.2-darwin-arm64.tar.gz
-tar -xvf alpacon-0.0.2-darwin-arm64.tar.gz
+VERSION=<latest-version> # Replace with the actual version
+wget https://github.com/alpacanetworks/alpacon-cli/releases/download/${VERSION}/alpacon-${VERSION}-darwin-arm64.tar.gz
+tar -xvf alpacon-${VERSION}-darwin-arm64.tar.gz
 chmod +x alpacon
 sudo mv alpacon /usr/local/bin
 ```
@@ -41,8 +49,9 @@ sudo yum install alpacon
 
 #### Download from GitHub Releases:
 ```bash
-wget https://github.com/alpacanetworks/alpacon-cli/releases/download/v0.0.2/alpacon-0.0.2-linux-amd64.tar.gz
-tar -xvf alpacon-0.0.2-linux-amd64.tar.gz
+VERSION=<latest-version> # Replace with the actual version
+wget https://github.com/alpacanetworks/alpacon-cli/releases/download/${VERSION}/alpacon-${VERSION}-linux-amd64.tar.gz
+tar -xvf alpacon-${VERSION}-linux-amd64.tar.gz
 chmod +x alpacon
 sudo mv alpacon /usr/local/bin
 ```
@@ -57,10 +66,14 @@ To access and utilize all features of `Alpacon CLI`, first authenticate with the
 ```bash
 $ alpacon login
 
-$ alpacon login -s=[SERVER URL] -u=[USERNAME] -p=[PASSWORD]
+$ alpacon login -s [SERVER URL] -u [USERNAME] -p [PASSWORD]
 ```
 Successful login creates `config.json` in `~/.alpacon`, containing server address, API token, and token expiration (~1 week).
 This file is essential for command execution and a new login is required upon token expiration.
+
+#### Default Server URL
+If you do not explicitly specify the server URL (-s) in the command, the default value `https://alpacon.io` is used. 
+Therefore, you only need to use the `-s` option to specify a server URL if you wish to connect to a server other than the default one.
 
 ## Usage
 Explore Alpacon CLI's capabilities with the `-h` or `help` command.
@@ -78,10 +91,12 @@ Available Commands:
   agent       Commands to manage server's agent
   completion  Generate the autocompletion script for the specified shell
   download    Transfer a file from a remote server
-  group       Manage Group resources
+  event       Retrieve and display recent Alpacon events.
+  group       Manage Group (Identity and Access Management) resources
   help        Help about any command
   log         Retrieve and display server logs
   login       Log in to Alpacon Server
+  note        Manage and view server notes
   package     Commands to manage and interact with packages
   server      Commands to manage and interact with servers
   upload      Transfer a file to a remote server
@@ -138,6 +153,12 @@ $ alpacon user ls / list / all
 # Detailed user information.
 $ alpacon user describe [USER NAME]
 
+# Create a new user
+$ alpacon user create
+
+# Delete user
+$ alpacon user delete [USER NAME]
+
 # Managing Groups
 
 # List all groups.
@@ -145,6 +166,16 @@ $ alpacon group ls
 
 # Detailed group information.
 $ alpacon group describe [GROUP NAME]
+
+# Delete group
+$ alpacon group delete [GROUP NAME]
+
+# Add a member to a group with a specific role
+$ alpacon group member add
+$ alpacon group member add --group=[GROUP NAME] --member=[MEMBER NAME] --role=[ROLE]
+
+# Remove a member from a group
+$ alpacon group member delete --group=[GROUP NAME] --member=[MEMBER NAME]
 ```
 
 #### File Transfer Protocol (FTP)
@@ -182,6 +213,18 @@ $ alpacon logs [SERVER_NAME]
 $ alpacon logs [SERVER NAME] --tail=10
 ```
 
+#### Events Management
+Retrieve and monitor events in the Alpacon:
+```bash
+# Display a list of recent events in the Alpacon
+$ alpacon event
+$ alpacon events
+
+# Tail the last 10 events related to a specific server and requested by a specific user
+$ alpacon event -tail 10 -s myserver -u admin
+$ alpacon event --tail=10 --server=myserver --user=admin
+```
+
 #### Agent (Alpamon) Commands
 Manage server agents(Alpamon) with ease:
 ```bash
@@ -189,6 +232,21 @@ Manage server agents(Alpamon) with ease:
 $ alpacon agent restart [SERVER NAME]
 $ alpacon agent upgrade [SERVER NAME]
 $ alpacon agent shutdown [SERVER NAME]
+```
+
+#### Note Commands
+Manage and view server notes:
+```bash
+# Display a list of all notes
+$ alpacon note ls / list / all
+$ alpacon note ls -s [SERVER NAME] --tail=10
+
+# Create a note on the specified server
+$ alpacon note create
+$ alpacon note create -s [SERVER NAME] -c [CONTENT] -p [PRIVATE(true or false)]
+
+# Delete a specified note
+$ alpacon note delete [NOTE ID]
 ```
 
 
