@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"github.com/alpacanetworks/alpacon-cli/client"
 	"github.com/alpacanetworks/alpacon-cli/utils"
+	"net/url"
 )
 
 var (
@@ -17,6 +18,7 @@ var (
 
 	getUserMembershipURL  = "/api/iam/memberships/?user="
 	getGroupMembershipURL = "/api/iam/memberships/?group="
+	membershipURL         = "/api/iam/memberships/"
 )
 
 func GetUserList(ac *client.AlpaconClient) ([]UserAttributes, error) {
@@ -185,6 +187,25 @@ func GetGroupDetail(ac *client.AlpaconClient, groupName string) ([]byte, error) 
 	return groupDetailJson, nil
 }
 
+func CreateUser(ac *client.AlpaconClient, userRequest UserCreateRequest) error {
+	userRequest.IsActive = true
+	_, err := ac.SendPostRequest(userURL, userRequest)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func CreateGroup(ac *client.AlpaconClient, groupRequest GroupCreateRequest) error {
+	_, err := ac.SendPostRequest(groupURL, groupRequest)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
 func DeleteUser(ac *client.AlpaconClient, userName string) error {
 	userID, err := GetUserIDByName(ac, userName)
 	if err != nil {
@@ -206,6 +227,60 @@ func DeleteGroup(ac *client.AlpaconClient, groupName string) error {
 	}
 
 	_, err = ac.SendDeleteRequest(groupURL + groupID + "/")
+	if err != nil {
+		return err
+	}
+
+	return err
+}
+
+func AddMember(ac *client.AlpaconClient, memberRequest MemberAddRequest) error {
+	var err error
+	memberRequest.Group, err = GetGroupIDByName(ac, memberRequest.Group)
+	if err != nil {
+		return err
+	}
+
+	memberRequest.User, err = GetUserIDByName(ac, memberRequest.User)
+	if err != nil {
+		return err
+	}
+
+	_, err = ac.SendPostRequest(membershipURL, memberRequest)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func DeleteMember(ac *client.AlpaconClient, memberDeleteRequest MemberDeleteRequest) error {
+	groupID, err := GetGroupIDByName(ac, memberDeleteRequest.Group)
+	if err != nil {
+		return err
+	}
+
+	memberID, err := GetUserIDByName(ac, memberDeleteRequest.User)
+	if err != nil {
+		return err
+	}
+
+	params := url.Values{}
+	params.Add("user", memberID)
+	params.Add("group", groupID)
+
+	responseBody, err := ac.SendGetRequest(membershipURL + "?" + params.Encode())
+	if err != nil {
+		return err
+	}
+
+	var memberDetails []MemberDetailResponse
+	err = json.Unmarshal(responseBody, &memberDetails)
+	if err != nil {
+		return err
+	}
+
+	_, err = ac.SendDeleteRequest(membershipURL + memberDetails[0].ID + "/")
 	if err != nil {
 		return err
 	}

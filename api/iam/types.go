@@ -79,6 +79,22 @@ type UserDetails struct {
 	UpdatedAt     string `json:"updated_at"`
 }
 
+type UserCreateRequest struct {
+	Username    string `json:"username"`
+	Password    string `json:"password"`
+	FirstName   string `json:"first_name"`
+	LastName    string `json:"last_name"`
+	Email       string `json:"email"`
+	Phone       string `json:"phone"`
+	Tags        string `json:"tags"`
+	Description string `json:"description"`
+	Shell       string `json:"shell"`
+	IsActive    bool   `json:"is_active"`
+	IsStaff     bool   `json:"is_staff"`
+	IsSuperuser bool   `json:"is_superuser"`
+	IsLdapUser  bool   `json:"is_ldap_user"`
+}
+
 type GroupAttributes struct {
 	Name        string `json:"name"`
 	DisplayName string `json:"display_name"`
@@ -138,6 +154,15 @@ type GroupDetails struct {
 	UpdatedAt    string   `json:"updated_at"`
 }
 
+type GroupCreateRequest struct {
+	Name        string   `json:"name"`
+	DisplayName string   `json:"display_name"`
+	Tags        string   `json:"tags"`
+	Description string   `json:"description"`
+	IsLdapGroup bool     `json:"is_ldap_group"`
+	Servers     []string `json:"servers"`
+}
+
 type Membership struct {
 	ID        string `json:"id"`
 	Group     string `json:"group"`
@@ -145,4 +170,24 @@ type Membership struct {
 	User      string `json:"user"`
 	UserName  string `json:"user_name"`
 	Role      string `json:"role"`
+}
+
+type MemberAddRequest struct {
+	Group string `json:"group"`
+	User  string `json:"user"`
+	Role  string `json:"role"`
+}
+
+type MemberDetailResponse struct {
+	ID        string `json:"id"`
+	Group     string `json:"group"`
+	GroupName string `json:"group_name"`
+	User      string `json:"user"`
+	UserName  string `json:"user_name"`
+	Role      string `json:"role"`
+}
+
+type MemberDeleteRequest struct {
+	Group string `json:"group"`
+	User  string `json:"user"`
 }
