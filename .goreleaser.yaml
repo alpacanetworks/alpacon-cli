@@ -43,7 +43,7 @@ dockers:
     dockerfile: Dockerfile
 
 nfpms:
-  - maintainer: Younghwan Kim <kim131325@naver.com>
+  - maintainer: Younghwan Kim <yh.kim@alpacanetworks.com>
     description: Alpacon-CLI
     homepage: https://github.com/alpacanetworks/alpacon-cli
     license: MIT
