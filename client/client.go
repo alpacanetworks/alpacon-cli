@@ -118,7 +118,7 @@ func (ac *AlpaconClient) sendRequest(req *http.Request) ([]byte, error) {
 		return nil, err
 	}
 
-	if req.Method == "POST" && (resp.StatusCode != http.StatusCreated || resp.StatusCode != http.StatusOK) {
+	if req.Method == "POST" && (resp.StatusCode != http.StatusCreated && resp.StatusCode != http.StatusOK) {
 		return nil, fmt.Errorf("POST request failed: expected status 201, got %d (%s)", resp.StatusCode, resp.Status)
 	} else if req.Method == "DELETE" && resp.StatusCode != http.StatusNoContent {
 		return nil, fmt.Errorf("DELETE request failed: expected status 204, got %d (%s). Verify permissions.", resp.StatusCode, resp.Status)
