@@ -25,6 +25,7 @@ func init() {
 	GroupCmd.AddCommand(groupListCmd)
 	GroupCmd.AddCommand(groupDetailCmd)
 	GroupCmd.AddCommand(groupDeleteCmd)
+	GroupCmd.AddCommand(groupCreateCmd)
 
 	GroupCmd.AddCommand(MemberCmd)
 }
