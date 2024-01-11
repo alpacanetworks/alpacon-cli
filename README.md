@@ -22,6 +22,14 @@ For every release and Release Candidate (RC), we push a corresponding container 
 docker run --rm -it alpacanetworks/alpacon-cli version  
 ```
 
+### Build the binary
+- Make sure you have go installed:
+```bash
+git clone https://github.com/alpacanetworks/alpacon-cli.git
+go build
+sudo mv alpacon-cli /usr/local/bin/alpacon
+```
+
 ### macOS
 ```bash
 VERSION=<latest-version> # Replace with the actual version
