@@ -12,6 +12,7 @@ import (
 	"io"
 	"net/http"
 	"os"
+	"time"
 )
 
 var (
@@ -98,6 +99,26 @@ func websocketClient(conn *websocket.Conn) error {
 	}()
 
 	// Goroutine for reading user input and sending it to the server
+	inputChan := make(chan string)
+	go func() {
+		var inputBuffer []rune
+		for {
+			select {
+			case <-time.After(time.Millisecond * 5):
+				if len(inputBuffer) > 0 {
+					err := conn.WriteMessage(websocket.TextMessage, []byte(string(inputBuffer)))
+					if err != nil {
+						done <- err
+						return
+					}
+					inputBuffer = []rune{}
+				}
+			case input := <-inputChan:
+				inputBuffer = append(inputBuffer, []rune(input)...)
+			}
+		}
+	}()
+
 	go func() {
 		reader := bufio.NewReader(os.Stdin)
 		for {
@@ -108,14 +129,9 @@ func websocketClient(conn *websocket.Conn) error {
 					return
 				}
 				done <- err
-
 				return
 			}
-			err = conn.WriteMessage(websocket.TextMessage, []byte(string(char)))
-			if err != nil {
-				done <- err
-				return
-			}
+			inputChan <- string(char)
 		}
 	}()
 
