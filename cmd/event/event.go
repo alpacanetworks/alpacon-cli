@@ -7,10 +7,6 @@ import (
 	"github.com/spf13/cobra"
 )
 
-var pageSize int
-var serverName string
-var userName string
-
 var EventCmd = &cobra.Command{
 	Use:     "event",
 	Aliases: []string{"events"},
@@ -26,23 +22,35 @@ var EventCmd = &cobra.Command{
 	alpacon event -tail 10 -s myserver -u admin
 	alpacon event --tail=10 --server=myserver --user=admin
 	`,
-	Run: func(cmd *cobra.Command, args []string) {
-		alpaconClient, err := client.NewAlpaconAPIClient()
-		if err != nil {
-			utils.CliError("Connection to Alpacon API failed: %s. Consider re-logging.", err)
-		}
-
-		eventList, err := event.GetEventList(alpaconClient, pageSize, serverName, userName)
-		if err != nil {
-			utils.CliError("Failed to get event %s", err)
-		}
-
-		utils.PrintTable(eventList)
-	},
+	Run: runEvent,
 }
 
 func init() {
+	var pageSize int
+	var serverName string
+	var userName string
+
 	EventCmd.Flags().IntVarP(&pageSize, "tail", "t", 25, "Number of event entries to show from the end")
 	EventCmd.Flags().StringVarP(&serverName, "server", "s", "", "Specify server for events")
 	EventCmd.Flags().StringVarP(&userName, "user", "u", "", "Specify request user for events")
+}
+
+func runEvent(cmd *cobra.Command, args []string) {
+	pageSize, _ := cmd.Flags().GetInt("tail")
+	serverName, _ := cmd.Flags().GetString("server")
+	userName, _ := cmd.Flags().GetString("user")
+
+	alpaconClient, err := client.NewAlpaconAPIClient()
+	if err != nil {
+		utils.CliError("Connection to Alpacon API failed: %s. Consider re-logging.", err)
+		return
+	}
+
+	eventList, err := event.GetEventList(alpaconClient, pageSize, serverName, userName)
+	if err != nil {
+		utils.CliError("Failed to get event %s", err)
+		return
+	}
+
+	utils.PrintTable(eventList)
 }

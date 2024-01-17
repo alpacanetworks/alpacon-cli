@@ -10,10 +10,6 @@ import (
 	"strings"
 )
 
-var (
-	serverRequest server.ServerRequest
-)
-
 var serverCreateCmd = &cobra.Command{
 	Use:   "create",
 	Short: "Create a new server",
@@ -34,7 +30,7 @@ var serverCreateCmd = &cobra.Command{
 			utils.CliError("Failed to retrieve the group list %s", err)
 		}
 
-		promptForServer(alpaconClient, groupList)
+		serverRequest := promptForServer(alpaconClient, groupList)
 
 		response, err := server.CreateServer(alpaconClient, serverRequest)
 		if err != nil {
@@ -45,13 +41,17 @@ var serverCreateCmd = &cobra.Command{
 	},
 }
 
-func promptForServer(ac *client.AlpaconClient, groupList []iam.GroupAttributes) {
+func promptForServer(ac *client.AlpaconClient, groupList []iam.GroupAttributes) server.ServerRequest {
+	var serverRequest server.ServerRequest
+
 	serverRequest.Name = utils.PromptForRequiredInput("Server Name: ")
 	serverRequest.Platform = promptForPlatform()
 
 	displayGroups(groupList)
 
 	serverRequest.Groups = selectAndConvertGroups(ac, groupList)
+
+	return serverRequest
 }
 
 func promptForPlatform() string {

@@ -7,8 +7,6 @@ import (
 	"github.com/spf13/cobra"
 )
 
-var userRequest iam.UserCreateRequest
-
 var userCreateCmd = &cobra.Command{
 	Use:   "create",
 	Short: "Create a new user",
@@ -30,7 +28,7 @@ var userCreateCmd = &cobra.Command{
 			utils.CliError("You do not have the permission to create users.")
 		}
 
-		promptForUser(alpaconClient)
+		userRequest := promptForUser(alpaconClient)
 
 		err = iam.CreateUser(alpaconClient, userRequest)
 		if err != nil {
@@ -41,7 +39,9 @@ var userCreateCmd = &cobra.Command{
 	},
 }
 
-func promptForUser(ac *client.AlpaconClient) {
+func promptForUser(ac *client.AlpaconClient) iam.UserCreateRequest {
+	var userRequest iam.UserCreateRequest
+
 	userRequest.Username = utils.PromptForRequiredInput("Username(required): ")
 	userRequest.Password = utils.PromptForPassword("Password(required)")
 	userRequest.FirstName = utils.PromptForRequiredInput("First name(required): ")
@@ -59,4 +59,5 @@ func promptForUser(ac *client.AlpaconClient) {
 		userRequest.IsSuperuser = utils.PromptForBool("Superuser status:")
 	}
 
+	return userRequest
 }

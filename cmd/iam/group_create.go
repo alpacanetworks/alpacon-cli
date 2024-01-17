@@ -9,8 +9,6 @@ import (
 	"github.com/spf13/cobra"
 )
 
-var groupRequest iam.GroupCreateRequest
-
 var groupCreateCmd = &cobra.Command{
 	Use:   "create",
 	Short: "Create a new group",
@@ -37,7 +35,7 @@ var groupCreateCmd = &cobra.Command{
 			utils.CliError("Failed to retrieve the server list %s", err)
 		}
 
-		promptForGroup(alpaconClient, serverList)
+		groupRequest := promptForGroup(alpaconClient, serverList)
 
 		err = iam.CreateGroup(alpaconClient, groupRequest)
 		if err != nil {
@@ -48,17 +46,20 @@ var groupCreateCmd = &cobra.Command{
 	},
 }
 
-func promptForGroup(ac *client.AlpaconClient, serverList []server.ServerAttributes) {
+func promptForGroup(ac *client.AlpaconClient, serverList []server.ServerAttributes) iam.GroupCreateRequest {
+	var groupRequest iam.GroupCreateRequest
+
 	groupRequest.Name = utils.PromptForRequiredInput("Name(required): ")
 	groupRequest.DisplayName = utils.PromptForRequiredInput("Display name(required): ")
 	groupRequest.Tags = utils.PromptForInput("Tags(optional, Add tags for this group so that people can find easily. Tags should start with \"#\" and be comma-separated.): ")
-	userRequest.Description = utils.PromptForInput("Description(optional): ")
+	groupRequest.Description = utils.PromptForInput("Description(optional): ")
 
 	displayServers(serverList)
 	groupRequest.Servers = selectAndConvertServers(ac, serverList)
 
 	groupRequest.IsLdapGroup = utils.PromptForBool("LDAP status: ")
 
+	return groupRequest
 }
 
 func displayServers(serverList []server.ServerAttributes) {

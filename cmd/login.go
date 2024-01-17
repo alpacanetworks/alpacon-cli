@@ -9,9 +9,10 @@ import (
 )
 
 var (
-	loginRequest     auth.LoginRequest
-	defaultServerURL = "https://alpacon.io"
+	loginRequest auth.LoginRequest
 )
+
+const defaultServerURL = "https://alpacon.io"
 
 var loginCmd = &cobra.Command{
 	Use:   "login",
