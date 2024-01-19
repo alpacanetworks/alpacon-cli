@@ -99,7 +99,7 @@ func (ac *AlpaconClient) createRequest(method, url string, body io.Reader) (*htt
 
 	authHeaderValue := fmt.Sprintf("token=\"%s\"", ac.Token)
 	req.Header.Add("Authorization", authHeaderValue)
-	if method == "POST" {
+	if method == "POST" || method == "PATCH" || method == "PUT" {
 		req.Header.Add("Content-Type", "application/json")
 	}
 
@@ -161,6 +161,18 @@ func (ac *AlpaconClient) SendDeleteRequest(url string) ([]byte, error) {
 }
 
 // TODO PUT, PATCH
+func (ac *AlpaconClient) SendPatchRequest(url string, params interface{}) ([]byte, error) {
+	jsonValue, err := json.Marshal(params)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := ac.createRequest("PATCH", url, bytes.NewBuffer(jsonValue))
+	if err != nil {
+		return nil, err
+	}
+	return ac.sendRequest(req)
+}
 
 func (ac *AlpaconClient) SendMultipartRequest(url string, multiPartWriter *multipart.Writer, body bytes.Buffer) error {
 	req, err := ac.createRequest("POST", url, &body)

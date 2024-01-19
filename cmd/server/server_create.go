@@ -96,15 +96,12 @@ func selectAndConvertGroups(ac *client.AlpaconClient, groupList []iam.GroupAttri
 func installServerInfo(response server.ServerCreatedResponse) {
 	fmt.Println()
 	utils.PrintHeader("Connecting server to alpacon")
-	printIntro()
+	fmt.Println("We provide two ways to connect your server to alpacon.")
+	fmt.Println("Please follow one of the following steps to install the \"alpamon\" agent on your server.")
+
 	printMethod("Simply use our install script:", response.Instruction1)
 	printMethod("Or, do it manually (If you've followed the script above, this is not required):", response.Instruction2)
 	utils.CliWarning("Please be aware that after leaving this page, you cannot obtain the script again for security.")
-}
-
-func printIntro() {
-	fmt.Println("We provide two ways to connect your server to alpacon.")
-	fmt.Println("Please follow one of the following steps to install the \"alpamon\" agent on your server.")
 }
 
 func printMethod(header, instruction string) {
