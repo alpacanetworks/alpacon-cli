@@ -119,11 +119,11 @@ func (ac *AlpaconClient) sendRequest(req *http.Request) ([]byte, error) {
 	}
 
 	if req.Method == "POST" && (resp.StatusCode != http.StatusCreated && resp.StatusCode != http.StatusOK) {
-		return nil, fmt.Errorf("POST request failed: expected status 201, got %d (%s)", resp.StatusCode, resp.Status)
+		return nil, fmt.Errorf("POST request failed: %s (%s)", resp.StatusCode, resp.Status, string(body))
 	} else if req.Method == "DELETE" && resp.StatusCode != http.StatusNoContent {
-		return nil, fmt.Errorf("DELETE request failed: expected status 204, got %d (%s). Verify permissions.", resp.StatusCode, resp.Status)
+		return nil, fmt.Errorf("DELETE request failed: %s (%s)", resp.Status, string(body))
 	} else if resp.StatusCode < http.StatusOK || resp.StatusCode >= http.StatusMultipleChoices {
-		return nil, fmt.Errorf("unexpected status code: %d (%s)", resp.StatusCode, resp.Status)
+		return nil, fmt.Errorf("unexpected status code: %s (%s)", resp.Status, string(body))
 	}
 
 	return body, nil
@@ -160,7 +160,7 @@ func (ac *AlpaconClient) SendDeleteRequest(url string) ([]byte, error) {
 	return ac.sendRequest(req)
 }
 
-// TODO PUT, PATCH
+// TODO PUT
 func (ac *AlpaconClient) SendPatchRequest(url string, params interface{}) ([]byte, error) {
 	jsonValue, err := json.Marshal(params)
 	if err != nil {
