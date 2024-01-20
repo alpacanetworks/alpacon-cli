@@ -97,10 +97,13 @@ Usage:
 
 Available Commands:
   agent       Commands to manage server's agent
+  authority   Commands to manage and interact with certificate authorities
+  cert        Manage and interact with SSL/TLS certificates
   completion  Generate the autocompletion script for the specified shell
+  csr         Generate and manage Certificate Signing Request (CSR) operations
   download    Transfer a file from a remote server
   event       Retrieve and display recent Alpacon events.
-  group       Manage Group (Identity and Access Management) resources
+  group       Manage Group resources
   help        Help about any command
   log         Retrieve and display server logs
   login       Log in to Alpacon Server
@@ -111,6 +114,7 @@ Available Commands:
   user        Manage User resources
   version     Displays the current CLI version.
   websh       Open a websh terminal for a server
+
 ```
 
 
@@ -257,6 +261,34 @@ $ alpacon note create -s [SERVER NAME] -c [CONTENT] -p [PRIVATE(true or false)]
 $ alpacon note delete [NOTE ID]
 ```
 
+#### Private CA, Certificate Commands
+Easily manage your private Certificate Authorities (CAs) and certificates:
+```bash
+# Create a new Certificate Authority
+$ alpacon authority create
+
+# List all Certificate Authorities
+$ alpacon authority ls
+
+# Generate a new Certificate Signing Request (CSR)
+$ alpacon csr create
+
+# Display a list of CSRs, optionally filtered by state
+$ alpacon csr ls
+$ alpacon csr ls --state=signed
+
+# Approve a Certificate Signing Request
+$ alpacon csr approve [CSR ID]
+
+# Deny a Certificate Signing Request
+$ alpacon csr deny [CSR ID]
+
+# Delete a Certificate Signing Request
+$ alpacon csr delete [CSR ID]
+
+# List all certificates
+$ alpacon cert ls
+```
 
 ### Contributing
 We welcome bug reports and pull requests on our GitHub repository at https://github.com/alpacanetworks/alpacon-cli.
