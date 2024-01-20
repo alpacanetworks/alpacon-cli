@@ -53,7 +53,7 @@ func GetEventList(ac *client.AlpaconClient, pageSize int, serverName string, use
 			Result:      utils.TruncateString(event.Result, 70),
 			Status:      event.Success,
 			Operator:    event.RequestedByName,
-			RequestedAt: utils.TimeAgo(event.AddedAt),
+			RequestedAt: utils.TimeUtils(event.AddedAt),
 		})
 	}
 

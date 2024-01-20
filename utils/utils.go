@@ -46,11 +46,40 @@ func PromptForInput(promptText string) string {
 	return strings.TrimSpace(input)
 }
 
-func PromptForRequiredInput(prompt string) string {
+func PromptForRequiredInput(promptText string) string {
 	for {
-		input := PromptForInput(prompt)
+		input := PromptForInput(promptText)
 		if input != "" {
 			return input
+		}
+		fmt.Println("This field is required. Please enter a value.")
+	}
+}
+
+func PromptForIntInput(promptText string) int {
+	inputStr := PromptForInput(promptText)
+	inputInt, err := strconv.Atoi(inputStr)
+	if err != nil {
+		fmt.Println("Only integers are allowed. Please try again.")
+		return PromptForIntInput(promptText)
+	}
+	return inputInt
+}
+
+func PromptForListInput(promptText string) []string {
+	inputStr := PromptForInput(promptText)
+	inputList := strings.Split(inputStr, ",")
+	for i, item := range inputList {
+		inputList[i] = strings.TrimSpace(item)
+	}
+	return inputList
+}
+
+func PromptForRequiredListInput(promptText string) []string {
+	for {
+		inputList := PromptForListInput(promptText)
+		if len(inputList) > 0 && inputList[0] != "" {
+			return inputList
 		}
 		fmt.Println("This field is required. Please enter a value.")
 	}
@@ -93,28 +122,44 @@ func SplitAndParseInts(input string) []int {
 	return intValues
 }
 
-func CreatePaginationParams(page, pageSize int) string {
+func CreatePaginationParams(page int, pageSize int) string {
 	params := url.Values{}
 	params.Add("page", strconv.Itoa(page))
 	params.Add("page_size", strconv.Itoa(pageSize))
 	return params.Encode()
 }
 
-func TimeAgo(t time.Time) string {
+func TimeUtils(t time.Time) string {
 	now := time.Now()
-	diff := now.Sub(t)
+	diff := t.Sub(now)
 
-	switch {
-	case diff < time.Minute:
-		return "just now"
-	case diff < time.Hour:
-		return fmt.Sprintf("%d minutes ago", diff/time.Minute)
-	case diff < 24*time.Hour:
-		return fmt.Sprintf("%d hours ago", diff/time.Hour)
-	case diff < 48*time.Hour:
-		return "yesterday"
-	default:
-		return fmt.Sprintf("%d days ago", diff/(24*time.Hour))
+	if diff >= 0 {
+		switch {
+		case diff < time.Minute:
+			return "in a few seconds"
+		case diff < time.Hour:
+			return fmt.Sprintf("in %d minutes", diff/time.Minute)
+		case diff < 24*time.Hour:
+			return fmt.Sprintf("in %d hours", diff/time.Hour)
+		case diff < 48*time.Hour:
+			return "tomorrow"
+		default:
+			return fmt.Sprintf("in %d days", diff/(24*time.Hour))
+		}
+	} else {
+		diff = -diff
+		switch {
+		case diff < time.Minute:
+			return "just now"
+		case diff < time.Hour:
+			return fmt.Sprintf("%d minutes ago", diff/time.Minute)
+		case diff < 24*time.Hour:
+			return fmt.Sprintf("%d hours ago", diff/time.Hour)
+		case diff < 48*time.Hour:
+			return "yesterday"
+		default:
+			return fmt.Sprintf("%d days ago", diff/(24*time.Hour))
+		}
 	}
 }
 

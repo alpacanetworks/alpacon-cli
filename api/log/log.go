@@ -39,7 +39,7 @@ func GetSystemLogList(ac *client.AlpaconClient, serverName string, pageSize int)
 			Level:   getLogLevel(log.Level),
 			Message: fmt.Sprintf("[%s] %s", log.Process, log.Msg),
 			//	Date:    log.Date.Format("2006-01-02 15:04:05 MST"),
-			Date: utils.TimeAgo(log.Date),
+			Date: utils.TimeUtils(log.Date),
 		})
 	}
 

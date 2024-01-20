@@ -3,6 +3,9 @@ package cmd
 import (
 	"fmt"
 	"github.com/alpacanetworks/alpacon-cli/cmd/agent"
+	"github.com/alpacanetworks/alpacon-cli/cmd/authority"
+	"github.com/alpacanetworks/alpacon-cli/cmd/cert"
+	"github.com/alpacanetworks/alpacon-cli/cmd/csr"
 	"github.com/alpacanetworks/alpacon-cli/cmd/event"
 	"github.com/alpacanetworks/alpacon-cli/cmd/ftp"
 	"github.com/alpacanetworks/alpacon-cli/cmd/iam"
@@ -81,4 +84,12 @@ func init() {
 	// note
 	rootCmd.AddCommand(note.NoteCmd)
 
+	// authority
+	rootCmd.AddCommand(authority.AuthorityCmd)
+
+	// csr
+	rootCmd.AddCommand(csr.CsrCmd)
+
+	// certificate
+	rootCmd.AddCommand(cert.CertCmd)
 }

@@ -36,3 +36,24 @@ type EventDetails struct {
 	RequestedBy     string                 `json:"requested_by"`
 	RequestedByName string                 `json:"requested_by_name"`
 }
+
+type EventCommandRequest struct {
+	Shell       string   `json:"shell"`
+	Line        string   `json:"line"`
+	Data        string   `json:"data"`
+	ScheduledAt string   `json:"scheduled_at"`
+	Server      string   `json:"server"`
+	RunAfter    []string `json:"run_after"`
+}
+
+type EventCommandResponse struct {
+	ID          string   `json:"id"`
+	Shell       string   `json:"shell"`
+	Line        string   `json:"line"`
+	Data        string   `json:"data"`
+	AddedAt     string   `json:"added_at"`
+	ScheduledAt string   `json:"scheduled_at"`
+	Server      string   `json:"server"`
+	RequestedBy string   `json:"requested_by"`
+	RunAfter    []string `json:"run_after"`
+}
