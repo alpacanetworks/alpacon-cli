@@ -154,6 +154,7 @@ type CertificateListResponse struct {
 
 type Certificate struct {
 	Id           string    `json:"id"`
+	Authority    string    `json:"authority"`
 	Csr          string    `json:"csr"`
 	CrtText      string    `json:"crt_text"`
 	ValidDays    int       `json:"valid_days"`
@@ -165,6 +166,7 @@ type Certificate struct {
 
 type CertificateAttributes struct {
 	Id        string `json:"id"`
+	Authority string `json:"authority"`
 	Csr       string `json:"csr"`
 	ValidDays int    `json:"valid_days"`
 	SignedAt  string `json:"signed_at"`

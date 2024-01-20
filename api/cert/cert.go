@@ -186,6 +186,7 @@ func GetCertificateList(ac *client.AlpaconClient) ([]CertificateAttributes, erro
 		for _, cert := range response.Results {
 			certList = append(certList, CertificateAttributes{
 				Id:        cert.Id,
+				Authority: cert.Authority,
 				Csr:       cert.Csr,
 				ValidDays: cert.ValidDays,
 				SignedAt:  utils.TimeUtils(cert.SignedAt),
