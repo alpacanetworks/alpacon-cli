@@ -270,6 +270,9 @@ $ alpacon authority create
 # List all Certificate Authorities
 $ alpacon authority ls
 
+# Get detailed information about a specific Certificate Authority.
+$ alpacon authority describe [AUTHORITY ID]
+
 # Generate a new Certificate Signing Request (CSR)
 $ alpacon csr create
 
@@ -286,8 +289,14 @@ $ alpacon csr deny [CSR ID]
 # Delete a Certificate Signing Request
 $ alpacon csr delete [CSR ID]
 
+# Get detailed information about a specific Signing Request.
+$ alpacon csr describe [CSR ID]
+
 # List all certificates
 $ alpacon cert ls
+
+# Get detailed information about a specific Certificate.
+$ alpacon cert describe [CERT ID]
 ```
 
 ### Contributing
