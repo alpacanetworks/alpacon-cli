@@ -23,4 +23,5 @@ func init() {
 	CsrCmd.AddCommand(csrApproveCmd)
 	CsrCmd.AddCommand(csrDenyCmd)
 	CsrCmd.AddCommand(csrDeleteCmd)
+	CsrCmd.AddCommand(csrDetailCmd)
 }

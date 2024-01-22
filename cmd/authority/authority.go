@@ -20,4 +20,5 @@ var AuthorityCmd = &cobra.Command{
 func init() {
 	AuthorityCmd.AddCommand(authorityCreateCmd)
 	AuthorityCmd.AddCommand(authorityListCmd)
+	AuthorityCmd.AddCommand(authorityDetailCmd)
 }

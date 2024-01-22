@@ -76,14 +76,15 @@ type AuthorityResponse struct {
 }
 
 type AuthorityAttributes struct {
+	Id               string `json:"id"`
 	Name             string `json:"name"`
 	Organization     string `json:"organization"`
 	Domain           string `json:"domain"`
 	RootValidDays    int    `json:"root_valid_days"`
 	DefaultValidDays int    `json:"default_valid_days"`
 	MaxValidDays     int    `json:"max_valid_days"`
-	Server           string `json:"server"` // agentName -> server
-	Owner            string `json:"owner"`  // Owner name -> owner
+	Server           string `json:"server"`
+	Owner            string `json:"owner"`
 	SignedAt         string `json:"signed_at"`
 }
 

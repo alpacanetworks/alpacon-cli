@@ -118,6 +118,7 @@ func GetAuthorityList(ac *client.AlpaconClient) ([]AuthorityAttributes, error) {
 
 		for _, authority := range response.Results {
 			authorityList = append(authorityList, AuthorityAttributes{
+				Id:               authority.Id,
 				Name:             authority.Name,
 				Organization:     authority.Organization,
 				Domain:           authority.Domain,
@@ -137,6 +138,33 @@ func GetAuthorityList(ac *client.AlpaconClient) ([]AuthorityAttributes, error) {
 	}
 
 	return authorityList, nil
+}
+
+func GetAuthorityDetail(ac *client.AlpaconClient, authorityId string) ([]byte, error) {
+	body, err := ac.SendGetRequest(authorityURL + authorityId)
+	if err != nil {
+		return nil, err
+	}
+
+	return body, nil
+}
+
+func GetCSRDetail(ac *client.AlpaconClient, csrId string) ([]byte, error) {
+	body, err := ac.SendGetRequest(signRequestURL + csrId)
+	if err != nil {
+		return nil, err
+	}
+
+	return body, nil
+}
+
+func GetCertificateDetail(ac *client.AlpaconClient, certId string) ([]byte, error) {
+	body, err := ac.SendGetRequest(certURL + certId)
+	if err != nil {
+		return nil, err
+	}
+
+	return body, nil
 }
 
 func ApproveCSR(ac *client.AlpaconClient, csrId string) ([]byte, error) {
