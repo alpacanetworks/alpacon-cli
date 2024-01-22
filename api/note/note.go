@@ -9,7 +9,7 @@ import (
 	"net/url"
 )
 
-var (
+const (
 	noteURL = "/api/servers/notes/"
 )
 

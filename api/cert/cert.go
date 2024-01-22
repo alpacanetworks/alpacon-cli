@@ -10,7 +10,7 @@ import (
 	"strconv"
 )
 
-var (
+const (
 	authorityURL   = "/api/cert/authorities/"
 	signRequestURL = "/api/cert/sign_requests/"
 	certURL        = "/api/cert/certificates/"

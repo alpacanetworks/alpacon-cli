@@ -10,7 +10,7 @@ import (
 	"net/url"
 )
 
-var (
+const (
 	getEventURL = "/api/events/commands/"
 )
 

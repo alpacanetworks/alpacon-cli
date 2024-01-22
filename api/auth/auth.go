@@ -20,7 +20,7 @@ type LoginResponse struct {
 	ExpiresAt string `json:"expires_at"`
 }
 
-var (
+const (
 	loginURL = "/api/auth/login/"
 )
 

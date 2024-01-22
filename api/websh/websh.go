@@ -15,7 +15,7 @@ import (
 	"time"
 )
 
-var (
+const (
 	createSessionURL = "/api/websh/sessions/"
 )
 

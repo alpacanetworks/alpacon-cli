@@ -12,7 +12,7 @@ import (
 	"time"
 )
 
-var (
+const (
 	uploadAPIURL   = "/api/websh/uploads/"
 	downloadAPIURL = "/api/websh/downloads/"
 )

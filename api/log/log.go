@@ -9,9 +9,8 @@ import (
 	"net/url"
 )
 
-var (
+const (
 	getSystemLogURL = "/api/history/logs/"
-	defaultPageSize = "25"
 )
 
 func GetSystemLogList(ac *client.AlpaconClient, serverName string, pageSize int) ([]LogAttributes, error) {

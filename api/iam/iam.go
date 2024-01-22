@@ -9,7 +9,7 @@ import (
 	"net/url"
 )
 
-var (
+const (
 	userURL      = "/api/iam/users/"
 	getUserIDURL = "/api/iam/users/?username="
 

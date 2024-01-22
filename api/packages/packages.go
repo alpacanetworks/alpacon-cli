@@ -8,7 +8,7 @@ import (
 	"mime/multipart"
 )
 
-var (
+const (
 	systemPackageEntryURL = "/api/packages/system/entries/"
 	pythonPackageEntryURL = "/api/packages/python/entries/"
 )

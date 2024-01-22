@@ -11,7 +11,7 @@ import (
 	"net/http"
 )
 
-var (
+const (
 	checkAuthURL       = "/api/auth/is_authenticated/"
 	checkPrivilegesURL = "/api/iam/users/-"
 )

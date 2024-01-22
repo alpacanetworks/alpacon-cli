@@ -8,7 +8,7 @@ import (
 	"github.com/alpacanetworks/alpacon-cli/utils"
 )
 
-var (
+const (
 	serverURL      = "/api/servers/servers/"
 	getServerIDURL = "/api/servers/servers/?name="
 )
