@@ -128,22 +128,6 @@ type CSRAttributes struct {
 	RequestedDate string   `json:"requested_date"`
 }
 
-type CSRDetails struct {
-	Id              string    `json:"id"`
-	Authority       string    `json:"authority"`
-	AuthorityName   string    `json:"authority_name"`
-	CommonName      string    `json:"common_name"`
-	DomainList      []string  `json:"domain_list"`
-	IpList          []string  `json:"ip_list"`
-	ValidDays       int       `json:"valid_days"`
-	State           string    `json:"state"`
-	CsrText         string    `json:"csr_text"`
-	RequestedIp     string    `json:"requested_ip"`
-	RequestedBy     string    `json:"requested_by"`
-	RequestedByName string    `json:"requested_by_name"`
-	AddedAt         time.Time `json:"added_at"`
-}
-
 type CertificateListResponse struct {
 	Count    int           `json:"count"`
 	Current  int           `json:"current"`
@@ -154,15 +138,14 @@ type CertificateListResponse struct {
 }
 
 type Certificate struct {
-	Id           string    `json:"id"`
-	Authority    string    `json:"authority"`
-	Csr          string    `json:"csr"`
-	CrtText      string    `json:"crt_text"`
-	ValidDays    int       `json:"valid_days"`
-	SignedAt     time.Time `json:"signed_at"`
-	ExpiresAt    time.Time `json:"expires_at"`
-	SignedBy     string    `json:"signed_by"`
-	SignedByName string    `json:"signed_by_name"`
+	Id        string    `json:"id"`
+	Authority string    `json:"authority"`
+	Csr       string    `json:"csr"`
+	CrtText   string    `json:"crt_text"`
+	ValidDays int       `json:"valid_days"`
+	SignedAt  time.Time `json:"signed_at"`
+	ExpiresAt time.Time `json:"expires_at"`
+	SignedBy  string    `json:"signed_by"`
 }
 
 type CertificateAttributes struct {

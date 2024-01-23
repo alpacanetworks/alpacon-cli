@@ -219,7 +219,7 @@ func GetCertificateList(ac *client.AlpaconClient) ([]CertificateAttributes, erro
 				ValidDays: cert.ValidDays,
 				SignedAt:  utils.TimeUtils(cert.SignedAt),
 				ExpiresAt: utils.TimeUtils(cert.ExpiresAt),
-				SignedBy:  cert.SignedByName,
+				SignedBy:  cert.SignedBy,
 			})
 		}
 
