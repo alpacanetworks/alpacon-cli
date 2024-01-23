@@ -177,3 +177,23 @@ func RemovePrefixBeforeAPI(url string) string {
 	}
 	return url[apiIndex:]
 }
+
+func SaveFile(fileName string, data []byte) error {
+	dir := filepath.Dir(fileName)
+	if err := os.MkdirAll(dir, 0755); err != nil {
+		return fmt.Errorf("failed to create directories: %v", err)
+	}
+
+	file, err := os.Create(fileName)
+	if err != nil {
+		return fmt.Errorf("failed to create file: %v", err)
+	}
+	defer file.Close()
+
+	_, err = file.Write(data)
+	if err != nil {
+		return fmt.Errorf("failed to write data to file: %v", err)
+	}
+
+	return nil
+}

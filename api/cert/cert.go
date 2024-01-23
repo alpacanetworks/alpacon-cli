@@ -232,6 +232,26 @@ func GetCertificateList(ac *client.AlpaconClient) ([]CertificateAttributes, erro
 	return certList, nil
 }
 
+func DownloadCertificate(ac *client.AlpaconClient, csrId string, filePath string) error {
+	body, err := GetCertificateDetail(ac, csrId)
+	if err != nil {
+		return err
+	}
+
+	var response Certificate
+	err = json.Unmarshal(body, &response)
+	if err != nil {
+		return err
+	}
+
+	err = utils.SaveFile(filePath, []byte(response.CrtText))
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
 func buildURL(state string, page int, pageSize int) string {
 	params := url.Values{}
 	params.Add("state", state)

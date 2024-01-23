@@ -297,6 +297,9 @@ $ alpacon cert ls
 
 # Get detailed information about a specific Certificate.
 $ alpacon cert describe [CERT ID]
+
+# Download a specific Certificate by its ID and save it to the specified file path.
+$ alpacon cert download [CERT ID] --out=/path/to/certificate.crt
 ```
 
 ### Contributing

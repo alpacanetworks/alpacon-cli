@@ -54,8 +54,6 @@ var csrCreateCmd = &cobra.Command{
 		if err != nil {
 			utils.CliError("Failed to submit CSR file to server %s", err)
 		}
-
-		// TODO holding
 	},
 }
 

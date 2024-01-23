@@ -9,6 +9,7 @@ import (
 	"errors"
 	"fmt"
 	"github.com/alpacanetworks/alpacon-cli/api/cert"
+	"github.com/alpacanetworks/alpacon-cli/utils"
 	"net"
 	"os"
 	"path/filepath"
@@ -68,7 +69,7 @@ func CreateCSR(res cert.SignRequestResponse, certPath CertificatePath) ([]byte, 
 		Bytes: csrBytes,
 	})
 
-	err = saveCSR(certPath.CSRPath, csrPEM)
+	err = utils.SaveFile(certPath.CSRPath, csrPEM)
 	if err != nil {
 		return nil, err
 	}
@@ -129,26 +130,6 @@ func savePrivateKey(fileName string, key *rsa.PrivateKey) error {
 	err = pem.Encode(file, privateKey)
 	if err != nil {
 		return errors.New("failed to PEM block in the key file")
-	}
-
-	return nil
-}
-
-func saveCSR(fileName string, csr []byte) error {
-	dir := filepath.Dir(fileName)
-	if err := os.MkdirAll(dir, 0755); err != nil {
-		return fmt.Errorf("failed to create directories: %v", err)
-	}
-
-	file, err := os.Create(fileName)
-	if err != nil {
-		return fmt.Errorf("failed to create CSR file: %v", err)
-	}
-	defer file.Close()
-
-	_, err = file.Write(csr)
-	if err != nil {
-		return fmt.Errorf("failed to write CSR data to file: %v", err)
 	}
 
 	return nil

@@ -21,4 +21,5 @@ var CertCmd = &cobra.Command{
 func init() {
 	CertCmd.AddCommand(certListCmd)
 	CertCmd.AddCommand(certDetailCmd)
+	CertCmd.AddCommand(certDownloadCmd)
 }
