@@ -8,8 +8,9 @@ import (
 )
 
 var serverDetailCmd = &cobra.Command{
-	Use:   "describe [SERVER NAME]",
-	Short: "Display detailed information about a specific server",
+	Use:     "describe [SERVER NAME]",
+	Aliases: []string{"desc"},
+	Short:   "Display detailed information about a specific server",
 	Long: `
 	The describe command fetches and displays detailed information about a specific server, 
 	including its status, and other relevant attributes. 

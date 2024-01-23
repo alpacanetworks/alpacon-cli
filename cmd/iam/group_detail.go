@@ -8,8 +8,9 @@ import (
 )
 
 var groupDetailCmd = &cobra.Command{
-	Use:   "describe [GROUP NAME]",
-	Short: "Display detailed information about a specific group",
+	Use:     "describe [GROUP NAME]",
+	Aliases: []string{"desc"},
+	Short:   "Display detailed information about a specific group",
 	Long: `
 	The describe command fetches and displays detailed information about a specific group, 
 	including its description, member names and other relevant attributes. 

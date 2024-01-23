@@ -8,8 +8,9 @@ import (
 )
 
 var certDetailCmd = &cobra.Command{
-	Use:   "describe [CERT ID]",
-	Short: "Display detailed information about a specific Certificate",
+	Use:     "describe [CERT ID]",
+	Aliases: []string{"desc"},
+	Short:   "Display detailed information about a specific Certificate",
 	Long: `
 	The describe command fetches and displays detailed information about a specific certificate, 
 	including its crt text, certificate authority and other relevant attributes. 
