@@ -47,7 +47,7 @@ func promptForCredentials() {
 	configFile, err := config.LoadConfig()
 	if err == nil && configFile.ServerAddress != "" {
 		loginRequest.ServerAddress = configFile.ServerAddress
-		fmt.Println("Using server address from config:", configFile.ServerAddress, ". To modify it, edit `~/.alpacon/config.json`")
+		fmt.Println("Using server address from config:", configFile.ServerAddress, ". Modify it in `~/.alpacon/config.json` or use all flags (-s, -u, -p) for changes.")
 	} else {
 		loginRequest.ServerAddress = utils.PromptForInput("Server Address[https://alpacon.io]: ")
 		if loginRequest.ServerAddress == "" {
