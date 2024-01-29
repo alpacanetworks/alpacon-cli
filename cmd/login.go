@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/alpacanetworks/alpacon-cli/api/auth"
 	"github.com/alpacanetworks/alpacon-cli/client"
+	"github.com/alpacanetworks/alpacon-cli/config"
 	"github.com/alpacanetworks/alpacon-cli/utils"
 	"github.com/spf13/cobra"
 )
@@ -43,15 +44,21 @@ func init() {
 }
 
 func promptForCredentials() {
+	configFile, err := config.LoadConfig()
+	if err == nil && configFile.ServerAddress != "" {
+		loginRequest.ServerAddress = configFile.ServerAddress
+		fmt.Println("Using server address from config:", configFile.ServerAddress, ". To modify it, edit `~/.alpacon/config.json`")
+	} else {
+		loginRequest.ServerAddress = utils.PromptForInput("Server Address[https://alpacon.io]: ")
+		if loginRequest.ServerAddress == "" {
+			loginRequest.ServerAddress = defaultServerURL
+		}
+	}
+
 	if loginRequest.Username == "" {
 		loginRequest.Username = utils.PromptForRequiredInput("Username: ")
 	}
 	if loginRequest.Password == "" {
 		loginRequest.Password = utils.PromptForPassword("Password: ")
-	}
-
-	loginRequest.ServerAddress = utils.PromptForInput("Server Address[https://alpacon.io]: ")
-	if loginRequest.ServerAddress == "" {
-		loginRequest.ServerAddress = defaultServerURL
 	}
 }
