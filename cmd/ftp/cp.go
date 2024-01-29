@@ -52,12 +52,12 @@ func isLocalPath(path string) bool {
 }
 
 func downloadFile(client *client.AlpaconClient, src, dest string) {
-	downloadURL, err := ftp.DownloadFile(client, src, dest)
+	err := ftp.DownloadFile(client, src, dest)
 	if err != nil {
 		utils.CliError("Failed to download the file from server: %s", err)
 		return
 	}
-	utils.CliInfo("`%s` successfully downloaded from server `%s`. Download URL: %s", src, dest, downloadURL)
+	utils.CliInfo("`%s` successfully downloaded from server `%s`", src, dest)
 }
 
 func uploadFile(client *client.AlpaconClient, src, dest string) {

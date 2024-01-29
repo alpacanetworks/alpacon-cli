@@ -63,14 +63,14 @@ func UploadFile(ac *client.AlpaconClient, src string, dest string) error {
 	return nil
 }
 
-func DownloadFile(ac *client.AlpaconClient, src string, dest string) (string, error) {
+func DownloadFile(ac *client.AlpaconClient, src string, dest string) error {
 	parts := strings.SplitN(src, ":", 2)
 	serverName := parts[0]
 	remotePath := parts[1]
 
 	serverID, err := server.GetServerIDByName(ac, serverName)
 	if err != nil {
-		return "", err
+		return err
 	}
 
 	downloadRequest := &DownloadRequest{
@@ -80,13 +80,13 @@ func DownloadFile(ac *client.AlpaconClient, src string, dest string) (string, er
 
 	postBody, err := ac.SendPostRequest(downloadAPIURL, downloadRequest)
 	if err != nil {
-		return "", err
+		return err
 	}
 
 	var downloadResponse DownloadResponse
 	err = json.Unmarshal(postBody, &downloadResponse)
 	if err != nil {
-		return "", err
+		return err
 	}
 
 	var data []byte
@@ -105,7 +105,7 @@ func DownloadFile(ac *client.AlpaconClient, src string, dest string) (string, er
 
 	err = utils.SaveFile(filepath.Join(dest, filepath.Base(remotePath)), data)
 
-	return downloadResponse.DownloadURL, nil
+	return nil
 }
 
 func splitPath(path string) (string, string) {
