@@ -69,8 +69,7 @@ func init() {
 	rootCmd.AddCommand(websh.WebshCmd)
 
 	// ftp
-	rootCmd.AddCommand(ftp.UploadCmd)
-	rootCmd.AddCommand(ftp.DownloadCmd)
+	rootCmd.AddCommand(ftp.CpCmd)
 
 	// packages
 	rootCmd.AddCommand(packages.PackagesCmd)

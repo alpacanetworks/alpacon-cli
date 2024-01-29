@@ -193,15 +193,16 @@ $ alpacon group member delete --group=[GROUP NAME] --member=[MEMBER NAME]
 #### File Transfer Protocol (FTP)
 Facilitate file uploads and downloads:
 ```bash
+
+$ alpacon cp [SOURCE] [DESTINATION]
+
 # Upload files
-$ alpacon upload alpacon.txt myserver:/home/alpacon/
 $ alpacon cp /Users/alpacon.txt myserver:/home/alpacon/
 
 # Download files
-$ alpacon download myserver:/home/alpacon/alpacon.txt
-$ alpacon cp myserver:/home/alpacon/alpacon.txt
+$ alpacon cp myserver:/home/alpacon/alpacon.txt .
 ```
-- Download command: This command downloads the specified file to the **current directory** and also provides its **download URL**
+- `[SERVER NAME]:[PATH]` : denotes the server's name and the file's path for FTP operations.
 
 #### Package Management
 Handle Python and system packages effortlessly:

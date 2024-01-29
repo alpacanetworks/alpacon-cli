@@ -7,8 +7,8 @@ import (
 	"github.com/alpacanetworks/alpacon-cli/client"
 	"github.com/alpacanetworks/alpacon-cli/utils"
 	"mime/multipart"
-	"os"
 	"path/filepath"
+	"strings"
 	"time"
 )
 
@@ -17,13 +17,17 @@ const (
 	downloadAPIURL = "/api/websh/downloads/"
 )
 
-func UploadFile(ac *client.AlpaconClient, file string, serverName string, path string) error {
+func UploadFile(ac *client.AlpaconClient, src string, dest string) error {
+	parts := strings.SplitN(dest, ":", 2)
+	serverName := parts[0]
+	remotePath := parts[1]
+
 	serverID, err := server.GetServerIDByName(ac, serverName)
 	if err != nil {
 		return err
 	}
 
-	content, err := utils.ReadFileFromPath(file)
+	content, err := utils.ReadFileFromPath(src)
 	if err != nil {
 		return err
 	}
@@ -31,12 +35,12 @@ func UploadFile(ac *client.AlpaconClient, file string, serverName string, path s
 	var requestBody bytes.Buffer
 	multiPartWriter := multipart.NewWriter(&requestBody)
 
-	err = multiPartWriter.WriteField("path", path)
+	err = multiPartWriter.WriteField("path", remotePath)
 	if err != nil {
 		return err
 	}
 
-	fileWriter, err := multiPartWriter.CreateFormFile("content", file)
+	fileWriter, err := multiPartWriter.CreateFormFile("content", src)
 	if err != nil {
 		return err
 	}
@@ -59,14 +63,18 @@ func UploadFile(ac *client.AlpaconClient, file string, serverName string, path s
 	return nil
 }
 
-func DownloadFile(ac *client.AlpaconClient, serverName string, path string) (string, error) {
+func DownloadFile(ac *client.AlpaconClient, src string, dest string) (string, error) {
+	parts := strings.SplitN(src, ":", 2)
+	serverName := parts[0]
+	remotePath := parts[1]
+
 	serverID, err := server.GetServerIDByName(ac, serverName)
 	if err != nil {
 		return "", err
 	}
 
 	downloadRequest := &DownloadRequest{
-		Path:   path,
+		Path:   parts[1],
 		Server: serverID,
 	}
 
@@ -87,7 +95,6 @@ func DownloadFile(ac *client.AlpaconClient, serverName string, path string) (str
 	utils.CliWarning("Awaiting file transfer completion from Alpacon server. Transfer may timeout if it exceeds 100 seconds.")
 
 	for count := 0; count < maxAttempts; count++ {
-		data, err = ac.SendGetRequest(utils.RemovePrefixBeforeAPI(downloadResponse.DownloadURL))
 		if err != nil {
 			time.Sleep(1 * time.Second)
 			continue
@@ -96,10 +103,12 @@ func DownloadFile(ac *client.AlpaconClient, serverName string, path string) (str
 		break
 	}
 
-	err = os.WriteFile(filepath.Base(path), data, 0666)
-	if err != nil {
-		return "", err
-	}
+	err = utils.SaveFile(filepath.Join(dest, filepath.Base(remotePath)), data)
 
 	return downloadResponse.DownloadURL, nil
+}
+
+func splitPath(path string) (string, string) {
+	parts := strings.SplitN(path, ":", 2)
+	return parts[0], parts[1]
 }
