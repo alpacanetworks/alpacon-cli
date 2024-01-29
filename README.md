@@ -80,7 +80,7 @@ A successful login generates a `config.json` file in `~/.alpacon`, which include
 This file is crucial for executing commands, and you will need to log in again once the token expires.
 
 Upon re-login, the Alpacon CLI will automatically reuse the server address from `config.json`, unless you provide all the flags (-s, -u, -p). 
-If you need to connect to a different server or change the server address, you can either directly modify the `config.json` file in ~/.alpacon or provide all flags to specify a new server URL.
+If you need to connect to a different server or change the server address, you can either directly modify the `config.json` file in `~/.alpacon` or provide all flags to specify a new server URL.
 
 #### Default Server URL
 If you do not explicitly specify the server URL (-s) in the command, the default value `https://alpacon.io` is used. 
