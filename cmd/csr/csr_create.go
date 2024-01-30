@@ -40,6 +40,8 @@ var csrCreateCmd = &cobra.Command{
 
 		signRequest, certPath := promptForCert()
 
+		EnsureSecureConnection(alpaconClient)
+
 		response, err := certApi.CreateSignRequest(alpaconClient, signRequest)
 		if err != nil {
 			utils.CliError("Failed to send sign request to server: %s", err)
@@ -92,4 +94,22 @@ func promptForCert() (certApi.SignRequest, cert.CertificatePath) {
 	}
 
 	return signRequest, certPath
+}
+
+// EnsureSecureConnection checks if the server uses HTTPS and prompts the user
+// to confirm proceeding with an insecure connection if necessary.
+func EnsureSecureConnection(client *client.AlpaconClient) {
+	isTLS, err := client.IsUsingHTTPS()
+	if err != nil {
+		utils.CliError("Connection to Alpacon API failed: %s. Consider re-logging.", err)
+	}
+	if !isTLS {
+		utils.CliWarning("The connection to %s might not be secure.", client.BaseURL)
+
+		proceed := utils.PromptForBool("Do you want to proceed with the CSR submission?:")
+		if !proceed {
+			utils.CliError("CSR submission cancelled by user.")
+		}
+
+	}
 }

@@ -48,7 +48,7 @@ func LoginAndSaveCredentials(loginReq *LoginRequest) error {
 	}
 	defer resp.Body.Close()
 
-	if resp.StatusCode < 200 || resp.StatusCode >= 300 {
+	if resp.StatusCode < http.StatusOK || resp.StatusCode > http.StatusFound {
 		return fmt.Errorf(resp.Status)
 	}
 

@@ -103,8 +103,8 @@ Available Commands:
   authority   Commands to manage and interact with certificate authorities
   cert        Manage and interact with SSL/TLS certificates
   completion  Generate the autocompletion script for the specified shell
+  cp          Copy files between local and remote locations
   csr         Generate and manage Certificate Signing Request (CSR) operations
-  download    Transfer a file from a remote server
   event       Retrieve and display recent Alpacon events.
   group       Manage Group resources
   help        Help about any command
@@ -113,13 +113,10 @@ Available Commands:
   note        Manage and view server notes
   package     Commands to manage and interact with packages
   server      Commands to manage and interact with servers
-  upload      Transfer a file to a remote server
   user        Manage User resources
   version     Displays the current CLI version.
   websh       Open a websh terminal for a server
-
 ```
-
 
 ### Examples of Use Cases
 

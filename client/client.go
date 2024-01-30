@@ -9,6 +9,7 @@ import (
 	"io"
 	"mime/multipart"
 	"net/http"
+	"net/url"
 )
 
 const (
@@ -197,4 +198,17 @@ func (ac *AlpaconClient) SendMultipartRequest(url string, multiPartWriter *multi
 	}
 
 	return nil
+}
+
+func (ac *AlpaconClient) IsUsingHTTPS() (bool, error) {
+	parsedURL, err := url.Parse(ac.BaseURL)
+	if err != nil {
+		return false, err
+	}
+
+	if parsedURL.Scheme == "https" {
+		return true, nil
+	}
+
+	return false, nil
 }
