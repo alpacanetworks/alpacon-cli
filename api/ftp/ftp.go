@@ -104,6 +104,9 @@ func DownloadFile(ac *client.AlpaconClient, src string, dest string) error {
 	}
 
 	err = utils.SaveFile(filepath.Join(dest, filepath.Base(remotePath)), data)
+	if err != nil {
+		return err
+	}
 
 	return nil
 }
