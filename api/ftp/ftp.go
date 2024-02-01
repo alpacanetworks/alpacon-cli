@@ -6,7 +6,9 @@ import (
 	"github.com/alpacanetworks/alpacon-cli/api/server"
 	"github.com/alpacanetworks/alpacon-cli/client"
 	"github.com/alpacanetworks/alpacon-cli/utils"
+	"io"
 	"mime/multipart"
+	"net/http"
 	"path/filepath"
 	"strings"
 	"time"
@@ -89,21 +91,35 @@ func DownloadFile(ac *client.AlpaconClient, src string, dest string) error {
 		return err
 	}
 
-	var data []byte
-	maxAttempts := 100
+	utils.CliWarning("Awaits file transfer completion from Alpacon server. Transfer may timeout after 100 seconds. If the specified file is not found, it will not download even after 100 seconds.")
 
-	utils.CliWarning("Awaiting file transfer completion from Alpacon server. Transfer may timeout if it exceeds 100 seconds.")
+	maxAttempts := 100
+	var resp *http.Response
 
 	for count := 0; count < maxAttempts; count++ {
+		resp, err = ac.SendGetRequestForDownload(utils.RemovePrefixBeforeAPI(downloadResponse.DownloadURL))
 		if err != nil {
+			return err
+		}
+
+		if resp.StatusCode == http.StatusNotFound {
 			time.Sleep(1 * time.Second)
 			continue
 		}
 
-		break
+		if resp.StatusCode == http.StatusOK {
+			break
+		}
 	}
 
-	err = utils.SaveFile(filepath.Join(dest, filepath.Base(remotePath)), data)
+	defer resp.Body.Close()
+
+	respBody, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return err
+	}
+
+	err = utils.SaveFile(filepath.Join(dest, filepath.Base(remotePath)), respBody)
 	if err != nil {
 		return err
 	}

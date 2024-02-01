@@ -200,6 +200,21 @@ func (ac *AlpaconClient) SendMultipartRequest(url string, multiPartWriter *multi
 	return nil
 }
 
+// This function returns response for custom error handling in each function, unlike direct error throwing in sendRequest.
+func (ac *AlpaconClient) SendGetRequestForDownload(url string) (*http.Response, error) {
+	req, err := ac.createRequest("GET", url, nil)
+	if err != nil {
+		return nil, err
+	}
+
+	resp, err := ac.HTTPClient.Do(req)
+	if err != nil {
+		return nil, err
+	}
+
+	return resp, nil
+}
+
 func (ac *AlpaconClient) IsUsingHTTPS() (bool, error) {
 	parsedURL, err := url.Parse(ac.BaseURL)
 	if err != nil {
