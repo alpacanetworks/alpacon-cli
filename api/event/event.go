@@ -32,9 +32,7 @@ func GetEventList(ac *client.AlpaconClient, pageSize int, serverName string, use
 		}
 	}
 
-	url := buildURL(serverID, userID, pageSize)
-
-	responseBody, err := ac.SendGetRequest(url)
+	responseBody, err := ac.SendGetRequest(buildURL(serverID, userID, pageSize))
 	if err != nil {
 		return nil, err
 	}
@@ -51,7 +49,7 @@ func GetEventList(ac *client.AlpaconClient, pageSize int, serverName string, use
 			Shell:       event.Shell,
 			Command:     event.Line,
 			Result:      utils.TruncateString(event.Result, 70),
-			Status:      event.Success,
+			Status:      utils.BoolPointerToString(event.Success),
 			Operator:    event.RequestedByName,
 			RequestedAt: utils.TimeUtils(event.AddedAt),
 		})
