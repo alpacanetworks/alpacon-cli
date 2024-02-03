@@ -197,3 +197,13 @@ func SaveFile(fileName string, data []byte) error {
 
 	return nil
 }
+
+func BoolPointerToString(value *bool) string {
+	if value == nil {
+		return "null"
+	}
+	if *value {
+		return "true"
+	}
+	return "false"
+}
