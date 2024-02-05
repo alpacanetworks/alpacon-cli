@@ -7,6 +7,7 @@ import (
 	"github.com/alpacanetworks/alpacon-cli/client"
 	"github.com/alpacanetworks/alpacon-cli/utils"
 	"github.com/spf13/cobra"
+	"strings"
 )
 
 var WebshCmd = &cobra.Command{
@@ -28,31 +29,29 @@ var WebshCmd = &cobra.Command{
 	alpacon websh [SERVER NAME] --root
 	`,
 	Run: func(cmd *cobra.Command, args []string) {
-		if len(args) < 1 || len(args) > 2 {
+		root, _ := cmd.Flags().GetBool("root")
+
+		if len(args) < 1 {
 			cmd.Usage()
 			return
 		}
 
 		serverName := args[0]
-
-		var command string
-		if len(args) > 1 {
-			command = args[1]
-		}
+		commandArgs := args[1:]
 
 		alpaconClient, err := client.NewAlpaconAPIClient()
 		if err != nil {
 			utils.CliError("Connection to Alpacon API failed: %s. Consider re-logging.", err)
 		}
 
-		if len(args) == 2 {
+		if len(commandArgs) > 0 {
+			command := strings.Join(commandArgs, " ")
 			result, err := event.RunCommand(alpaconClient, serverName, command)
 			if err != nil {
 				utils.CliError("Failed to run the '%s' command on the '%s' server: %s", command, serverName, err)
 			}
 			fmt.Println(result)
 		} else {
-			root, _ := cmd.Flags().GetBool("root")
 			session, err := websh.CreateWebshConnection(alpaconClient, serverName, root)
 			if err != nil {
 				utils.CliError("Failed to create the websh connection: %s", err)
