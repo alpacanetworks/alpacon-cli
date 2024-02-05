@@ -74,7 +74,7 @@ func DeleteServer(ac *client.AlpaconClient, serverName string) error {
 		return err
 	}
 
-	return err
+	return nil
 }
 
 func GetServerIDByName(ac *client.AlpaconClient, serverName string) (string, error) {
