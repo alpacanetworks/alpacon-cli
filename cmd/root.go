@@ -33,9 +33,10 @@ func showLogo() {
 }
 
 var rootCmd = &cobra.Command{
-	Use:   "alpacon",
-	Short: "Alpacon CLI: Your Gateway to Alpacon Services",
-	Long:  "Use this tool to interact with the alpacon service.",
+	Use:     "alpacon",
+	Aliases: []string{"ac"},
+	Short:   "Alpacon CLI: Your Gateway to Alpacon Services",
+	Long:    "Use this tool to interact with the alpacon service.",
 	Run: func(cmd *cobra.Command, args []string) {
 		showLogo()
 		fmt.Println("Welcome to Alpacon CLI! Use 'alpacon [command]' to execute a specific command or 'alpacon help' to see all available commands.")
