@@ -57,7 +57,8 @@ func createWebshSession(ac *client.AlpaconClient, serverID string, root bool) (S
 	return response, nil
 }
 
-// Open terminal
+// Handles graceful termination of the websh terminal.
+// Exits on error without further error handling.
 func OpenNewTerminal(ac *client.AlpaconClient, sessionResponse SessionResponse) error {
 	headers := http.Header{"Origin": []string{ac.BaseURL}}
 
