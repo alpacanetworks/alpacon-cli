@@ -29,9 +29,13 @@ func UploadFile(ac *client.AlpaconClient, src []string, dest string) error {
 	}
 
 	for _, path := range src {
+		content, err := utils.ReadFileFromPath(path)
+		if err != nil {
+			return err
+		}
+
 		var requestBody bytes.Buffer
 		multiPartWriter := multipart.NewWriter(&requestBody)
-		defer multiPartWriter.Close()
 
 		if err = multiPartWriter.WriteField("path", remotePath); err != nil {
 			return err
@@ -39,12 +43,6 @@ func UploadFile(ac *client.AlpaconClient, src []string, dest string) error {
 		if err = multiPartWriter.WriteField("server", serverID); err != nil {
 			return err
 		}
-
-		content, err := utils.ReadFileFromPath(path)
-		if err != nil {
-			return err
-		}
-
 		fileWriter, err := multiPartWriter.CreateFormFile("content", filepath.Base(path))
 		if err != nil {
 			return err
