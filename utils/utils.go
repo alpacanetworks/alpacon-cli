@@ -163,6 +163,13 @@ func TimeUtils(t time.Time) string {
 	}
 }
 
+func TimeFormat(value int) *string {
+	expiresAt := time.Now().Add(time.Hour * 24 * time.Duration(value))
+	formattedExpiresAt := expiresAt.Format(time.RFC3339)
+
+	return &formattedExpiresAt
+}
+
 func TruncateString(str string, num int) string {
 	if len(str) > num {
 		return str[:num] + "..."

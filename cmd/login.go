@@ -18,13 +18,15 @@ const defaultServerURL = "https://alpacon.io"
 var loginCmd = &cobra.Command{
 	Use:   "login",
 	Short: "Log in to Alpacon Server",
-	Long:  "Log in to Alpacon Server.\n To access Alpacon Server, server address is must specified",
+	Long:  "Log in to Alpacon Server. To access Alpacon Server, server address is must specified",
 	Run: func(cmd *cobra.Command, args []string) {
-		if loginRequest.Username == "" || loginRequest.Password == "" || loginRequest.ServerAddress == "" {
+		token, _ := cmd.Flags().GetString("token")
+
+		if (loginRequest.Username == "" || loginRequest.Password == "" || loginRequest.ServerAddress == "") && token == "" {
 			promptForCredentials()
 		}
 
-		err := auth.LoginAndSaveCredentials(&loginRequest)
+		err := auth.LoginAndSaveCredentials(&loginRequest, token)
 		if err != nil {
 			utils.CliError("Login failed %v. Please check your credentials and try again.\n", err)
 		}
@@ -38,9 +40,12 @@ var loginCmd = &cobra.Command{
 }
 
 func init() {
+	var token string
+
 	loginCmd.Flags().StringVarP(&loginRequest.ServerAddress, "server", "s", "defaultServerURL", "URL of the server to login, default: https://alpacon.io")
 	loginCmd.Flags().StringVarP(&loginRequest.Username, "username", "u", "", "Username for login")
 	loginCmd.Flags().StringVarP(&loginRequest.Password, "password", "p", "", "Password for login")
+	loginCmd.Flags().StringVarP(&token, "token", "t", "", "API token for login")
 }
 
 func promptForCredentials() {

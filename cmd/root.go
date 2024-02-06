@@ -13,6 +13,7 @@ import (
 	"github.com/alpacanetworks/alpacon-cli/cmd/note"
 	"github.com/alpacanetworks/alpacon-cli/cmd/packages"
 	"github.com/alpacanetworks/alpacon-cli/cmd/server"
+	"github.com/alpacanetworks/alpacon-cli/cmd/token"
 	"github.com/alpacanetworks/alpacon-cli/cmd/websh"
 	"github.com/alpacanetworks/alpacon-cli/utils"
 	"github.com/spf13/cobra"
@@ -92,4 +93,7 @@ func init() {
 
 	// certificate
 	rootCmd.AddCommand(cert.CertCmd)
+
+	// token
+	rootCmd.AddCommand(token.TokenCmd)
 }

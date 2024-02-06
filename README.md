@@ -75,15 +75,18 @@ To access and utilize all features of `Alpacon CLI`, first authenticate with the
 $ alpacon login
 
 $ alpacon login -s [SERVER URL] -u [USERNAME] -p [PASSWORD]
+
+# Log in via API token
+$ alpacon login -s [SERVER URL] -t [TOKEN KEY]
 ```
-A successful login generates a `config.json` file in `~/.alpacon`, which includes the server address, API token, and token expiration time (approximately 1 week). 
+A successful login generates a `config.json` file in `~/.alpacon`, which includes the server address, API token, and token expiration time (approximately 1 week).
 This file is crucial for executing commands, and you will need to log in again once the token expires.
 
-Upon re-login, the Alpacon CLI will automatically reuse the server address from `config.json`, unless you provide all the flags (-s, -u, -p). 
+Upon re-login, the Alpacon CLI will automatically reuse the server address from `config.json`, unless you provide all the flags (-s, -u, -p).
 If you need to connect to a different server or change the server address, you can either directly modify the `config.json` file in `~/.alpacon` or provide all flags to specify a new server URL.
 
 #### Default Server URL
-If you do not explicitly specify the server URL (-s) in the command, the default value `https://alpacon.io` is used. 
+If you do not explicitly specify the server URL (-s) in the command, the default value `https://alpacon.io` is used.
 Therefore, you only need to use the `-s` option to specify a server URL if you wish to connect to a server other than the default one.
 
 ## Usage
@@ -113,11 +116,11 @@ Available Commands:
   note        Manage and view server notes
   package     Commands to manage and interact with packages
   server      Commands to manage and interact with servers
+  token       Commands to manage api tokens
   user        Manage User resources
   version     Displays the current CLI version.
-  websh       Open a websh terminal for a server
+  websh       Open a websh terminal or execute a command on a server
 ```
-
 ### Examples of Use Cases
 
 #### Server Management
@@ -190,10 +193,28 @@ $ alpacon group member add --group=[GROUP NAME] --member=[MEMBER NAME] --role=[R
 $ alpacon group member delete --group=[GROUP NAME] --member=[MEMBER NAME]
 ```
 
+#### API tokens
+API tokens can be used to access alpacon.
+```bash
+# Create a new API token
+$ alpacon token create
+$ alpacon token create -n [TOKEN NAME] -l / --limit=true
+$ alpacon token create -n [TOKEN NAME] --expiration-in-days=7
+
+# Display a list of API tokens in the Alpacon
+$ alpacon token ls 
+
+# Delete API token
+$ alpacon token delete [TOKEN NAME]
+
+# Log in via API token
+$ alpacon login -s [SERVER URL] -t [TOKEN KEY]
+```
+
+
 #### File Transfer Protocol (FTP)
 Facilitate file uploads and downloads:
 ```bash
-
 $ alpacon cp [SOURCE] [DESTINATION]
 
 # Upload files
