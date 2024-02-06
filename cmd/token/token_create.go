@@ -43,7 +43,7 @@ var tokenCreateCmd = &cobra.Command{
 
 		token, err := auth.CreateAPIToken(alpaconClient, tokenRequest)
 		if err != nil {
-			utils.CliError("", err)
+			utils.CliError("Failed to create API token %s.", err)
 		}
 
 		utils.CliInfo("API Token Created: `%s`", token)
