@@ -50,6 +50,8 @@ type Command struct {
 	Shell       string     `json:"shell"`
 	Line        string     `json:"line"`
 	Data        string     `json:"data"`
+	Username    string     `json:"username"`
+	Groupname   string     `json:"groupname"`
 	ScheduledAt *time.Time `json:"scheduled_at"`
 	Server      string     `json:"server"`
 	RunAfter    []string   `json:"run_after"`

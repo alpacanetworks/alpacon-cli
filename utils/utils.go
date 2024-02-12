@@ -214,3 +214,11 @@ func BoolPointerToString(value *bool) string {
 	}
 	return "false"
 }
+
+func StringToStringPointer(value string) *string {
+	if value == "" {
+		return nil
+	} else {
+		return &value
+	}
+}

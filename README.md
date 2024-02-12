@@ -157,6 +157,17 @@ Access a server's websh terminal:
 $ alpacon websh [SERVER NAME]
 ```
 
+####  Execute a command
+Execute a command directly on a server and retrieve the output:
+```bash
+$ alpacon websh [SERVER NAME] [COMMAND]
+
+$ alpacon websh -u [USER NAME] -g [GROUP NAME] [COMMAND]
+
+$ alpacon websh --username=[USER NAME] --groupname=[GROUP NAME] [COMMAND]
+```
+
+
 #### Identity and Access Management (IAM)
 Efficiently manage user and group resources:
 ```bash

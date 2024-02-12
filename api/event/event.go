@@ -35,10 +35,12 @@ func GetEventList(ac *client.AlpaconClient, pageSize int, serverName string, use
 	if err != nil {
 		return nil, err
 	}
+
 	var response EventListResponse
 	if err = json.Unmarshal(responseBody, &response); err != nil {
 		return nil, err
 	}
+
 	var eventList []EventAttributes
 	for _, event := range response.Results {
 		eventList = append(eventList, EventAttributes{
@@ -53,15 +55,18 @@ func GetEventList(ac *client.AlpaconClient, pageSize int, serverName string, use
 	}
 	return eventList, nil
 }
-func RunCommand(ac *client.AlpaconClient, serverName, command string) (string, error) {
+func RunCommand(ac *client.AlpaconClient, serverName, command string, username, groupname string) (string, error) {
 	serverID, err := server.GetServerIDByName(ac, serverName)
 	if err != nil {
 		return "", err
 	}
+
 	commandRequest := &Command{
 		Shell:       "system", // TODO Support osquery, alpamon
 		Line:        command,
 		Data:        "",
+		Username:    username,
+		Groupname:   groupname,
 		ScheduledAt: nil,
 		Server:      serverID,
 		RunAfter:    []string{},

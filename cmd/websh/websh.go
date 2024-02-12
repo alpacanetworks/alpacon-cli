@@ -19,25 +19,58 @@ var WebshCmd = &cobra.Command{
 	`,
 	Example: `
 	// Open a websh terminal for a server
-	alpacon websh [SERVER NAME]
+	alpacon websh [SERVER_NAME]
 
 	// Execute a command directly on a server and retrieve the output
-	alpacon websh [SERVER NAME] [COMMAND]
+	alpacon websh [SERVER_NAME] [COMMAND]
 
-	// Additional examples with flags
+	// Open a websh terminal as a root user
 	alpacon websh -r [SERVER_NAME]
-	alpacon websh [SERVER NAME] --root
-	`,
-	Run: func(cmd *cobra.Command, args []string) {
-		root, _ := cmd.Flags().GetBool("root")
 
-		if len(args) < 1 {
-			cmd.Usage()
-			return
+	// Run a command as [USER_NAME]/[GROUP_NAME]
+	alpacon websh -u [USER_NAME] -g [GROUP_NAME] [SERVER_NAME] [COMMAND]
+
+	Flags:
+	-r          					   Run the websh terminal as the root user.
+	-u / --username [USER_NAME]        Specify the username under which the command should be executed.
+	-g / --groupname [GROUP_NAME]      Specify the group name under which the command should be executed.
+
+	Note:
+	- All flags (-r, -u, -g) must be placed before the [SERVER_NAME].
+	- The -u (or --username) and -g (or --groupname) flags require an argument specifying the user or group name, respectively.
+	`,
+	DisableFlagParsing: true,
+	Run: func(cmd *cobra.Command, args []string) {
+		var (
+			root                            bool
+			username, groupname, serverName string
+			commandArgs                     []string
+		)
+
+		for i := 0; i < len(args); i++ {
+			switch {
+			case args[i] == "-r" || args[i] == "--root":
+				root = true
+			case args[i] == "-h" || args[i] == "--help":
+				cmd.Help()
+				return
+			case strings.HasPrefix(args[i], "-u") || strings.HasPrefix(args[i], "--username"):
+				username, i = extractValue(args, i)
+			case strings.HasPrefix(args[i], "-g") || strings.HasPrefix(args[i], "--groupname"):
+				groupname, i = extractValue(args, i)
+			default:
+				if serverName == "" {
+					serverName = args[i]
+				} else {
+					commandArgs = append(commandArgs, args[i:]...)
+					i = len(args)
+				}
+			}
 		}
 
-		serverName := args[0]
-		commandArgs := args[1:]
+		if serverName == "" {
+			utils.CliError("Server name is required.")
+		}
 
 		alpaconClient, err := client.NewAlpaconAPIClient()
 		if err != nil {
@@ -46,7 +79,7 @@ var WebshCmd = &cobra.Command{
 
 		if len(commandArgs) > 0 {
 			command := strings.Join(commandArgs, " ")
-			result, err := event.RunCommand(alpaconClient, serverName, command)
+			result, err := event.RunCommand(alpaconClient, serverName, command, username, groupname)
 			if err != nil {
 				utils.CliError("Failed to run the '%s' command on the '%s' server: %s", command, serverName, err)
 			}
@@ -62,7 +95,12 @@ var WebshCmd = &cobra.Command{
 	},
 }
 
-func init() {
-	var root bool
-	WebshCmd.Flags().BoolVarP(&root, "root", "r", false, "Run as root user")
+func extractValue(args []string, i int) (string, int) {
+	if strings.Contains(args[i], "=") {
+		parts := strings.SplitN(args[i], "=", 2)
+		return parts[1], i
+	} else if i+1 < len(args) {
+		return args[i+1], i + 1
+	}
+	return "", i
 }
