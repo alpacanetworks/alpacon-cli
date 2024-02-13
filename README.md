@@ -242,12 +242,12 @@ Handle Python and system packages effortlessly:
 # python
 $ alpacon package python ls / list / all
 $ alpacon package python upload alpamon-1.1.0-py3-none-any.whl
-$ alpacon package python cp /home/alpacon/alpamon-1.1.0-py3-none-any.whl
+$ alpacon package python download alpamon-1.1.0-py3-none-any.whl .
 
 # system
 $ alpacon package system ls / list /all
 $ alpacon package system upload osquery-5.10.2-1.linux.x86_64.rpm
-$ alpacon package system cp /home/alpacon/osquery_5.8.2-1.linux_amd64.deb
+$ alpacon package system download osquery-5.10.2-1.linux.x86_64.rpm .
 ```
 
 #### Logs Management

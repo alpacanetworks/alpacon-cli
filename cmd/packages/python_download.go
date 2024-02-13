@@ -7,31 +7,31 @@ import (
 	"github.com/spf13/cobra"
 )
 
-var pythonPackageUploadCmd = &cobra.Command{
-	Use:   "upload [FILE PATH]",
-	Short: "Upload a python package to alpacon",
+var pythonPackageDownloadCmd = &cobra.Command{
+	Use:   "download [PACKAGE NAME] [FILE PATH]",
+	Short: "Download a python package from alpacon",
 	Long: `
-	The 'upload' command allows users to upload a Python package to the alpacon. 
+	The 'download' command allows users to download a Python package from the alpacon.
 	This command is designed to facilitate the transfer of your locally developed Python packages to a remote server environment for further usage or distribution.
 	`,
 	Example: `
-	alpacon package python upload alpamon-1.1.0-py3-none-any.whl
-	alpacon package python upload /home/alpacon/alpamon-1.1.0-py3-none-any.whl
+	alpacon package python download alpamon-1.1.0-py3-none-any.whl .
 	`,
-	Args: cobra.ExactArgs(1),
+	Args: cobra.ExactArgs(2),
 	Run: func(cmd *cobra.Command, args []string) {
 		file := args[0]
+		dest := args[1]
 
 		alpaconClient, err := client.NewAlpaconAPIClient()
 		if err != nil {
 			utils.CliError("Connection to Alpacon API failed: %s. Consider re-logging.", err)
 		}
 
-		err = packages.UploadPackage(alpaconClient, file, "python")
+		err = packages.DownloadPackage(alpaconClient, file, dest, "python")
 		if err != nil {
-			utils.CliError("Failed to upload the python packages to alpacon %s", err)
+			utils.CliError("Failed to download the python packages from alpacon %s", err)
 		}
 
-		utils.CliInfo("`%s` successfully uploaded to alpacon ", file)
+		utils.CliInfo("`%s` successfully downloaded from alpacon ", file)
 	},
 }

@@ -3,9 +3,12 @@ package packages
 import (
 	"bytes"
 	"encoding/json"
+	"errors"
 	"github.com/alpacanetworks/alpacon-cli/client"
 	"github.com/alpacanetworks/alpacon-cli/utils"
+	"io"
 	"mime/multipart"
+	"path/filepath"
 )
 
 const (
@@ -84,6 +87,33 @@ func GetPythonPackageEntry(ac *client.AlpaconClient) ([]PythonPackage, error) {
 	return packageList, nil
 }
 
+func GetPackageIDByName(ac *client.AlpaconClient, fileName string, packageType string) (string, error) {
+	var url string
+
+	if packageType == "python" {
+		url = pythonPackageEntryURL
+	} else {
+		url = systemPackageEntryURL
+	}
+
+	body, err := ac.SendGetRequest(url + "?name=" + fileName)
+	if err != nil {
+		return "", err
+	}
+
+	var response PythonPackageListResponse
+	err = json.Unmarshal(body, &response)
+	if err != nil {
+		return "", err
+	}
+
+	if response.Count == 0 {
+		return "", errors.New("no server found with the given name")
+	}
+
+	return response.Results[0].ID, nil
+}
+
 func UploadPackage(ac *client.AlpaconClient, file string, packageType string) error {
 	content, err := utils.ReadFileFromPath(file)
 	if err != nil {
@@ -111,6 +141,56 @@ func UploadPackage(ac *client.AlpaconClient, file string, packageType string) er
 	}
 
 	err = ac.SendMultipartRequest(requestURL, multiPartWriter, requestBody)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func DownloadPackage(ac *client.AlpaconClient, fileName string, dest string, packageType string) error {
+	packageID, err := GetPackageIDByName(ac, fileName, packageType)
+	if err != nil {
+		return err
+	}
+
+	var url string
+	if packageType == "python" {
+		url = pythonPackageEntryURL
+	} else {
+		url = systemPackageEntryURL
+	}
+
+	type DownloadURL struct {
+		DownloadURL string `json:"download_url"`
+	}
+
+	var downloadURL DownloadURL
+
+	respBody, err := ac.SendGetRequest(url + packageID)
+	if err != nil {
+		return err
+	}
+
+	err = json.Unmarshal(respBody, &downloadURL)
+	if err != nil {
+		return err
+	}
+
+	resp, err := ac.SendGetRequestForDownload(utils.RemovePrefixBeforeAPI(downloadURL.DownloadURL))
+	if err != nil {
+		return err
+	}
+
+	defer resp.Body.Close()
+
+	respBody, err = io.ReadAll(resp.Body)
+	if err != nil {
+		return err
+	}
+
+	savePath := filepath.Join(dest, filepath.Base(fileName))
+	err = utils.SaveFile(savePath, respBody)
 	if err != nil {
 		return err
 	}
