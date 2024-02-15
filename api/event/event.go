@@ -62,26 +62,24 @@ func RunCommand(ac *client.AlpaconClient, serverName, command string, username, 
 	}
 
 	commandRequest := &Command{
-		Shell:       "system", // TODO Support osquery, alpamon
-		Line:        command,
-		Data:        "",
-		Username:    username,
-		Groupname:   groupname,
-		ScheduledAt: nil,
-		Server:      serverID,
-		RunAfter:    []string{},
+		Shell:     "system", // TODO Support osquery, alpamon
+		Line:      command,
+		Username:  username,
+		Groupname: groupname,
+		Server:    serverID,
+		RunAfter:  []string{},
 	}
 	_, err = ac.SendPostRequest(getEventURL, commandRequest)
 	if err != nil {
 		return "", err
 	}
 
-	timeout := time.After(30 * time.Second)
+	timer := time.NewTimer(5 * time.Minute)
 	tick := time.Tick(1 * time.Second)
 
 	for {
 		select {
-		case <-timeout:
+		case <-timer.C:
 			return "", errors.New("command execution timed out")
 		case <-tick:
 			responseBody, err := ac.SendGetRequest(buildPageURL(1, 1))
@@ -95,7 +93,11 @@ func RunCommand(ac *client.AlpaconClient, serverName, command string, username, 
 			if len(response.Results) == 0 || utils.BoolPointerToString(response.Results[0].Success) == "null" {
 				continue
 			}
-			if response.Results[0].Status["text"] == "stuck" {
+			if response.Results[0].Status["text"] == "Acked" {
+				timer.Reset(5 * time.Minute)
+				continue
+			}
+			if response.Results[0].Status["text"] == "Stuck" || response.Results[0].Status["text"] == "Error" {
 				return response.Results[0].Status["message"].(string), nil
 			}
 			return response.Results[0].Result, nil
