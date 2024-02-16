@@ -23,7 +23,7 @@ var tokenCreateCmd = &cobra.Command{
 		var tokenRequest auth.APITokenRequest
 		var err error
 
-		if name == "" || (limit == false && expiresAt == 0) {
+		if name == "" || (limit == true && expiresAt == 0) {
 			tokenRequest, err = promptForToken()
 			if err != nil {
 				utils.CliError("Error during token prompt: %v", err)
@@ -31,7 +31,7 @@ var tokenCreateCmd = &cobra.Command{
 		} else {
 			tokenRequest = auth.APITokenRequest{Name: name}
 
-			if !limit {
+			if limit && expiresAt > 0 {
 				tokenRequest.ExpiresAt = utils.TimeFormat(expiresAt)
 			}
 		}
@@ -57,14 +57,14 @@ func init() {
 	var expiresAt int
 
 	tokenCreateCmd.Flags().StringVarP(&name, "name", "n", "", "A name to remember the token easily.")
-	tokenCreateCmd.Flags().BoolVarP(&limit, "limit", "l", false, "Set to true to apply usage limits.")
+	tokenCreateCmd.Flags().BoolVarP(&limit, "limit", "l", true, "Set to true to apply usage limits.")
 	tokenCreateCmd.Flags().IntVar(&expiresAt, "expiration-in-days", 0, "This token can be used by the specified time. (in days)")
 }
 
 func promptForToken() (auth.APITokenRequest, error) {
 	var tokenRequest auth.APITokenRequest
 	tokenRequest.Name = utils.PromptForRequiredInput("Token name:")
-	if !utils.PromptForBool("limit: ") {
+	if utils.PromptForBool("Limit: ") {
 		tokenRequest.ExpiresAt = utils.TimeFormat(utils.PromptForIntInput("Valid through (in days): "))
 	} else {
 		tokenRequest.ExpiresAt = nil
