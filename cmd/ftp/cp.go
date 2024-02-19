@@ -67,7 +67,7 @@ func downloadFile(client *client.AlpaconClient, src string, dest string) {
 		utils.CliError("Failed to download the file from server: %s", err)
 		return
 	}
-	utils.CliInfo("`%s` successfully downloaded from server `%s`", src, dest)
+	utils.CliInfo("Download request for %s to server %s successful. Verify in events (alpacon events).", src, dest)
 }
 
 func uploadFile(client *client.AlpaconClient, src []string, dest string) {
@@ -75,5 +75,5 @@ func uploadFile(client *client.AlpaconClient, src []string, dest string) {
 	if err != nil {
 		utils.CliError("Failed to upload the file to server %s", err)
 	}
-	utils.CliInfo("`%s` successfully uploaded to `%s` ", src, dest)
+	utils.CliInfo("Upload request for %s to %s successful. Verify in events (alpacon events).", src, dest)
 }

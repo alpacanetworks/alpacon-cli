@@ -114,20 +114,20 @@ func (ac *AlpaconClient) sendRequest(req *http.Request) ([]byte, error) {
 	}
 	defer resp.Body.Close()
 
-	body, err := io.ReadAll(resp.Body)
+	respBody, err := io.ReadAll(resp.Body)
 	if err != nil {
 		return nil, err
 	}
 
 	if req.Method == "POST" && (resp.StatusCode != http.StatusCreated && resp.StatusCode != http.StatusOK) {
-		return nil, fmt.Errorf("POST request failed: %s (%s)", resp.Status, string(body))
+		return nil, errors.New(resp.Status + string(respBody))
 	} else if req.Method == "DELETE" && resp.StatusCode != http.StatusNoContent {
-		return nil, fmt.Errorf("DELETE request failed: %s (%s)", resp.Status, string(body))
+		return nil, errors.New(resp.Status + string(respBody))
 	} else if resp.StatusCode < http.StatusOK || resp.StatusCode >= http.StatusMultipleChoices {
-		return nil, fmt.Errorf("unexpected status code: %s (%s)", resp.Status, string(body))
+		return nil, errors.New(resp.Status + string(respBody))
 	}
 
-	return body, nil
+	return respBody, nil
 }
 
 // Get Request to Alpacon Server
