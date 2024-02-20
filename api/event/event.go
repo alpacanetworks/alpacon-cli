@@ -55,13 +55,14 @@ func GetEventList(ac *client.AlpaconClient, pageSize int, serverName string, use
 	}
 	return eventList, nil
 }
+
 func RunCommand(ac *client.AlpaconClient, serverName, command string, username, groupname string) (string, error) {
 	serverID, err := server.GetServerIDByName(ac, serverName)
 	if err != nil {
 		return "", err
 	}
 
-	commandRequest := &Command{
+	commandRequest := &CommandRequest{
 		Shell:     "system", // TODO Support osquery, alpamon
 		Line:      command,
 		Username:  username,
@@ -69,38 +70,50 @@ func RunCommand(ac *client.AlpaconClient, serverName, command string, username, 
 		Server:    serverID,
 		RunAfter:  []string{},
 	}
-	_, err = ac.SendPostRequest(getEventURL, commandRequest)
+	respBody, err := ac.SendPostRequest(getEventURL, commandRequest)
 	if err != nil {
 		return "", err
 	}
 
+	var cmdResponse CommandResponse
+
+	err = json.Unmarshal(respBody, &cmdResponse)
+	if err != nil {
+		return "", err
+	}
+
+	return PollCommandExecution(ac, cmdResponse.Id)
+}
+
+func PollCommandExecution(ac *client.AlpaconClient, cmdId string) (string, error) {
+	var response EventDetails
+
 	timer := time.NewTimer(5 * time.Minute)
-	tick := time.Tick(1 * time.Second)
+	defer timer.Stop()
+	ticker := time.NewTicker(1 * time.Second)
+	defer ticker.Stop()
 
 	for {
 		select {
 		case <-timer.C:
 			return "", errors.New("command execution timed out")
-		case <-tick:
-			responseBody, err := ac.SendGetRequest(buildPageURL(1, 1))
+		case <-ticker.C:
+			responseBody, err := ac.SendGetRequest(getEventURL + cmdId)
 			if err != nil {
 				continue
 			}
-			var response EventListResponse
 			if err = json.Unmarshal(responseBody, &response); err != nil {
 				return "", err
 			}
-			if len(response.Results) == 0 || utils.BoolPointerToString(response.Results[0].Success) == "null" {
+
+			switch response.Status["text"] {
+			case "Acked":
 				continue
+			case "Stuck", "Error":
+				return response.Status["message"].(string), nil
+			default:
+				return response.Result, nil
 			}
-			if response.Results[0].Status["text"] == "Acked" {
-				timer.Reset(5 * time.Minute)
-				continue
-			}
-			if response.Results[0].Status["text"] == "Stuck" || response.Results[0].Status["text"] == "Error" {
-				return response.Results[0].Status["message"].(string), nil
-			}
-			return response.Results[0].Result, nil
 		}
 	}
 }
@@ -109,13 +122,6 @@ func buildURL(serverID, userID string, pageSize int) string {
 	params := url.Values{}
 	params.Add("server", serverID)
 	params.Add("requested_by", userID)
-	params.Add("page_size", fmt.Sprintf("%d", pageSize))
-	return getEventURL + "?" + params.Encode()
-}
-
-func buildPageURL(page int, pageSize int) string {
-	params := url.Values{}
-	params.Add("page", fmt.Sprintf("%d", page))
 	params.Add("page_size", fmt.Sprintf("%d", pageSize))
 	return getEventURL + "?" + params.Encode()
 }

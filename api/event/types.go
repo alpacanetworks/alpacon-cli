@@ -37,16 +37,7 @@ type EventDetails struct {
 	RequestedByName string                 `json:"requested_by_name"`
 }
 
-type EventCommandRequest struct {
-	Shell       string   `json:"shell"`
-	Line        string   `json:"line"`
-	Data        string   `json:"data"`
-	ScheduledAt string   `json:"scheduled_at"`
-	Server      string   `json:"server"`
-	RunAfter    []string `json:"run_after"`
-}
-
-type Command struct {
+type CommandRequest struct {
 	Shell       string     `json:"shell"`
 	Line        string     `json:"line"`
 	Data        string     `json:"data"`
@@ -55,4 +46,18 @@ type Command struct {
 	ScheduledAt *time.Time `json:"scheduled_at"`
 	Server      string     `json:"server"`
 	RunAfter    []string   `json:"run_after"`
+}
+
+type CommandResponse struct {
+	Id          string        `json:"id"`
+	Shell       string        `json:"shell"`
+	Line        string        `json:"line"`
+	Data        string        `json:"data"`
+	Username    string        `json:"username"`
+	Groupname   string        `json:"groupname"`
+	AddedAt     time.Time     `json:"added_at"`
+	ScheduledAt time.Time     `json:"scheduled_at"`
+	Server      string        `json:"server"`
+	RequestedBy string        `json:"requested_by"`
+	RunAfter    []interface{} `json:"run_after"`
 }
