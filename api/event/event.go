@@ -108,6 +108,7 @@ func PollCommandExecution(ac *client.AlpaconClient, cmdId string) (string, error
 
 			switch response.Status["text"] {
 			case "Acked":
+				timer.Reset(5 * time.Minute)
 				continue
 			case "Stuck", "Error":
 				return response.Status["message"].(string), nil
