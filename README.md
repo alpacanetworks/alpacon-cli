@@ -153,8 +153,14 @@ Select groups that are authorized to access this server. (e.g., 1,2):
 #### Connect Websh
 Access a server's websh terminal:
 ```bash
-# Opens a websh terminal for the specified server.
+# Open a websh terminal for the specified server.
 $ alpacon websh [SERVER NAME]
+
+# Open a websh terminal as the root user.
+$ alpacon websh -r [SERVER NAME]
+
+# Open a websh terminal for the specified server using a specified username and groupname.
+$ alpacon websh -u [USER NAME] -g [GROUP NAME] [SERVER NAME]
 ```
 
 ####  Execute a command
@@ -222,7 +228,6 @@ $ alpacon token delete [TOKEN NAME]
 $ alpacon login -s [SERVER URL] -t [TOKEN KEY]
 ```
 
-
 #### File Transfer Protocol (FTP)
 Facilitate file uploads and downloads:
 ```bash
@@ -233,6 +238,9 @@ $ alpacon cp /Users/alpacon.txt myserver:/home/alpacon/
 
 # Download files
 $ alpacon cp myserver:/home/alpacon/alpacon.txt .
+
+# To use a specified username and groupname for the transfer:
+$ alpacon cp -u [USER NAME] -g [GROUP NAME] [SOURCE] [DESTINATION]
 ```
 - `[SERVER NAME]:[PATH]` : denotes the server's name and the file's path for FTP operations.
 

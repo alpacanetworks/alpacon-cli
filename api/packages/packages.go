@@ -140,7 +140,7 @@ func UploadPackage(ac *client.AlpaconClient, file string, packageType string) er
 		requestURL = systemPackageEntryURL
 	}
 
-	err = ac.SendMultipartRequest(requestURL, multiPartWriter, requestBody)
+	_, err = ac.SendMultipartRequest(requestURL, multiPartWriter, requestBody)
 	if err != nil {
 		return err
 	}

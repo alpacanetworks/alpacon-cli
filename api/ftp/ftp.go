@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"github.com/alpacanetworks/alpacon-cli/api/event"
 	"github.com/alpacanetworks/alpacon-cli/api/server"
 	"github.com/alpacanetworks/alpacon-cli/client"
 	"github.com/alpacanetworks/alpacon-cli/utils"
@@ -20,50 +21,70 @@ const (
 	downloadAPIURL = "/api/websh/downloads/"
 )
 
-func UploadFile(ac *client.AlpaconClient, src []string, dest string) error {
+func UploadFile(ac *client.AlpaconClient, src []string, dest, username, groupname string) ([]string, error) {
 	serverName, remotePath := splitPath(dest)
 
 	serverID, err := server.GetServerIDByName(ac, serverName)
 	if err != nil {
-		return err
+		return nil, err
 	}
 
-	for _, path := range src {
-		content, err := utils.ReadFileFromPath(path)
+	var result []string
+	for _, filePath := range src {
+		file, err := utils.ReadFileFromPath(filePath)
 		if err != nil {
-			return err
+			return nil, err
 		}
 
 		var requestBody bytes.Buffer
-		multiPartWriter := multipart.NewWriter(&requestBody)
+		writer := multipart.NewWriter(&requestBody)
 
-		if err = multiPartWriter.WriteField("path", remotePath); err != nil {
-			return err
+		params := map[string]string{
+			"path":      remotePath,
+			"server":    serverID,
+			"username":  username,
+			"groupname": groupname,
 		}
-		if err = multiPartWriter.WriteField("server", serverID); err != nil {
-			return err
+		for key, value := range params {
+			if err := writer.WriteField(key, value); err != nil {
+				return nil, err
+			}
 		}
-		fileWriter, err := multiPartWriter.CreateFormFile("content", filepath.Base(path))
+
+		fileWriter, err := writer.CreateFormFile("content", filepath.Base(filePath))
 		if err != nil {
-			return err
+			return nil, err
 		}
-		if _, err = fileWriter.Write(content); err != nil {
-			return err
+		_, err = fileWriter.Write(file)
+		if err != nil {
+			return nil, err
+		}
+		err = writer.Close()
+		if err != nil {
+			return nil, err
+		}
+		respBody, err := ac.SendMultipartRequest(uploadAPIURL, writer, requestBody)
+		if err != nil {
+			return nil, err
 		}
 
-		if err = multiPartWriter.Close(); err != nil {
-			return err
+		var response UploadResponse
+		err = json.Unmarshal(respBody, &response)
+		if err != nil {
+			return nil, err
 		}
 
-		if err = ac.SendMultipartRequest(uploadAPIURL, multiPartWriter, requestBody); err != nil {
-			return err
+		status, err := event.PollCommandExecution(ac, response.Command)
+		if err != nil {
+			return nil, err
 		}
+		result = append(result, status)
 	}
 
-	return nil
+	return result, nil
 }
 
-func DownloadFile(ac *client.AlpaconClient, src string, dest string) error {
+func DownloadFile(ac *client.AlpaconClient, src, dest, username, groupname string) error {
 	serverName, remotePathStr := splitPath(src)
 
 	var remotePaths []string
@@ -78,8 +99,10 @@ func DownloadFile(ac *client.AlpaconClient, src string, dest string) error {
 
 	for _, path := range remotePaths {
 		downloadRequest := &DownloadRequest{
-			Path:   path,
-			Server: serverID,
+			Path:      path,
+			Server:    serverID,
+			Username:  username,
+			Groupname: groupname,
 		}
 
 		postBody, err := ac.SendPostRequest(downloadAPIURL, downloadRequest)
@@ -93,10 +116,15 @@ func DownloadFile(ac *client.AlpaconClient, src string, dest string) error {
 			return err
 		}
 
-		utils.CliWarning(fmt.Sprintf("Awaits %s file transfer completion from Alpacon server. Transfer may timeout after 100 seconds. If the specified file is not found, it will not download even after 100 seconds.", path))
-
 		maxAttempts := 100
 		var resp *http.Response
+
+		status, err := event.PollCommandExecution(ac, downloadResponse.Command)
+		if err != nil {
+			return err
+		}
+
+		utils.CliWarning(fmt.Sprintf("File Transfer Status: '%s'. Attempting to transfer '%s' from the Alpacon server. Note: Transfer may timeout after 100 seconds.", status, path))
 
 		for count := 0; count < maxAttempts; count++ {
 			resp, err = ac.SendGetRequestForDownload(utils.RemovePrefixBeforeAPI(downloadResponse.DownloadURL))

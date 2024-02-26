@@ -175,29 +175,29 @@ func (ac *AlpaconClient) SendPatchRequest(url string, params interface{}) ([]byt
 	return ac.sendRequest(req)
 }
 
-func (ac *AlpaconClient) SendMultipartRequest(url string, multiPartWriter *multipart.Writer, body bytes.Buffer) error {
+func (ac *AlpaconClient) SendMultipartRequest(url string, multiPartWriter *multipart.Writer, body bytes.Buffer) ([]byte, error) {
 	req, err := ac.createRequest("POST", url, &body)
 	if err != nil {
-		return err
+		return nil, err
 	}
 	req.Header.Set("Content-Type", multiPartWriter.FormDataContentType())
 
 	resp, err := ac.HTTPClient.Do(req)
 	if err != nil {
-		return err
+		return nil, err
 	}
 	defer resp.Body.Close()
 
 	respBody, err := io.ReadAll(resp.Body)
 	if err != nil {
-		return err
+		return nil, err
 	}
 
 	if resp.StatusCode != http.StatusCreated {
-		return errors.New(resp.Status + string(respBody))
+		return nil, errors.New(resp.Status + string(respBody))
 	}
 
-	return nil
+	return respBody, nil
 }
 
 // This function returns response for custom error handling in each function, unlike direct error throwing in sendRequest.

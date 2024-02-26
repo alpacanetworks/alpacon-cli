@@ -1,10 +1,11 @@
 package websh
 
 type SessionRequest struct {
-	Rows   int    `json:"rows"`
-	Cols   int    `json:"cols"`
-	Server string `json:"server"` // server id
-	Root   bool   `json:"root"`
+	Rows      int    `json:"rows"`
+	Cols      int    `json:"cols"`
+	Server    string `json:"server"` // server id
+	Username  string `json:"username"`
+	Groupname string `json:"groupname"`
 }
 
 type SessionResponse struct {

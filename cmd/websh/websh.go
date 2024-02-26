@@ -26,6 +26,10 @@ var WebshCmd = &cobra.Command{
 
 	// Open a websh terminal as a root user
 	alpacon websh -r [SERVER_NAME]
+	alapcon websh -u root [SERVER_NAME]
+	
+	// Open a websh terminal specifying username and groupname
+	alpacon websh -u [USER_NAME] -g [GROUP_NAME] [SERVER_NAME]
 
 	// Run a command as [USER_NAME]/[GROUP_NAME]
 	alpacon websh -u [USER_NAME] -g [GROUP_NAME] [SERVER_NAME] [COMMAND]
@@ -42,7 +46,6 @@ var WebshCmd = &cobra.Command{
 	DisableFlagParsing: true,
 	Run: func(cmd *cobra.Command, args []string) {
 		var (
-			root                            bool
 			username, groupname, serverName string
 			commandArgs                     []string
 		)
@@ -50,7 +53,7 @@ var WebshCmd = &cobra.Command{
 		for i := 0; i < len(args); i++ {
 			switch {
 			case args[i] == "-r" || args[i] == "--root":
-				root = true
+				username = "root"
 			case args[i] == "-h" || args[i] == "--help":
 				cmd.Help()
 				return
@@ -85,11 +88,10 @@ var WebshCmd = &cobra.Command{
 			}
 			fmt.Println(result)
 		} else {
-			session, err := websh.CreateWebshConnection(alpaconClient, serverName, root)
+			session, err := websh.CreateWebshConnection(alpaconClient, serverName, username, groupname)
 			if err != nil {
 				utils.CliError("Failed to create the websh connection: %s", err)
 			}
-
 			websh.OpenNewTerminal(alpaconClient, session)
 		}
 	},
@@ -99,7 +101,8 @@ func extractValue(args []string, i int) (string, int) {
 	if strings.Contains(args[i], "=") {
 		parts := strings.SplitN(args[i], "=", 2)
 		return parts[1], i
-	} else if i+1 < len(args) {
+	}
+	if i+1 < len(args) {
 		return args[i+1], i + 1
 	}
 	return "", i

@@ -12,10 +12,24 @@ var CpCmd = &cobra.Command{
 	Use:   "cp [SOURCE...] [DESTINATION]",
 	Short: "Copy files between local and remote locations",
 	Long: `The cp command allows you to copy files between your local machine and a remote server.
+	Copy files between your local machine and a remote server using the cp command.
+	This command supports uploading, downloading, and specifying authentication details
+	such as username and groupname.
+	
 	Example usages:
-	- Upload: alpacon cp /path/to/local/file1.txt /path/to/local/file2.txt servername:/remote/path/
-	- Download: alpacon cp servername:"/remote/path1 /remote/path2" /local/destination/path`,
+	- To upload multiple files to a remote server:
+	  alpacon cp /local/path/file1.txt /local/path/file2.txt [SERVER_NAME]:/remote/path/
+	
+	- To download files from a remote server to a local destination:
+	  alpacon cp [SERVER_NAME]:/remote/path1 /remote/path2 /local/destination/path
+	
+	- To specify username and groupname:
+	  alpacon cp -u [USER_NAME] -g [GROUP_NAME] /local/path/file.txt [SERVER_NAME]:/remote/path/
+	`,
 	Run: func(cmd *cobra.Command, args []string) {
+		username, _ := cmd.Flags().GetString("username")
+		groupname, _ := cmd.Flags().GetString("groupname")
+
 		if len(args) < 2 {
 			utils.CliError("You must specify at least two arguments.")
 			return
@@ -31,19 +45,24 @@ var CpCmd = &cobra.Command{
 		}
 
 		if isLocalPaths(sources) && isRemotePath(dest) {
-			uploadFile(alpaconClient, sources, dest)
+			uploadFile(alpaconClient, sources, dest, username, groupname)
 		} else if isRemotePath(sources[0]) && isLocalPath(dest) {
-			downloadFile(alpaconClient, sources[0], dest)
+			downloadFile(alpaconClient, sources[0], dest, username, groupname)
 		} else {
 			utils.CliError("Invalid combination of source and destination paths.")
 		}
 	},
 }
 
+func init() {
+	var username, groupname string
+
+	CpCmd.Flags().StringVarP(&username, "username", "u", "", "Specify username")
+	CpCmd.Flags().StringVarP(&groupname, "groupname", "g", "", "Specify groupname")
+}
+
 // isRemotePath determines if the given path is a remote server path.
 func isRemotePath(path string) bool {
-	// Implement your logic to determine if the path is a remote path
-	// For example, check if it contains ':'
 	return strings.Contains(path, ":")
 }
 
@@ -61,19 +80,19 @@ func isLocalPaths(paths []string) bool {
 	return true
 }
 
-func downloadFile(client *client.AlpaconClient, src string, dest string) {
-	err := ftp.DownloadFile(client, src, dest)
+func downloadFile(client *client.AlpaconClient, src, dest, username, groupname string) {
+	err := ftp.DownloadFile(client, src, dest, username, groupname)
 	if err != nil {
 		utils.CliError("Failed to download the file from server: %s", err)
 		return
 	}
-	utils.CliInfo("Download request for %s to server %s successful. Verify in events (alpacon events).", src, dest)
+	utils.CliInfo("Download request for %s to server %s successful.", src, dest)
 }
 
-func uploadFile(client *client.AlpaconClient, src []string, dest string) {
-	err := ftp.UploadFile(client, src, dest)
+func uploadFile(client *client.AlpaconClient, src []string, dest, username, groupname string) {
+	result, err := ftp.UploadFile(client, src, dest, username, groupname)
 	if err != nil {
 		utils.CliError("Failed to upload the file to server %s", err)
 	}
-	utils.CliInfo("Upload request for %s to %s successful. Verify in events (alpacon events).", src, dest)
+	utils.CliInfo("Upload request for %s to %s successful. result : %s", src, dest, result)
 }

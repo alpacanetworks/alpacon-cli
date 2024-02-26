@@ -63,7 +63,7 @@ func RunCommand(ac *client.AlpaconClient, serverName, command string, username, 
 	}
 
 	commandRequest := &CommandRequest{
-		Shell:     "system", // TODO Support osquery, alpamon
+		Shell:     "system",
 		Line:      command,
 		Username:  username,
 		Groupname: groupname,

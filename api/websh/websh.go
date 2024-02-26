@@ -19,28 +19,29 @@ const (
 	createSessionURL = "/api/websh/sessions/"
 )
 
-func CreateWebshConnection(ac *client.AlpaconClient, serverName string, root bool) (SessionResponse, error) {
+func CreateWebshConnection(ac *client.AlpaconClient, serverName, username, groupname string) (SessionResponse, error) {
 	var sessionResponse SessionResponse
 	serverID, err := server.GetServerIDByName(ac, serverName)
 	if err != nil {
 		return sessionResponse, err
 	}
 
-	return createWebshSession(ac, serverID, root)
+	return createWebshSession(ac, serverID, username, groupname)
 }
 
 // Create new websh session
-func createWebshSession(ac *client.AlpaconClient, serverID string, root bool) (SessionResponse, error) {
+func createWebshSession(ac *client.AlpaconClient, serverID, username, groupname string) (SessionResponse, error) {
 	width, height, err := term.GetSize(int(os.Stdin.Fd()))
 	if err != nil {
 		return SessionResponse{}, err
 	}
 
 	sessionRequest := &SessionRequest{
-		Server: serverID,
-		Root:   root,
-		Rows:   height,
-		Cols:   width,
+		Server:    serverID,
+		Username:  username,
+		Groupname: groupname,
+		Rows:      height,
+		Cols:      width,
 	}
 
 	responseBody, err := ac.SendPostRequest(createSessionURL, sessionRequest)
@@ -50,8 +51,8 @@ func createWebshSession(ac *client.AlpaconClient, serverID string, root bool) (S
 
 	var response SessionResponse
 	err = json.Unmarshal(responseBody, &response)
-	if err = json.Unmarshal(responseBody, &response); err != nil {
-		return response, err
+	if err != nil {
+		return SessionResponse{}, nil
 	}
 
 	return response, nil
