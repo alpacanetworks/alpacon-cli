@@ -120,6 +120,7 @@ func GetAPITokenList(ac *client.AlpaconClient) ([]APITokenAttributes, error) {
 
 		for _, token := range response.Results {
 			tokenList = append(tokenList, APITokenAttributes{
+				ID:        token.ID,
 				Name:      token.Name,
 				Enabled:   token.Enabled,
 				UpdatedAt: utils.TimeUtils(token.UpdatedAt),
@@ -148,19 +149,14 @@ func getAPITokenIDByName(ac *client.AlpaconClient, tokenName string) (string, er
 	}
 
 	if response.Count == 0 {
-		return "", errors.New("no server found with the given name")
+		return "", errors.New("no token found with the given name")
 	}
 
 	return response.Results[0].ID, nil
 }
 
-func DeleteAPIToken(ac *client.AlpaconClient, tokenName string) error {
-	tokenID, err := getAPITokenIDByName(ac, tokenName)
-	if err != nil {
-		return err
-	}
-
-	_, err = ac.SendDeleteRequest(tokenURL + tokenID + "/")
+func DeleteAPIToken(ac *client.AlpaconClient, tokenID string) error {
+	_, err := ac.SendDeleteRequest(tokenURL + tokenID + "/")
 	if err != nil {
 		return err
 	}

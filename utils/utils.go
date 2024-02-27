@@ -130,6 +130,10 @@ func CreatePaginationParams(page int, pageSize int) string {
 }
 
 func TimeUtils(t time.Time) string {
+	if t.IsZero() {
+		return "None"
+	}
+
 	now := time.Now()
 	diff := t.Sub(now)
 

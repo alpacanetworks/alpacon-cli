@@ -37,6 +37,7 @@ type APITokenResponse struct {
 }
 
 type APITokenAttributes struct {
+	ID        string `json:"id"`
 	Name      string `json:"name"`
 	Enabled   bool   `json:"enabled"`
 	UpdatedAt string `json:"updated_at"`

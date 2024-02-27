@@ -222,7 +222,7 @@ $ alpacon token create -n [TOKEN NAME] --expiration-in-days=7
 $ alpacon token ls 
 
 # Delete API token
-$ alpacon token delete [TOKEN NAME]
+$ alpacon token delete [TOKEN ID]
 
 # Log in via API token
 $ alpacon login -s [SERVER URL] -t [TOKEN KEY]
