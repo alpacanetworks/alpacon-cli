@@ -78,7 +78,11 @@ func UploadFile(ac *client.AlpaconClient, src []string, dest, username, groupnam
 		if err != nil {
 			return nil, err
 		}
-		result = append(result, status)
+		if status.Status["text"] == "Stuck" || status.Status["text"] == "Error" {
+			result = append(result, status.Status["message"].(string))
+		} else {
+			result = append(result, status.Result)
+		}
 	}
 
 	return result, nil
@@ -124,7 +128,13 @@ func DownloadFile(ac *client.AlpaconClient, src, dest, username, groupname strin
 			return err
 		}
 
-		utils.CliWarning(fmt.Sprintf("File Transfer Status: '%s'. Attempting to transfer '%s' from the Alpacon server. Note: Transfer may timeout after 100 seconds.", status, path))
+		if status.Status["text"] == "Stuck" || status.Status["text"] == "Error" {
+			utils.CliError(status.Status["message"].(string))
+		}
+		if status.Status["text"] == "Failed" {
+			utils.CliError(status.Result)
+		}
+		utils.CliWarning(fmt.Sprintf("File Transfer Status: '%s'. Attempting to transfer '%s' from the Alpacon server. Note: Transfer may timeout after 100 seconds.", status.Result, path))
 
 		for count := 0; count < maxAttempts; count++ {
 			resp, err = ac.SendGetRequestForDownload(utils.RemovePrefixBeforeAPI(downloadResponse.DownloadURL))

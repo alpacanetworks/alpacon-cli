@@ -82,10 +82,19 @@ func RunCommand(ac *client.AlpaconClient, serverName, command string, username, 
 		return "", err
 	}
 
-	return PollCommandExecution(ac, cmdResponse.Id)
+	result, err := PollCommandExecution(ac, cmdResponse.Id)
+	if err != nil {
+		return "", err
+	}
+
+	if result.Status["text"] == "Stuck" || result.Status["text"] == "Error" {
+		return result.Status["message"].(string), nil
+	}
+
+	return result.Result, nil
 }
 
-func PollCommandExecution(ac *client.AlpaconClient, cmdId string) (string, error) {
+func PollCommandExecution(ac *client.AlpaconClient, cmdId string) (EventDetails, error) {
 	var response EventDetails
 
 	timer := time.NewTimer(5 * time.Minute)
@@ -96,24 +105,22 @@ func PollCommandExecution(ac *client.AlpaconClient, cmdId string) (string, error
 	for {
 		select {
 		case <-timer.C:
-			return "", errors.New("command execution timed out")
+			return response, errors.New("command execution timed out")
 		case <-ticker.C:
 			responseBody, err := ac.SendGetRequest(getEventURL + cmdId)
 			if err != nil {
 				continue
 			}
 			if err = json.Unmarshal(responseBody, &response); err != nil {
-				return "", err
+				return response, err
 			}
 
 			switch response.Status["text"] {
 			case "Acked":
 				timer.Reset(5 * time.Minute)
 				continue
-			case "Stuck", "Error":
-				return response.Status["message"].(string), nil
 			default:
-				return response.Result, nil
+				return response, nil
 			}
 		}
 	}
