@@ -10,6 +10,7 @@ import (
 	"mime/multipart"
 	"net/http"
 	"net/url"
+	"strings"
 )
 
 const (
@@ -113,6 +114,10 @@ func (ac *AlpaconClient) sendRequest(req *http.Request) ([]byte, error) {
 		return nil, err
 	}
 	defer resp.Body.Close()
+
+	if !strings.Contains(resp.Header.Get("Content-Type"), "application/json") {
+		return nil, fmt.Errorf("Server error or incorrect request detected")
+	}
 
 	respBody, err := io.ReadAll(resp.Body)
 	if err != nil {
