@@ -6,19 +6,13 @@ import (
 	"fmt"
 	"github.com/alpacanetworks/alpacon-cli/client"
 	"github.com/alpacanetworks/alpacon-cli/utils"
-	"net/url"
+	"strconv"
 )
 
 const (
-	userURL      = "/api/iam/users/"
-	getUserIDURL = "/api/iam/users/?username="
-
+	userURL       = "/api/iam/users/"
 	groupURL      = "/api/iam/groups/"
-	getGroupIDURL = "/api/iam/groups/?name="
-
-	getUserMembershipURL  = "/api/iam/memberships/?user="
-	getGroupMembershipURL = "/api/iam/memberships/?group="
-	membershipURL         = "/api/iam/memberships/"
+	membershipURL = "/api/iam/memberships/"
 )
 
 func GetUserList(ac *client.AlpaconClient) ([]UserAttributes, error) {
@@ -26,9 +20,12 @@ func GetUserList(ac *client.AlpaconClient) ([]UserAttributes, error) {
 	page := 1
 	const pageSize = 100
 
+	params := map[string]string{
+		"page":      strconv.Itoa(page),
+		"page_size": fmt.Sprintf("%d", pageSize),
+	}
 	for {
-		params := utils.CreatePaginationParams(page, pageSize)
-		responseBody, err := ac.SendGetRequest(userURL + "?" + params)
+		responseBody, err := ac.SendGetRequest(utils.BuildURL(userURL, "", params))
 		if err != nil {
 			return nil, err
 		}
@@ -64,9 +61,12 @@ func GetGroupList(ac *client.AlpaconClient) ([]GroupAttributes, error) {
 	page := 1
 	const pageSize = 100
 
+	params := map[string]string{
+		"page":      strconv.Itoa(page),
+		"page_size": fmt.Sprintf("%d", pageSize),
+	}
 	for {
-		params := utils.CreatePaginationParams(page, pageSize)
-		responseBody, err := ac.SendGetRequest(groupURL + "?" + params)
+		responseBody, err := ac.SendGetRequest(utils.BuildURL(groupURL, "", params))
 		if err != nil {
 			return nil, err
 		}
@@ -104,7 +104,7 @@ func GetUserDetail(ac *client.AlpaconClient, userName string) ([]byte, error) {
 		return nil, err
 	}
 
-	responseBody, err := ac.SendGetRequest(userURL + userID)
+	responseBody, err := ac.SendGetRequest(utils.BuildURL(userURL, userID, nil))
 	if err != nil {
 		return nil, err
 	}
@@ -151,7 +151,7 @@ func GetGroupDetail(ac *client.AlpaconClient, groupName string) ([]byte, error) 
 		return nil, err
 	}
 
-	responseBody, err := ac.SendGetRequest(groupURL + groupID)
+	responseBody, err := ac.SendGetRequest(utils.BuildURL(groupURL, groupID, nil))
 	if err != nil {
 		return nil, err
 	}
@@ -212,7 +212,7 @@ func DeleteUser(ac *client.AlpaconClient, userName string) error {
 		return err
 	}
 
-	_, err = ac.SendDeleteRequest(userURL + userID + "/")
+	_, err = ac.SendDeleteRequest(utils.BuildURL(userURL, userID, nil))
 	if err != nil {
 		return err
 	}
@@ -226,7 +226,7 @@ func DeleteGroup(ac *client.AlpaconClient, groupName string) error {
 		return err
 	}
 
-	_, err = ac.SendDeleteRequest(groupURL + groupID + "/")
+	_, err = ac.SendDeleteRequest(utils.BuildURL(groupURL, groupID, nil))
 	if err != nil {
 		return err
 	}
@@ -265,11 +265,11 @@ func DeleteMember(ac *client.AlpaconClient, memberDeleteRequest MemberDeleteRequ
 		return err
 	}
 
-	params := url.Values{}
-	params.Add("user", memberID)
-	params.Add("group", groupID)
-
-	responseBody, err := ac.SendGetRequest(membershipURL + "?" + params.Encode())
+	params := map[string]string{
+		"user":  memberID,
+		"group": groupID,
+	}
+	responseBody, err := ac.SendGetRequest(utils.BuildURL(membershipURL, "", params))
 	if err != nil {
 		return err
 	}
@@ -280,7 +280,7 @@ func DeleteMember(ac *client.AlpaconClient, memberDeleteRequest MemberDeleteRequ
 		return err
 	}
 
-	_, err = ac.SendDeleteRequest(membershipURL + memberDetails[0].ID + "/")
+	_, err = ac.SendDeleteRequest(utils.BuildURL(membershipURL, memberDetails[0].ID, nil))
 	if err != nil {
 		return err
 	}
@@ -289,7 +289,11 @@ func DeleteMember(ac *client.AlpaconClient, memberDeleteRequest MemberDeleteRequ
 }
 
 func GetUserIDByName(ac *client.AlpaconClient, userName string) (string, error) {
-	responseBody, err := ac.SendGetRequest(getUserIDURL + userName)
+	params := map[string]string{
+		"username": userName,
+	}
+
+	responseBody, err := ac.SendGetRequest(utils.BuildURL(userURL, "", params))
 	if err != nil {
 		return "", err
 	}
@@ -308,7 +312,7 @@ func GetUserIDByName(ac *client.AlpaconClient, userName string) (string, error) 
 }
 
 func GetUserNameByID(ac *client.AlpaconClient, userID string) (string, error) {
-	responseBody, err := ac.SendGetRequest(userURL + userID)
+	responseBody, err := ac.SendGetRequest(utils.BuildURL(userURL, userID, nil))
 	if err != nil {
 		return "", err
 	}
@@ -323,7 +327,10 @@ func GetUserNameByID(ac *client.AlpaconClient, userID string) (string, error) {
 }
 
 func GetGroupIDByName(ac *client.AlpaconClient, groupName string) (string, error) {
-	responseBody, err := ac.SendGetRequest(getGroupIDURL + groupName)
+	params := map[string]string{
+		"name": groupName,
+	}
+	responseBody, err := ac.SendGetRequest(utils.BuildURL(groupURL, "", params))
 	if err != nil {
 		return "", err
 	}
@@ -363,7 +370,10 @@ func getLDAPStatus(isLDAP bool) string {
 }
 
 func getGroupNames(ac *client.AlpaconClient, userID string) ([]string, error) {
-	responseBody, err := ac.SendGetRequest(getUserMembershipURL + userID)
+	params := map[string]string{
+		"user": userID,
+	}
+	responseBody, err := ac.SendGetRequest(utils.BuildURL(membershipURL, "", params))
 	if err != nil {
 		return nil, err
 	}
@@ -383,7 +393,10 @@ func getGroupNames(ac *client.AlpaconClient, userID string) ([]string, error) {
 }
 
 func getMemberNames(ac *client.AlpaconClient, groupID string) ([]string, error) {
-	responseBody, err := ac.SendGetRequest(getGroupMembershipURL + groupID)
+	params := map[string]string{
+		"group": groupID,
+	}
+	responseBody, err := ac.SendGetRequest(utils.BuildURL(membershipURL, "", params))
 	if err != nil {
 		return nil, err
 	}

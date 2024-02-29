@@ -6,7 +6,6 @@ import (
 	"github.com/alpacanetworks/alpacon-cli/api/server"
 	"github.com/alpacanetworks/alpacon-cli/client"
 	"github.com/alpacanetworks/alpacon-cli/utils"
-	"net/url"
 )
 
 const (
@@ -19,9 +18,11 @@ func GetSystemLogList(ac *client.AlpaconClient, serverName string, pageSize int)
 		return nil, err
 	}
 
-	url := buildURL(serverID, pageSize)
-
-	responseBody, err := ac.SendGetRequest(url)
+	params := map[string]string{
+		"server":    serverID,
+		"page_size": fmt.Sprintf("%d", pageSize),
+	}
+	responseBody, err := ac.SendGetRequest(utils.BuildURL(getSystemLogURL, "", params))
 	if err != nil {
 		return nil, err
 	}
@@ -60,11 +61,4 @@ func getLogLevel(level int) string {
 	default:
 		return "UNKNOWN"
 	}
-}
-
-func buildURL(serverID string, pageSize int) string {
-	params := url.Values{}
-	params.Add("server", serverID)
-	params.Add("page_size", fmt.Sprintf("%d", pageSize))
-	return getSystemLogURL + "?" + params.Encode()
 }

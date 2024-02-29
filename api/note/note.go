@@ -6,7 +6,7 @@ import (
 	"github.com/alpacanetworks/alpacon-cli/api/iam"
 	"github.com/alpacanetworks/alpacon-cli/api/server"
 	"github.com/alpacanetworks/alpacon-cli/client"
-	"net/url"
+	"github.com/alpacanetworks/alpacon-cli/utils"
 )
 
 const (
@@ -25,9 +25,11 @@ func GetNoteList(ac *client.AlpaconClient, serverName string, pageSize int) ([]N
 		}
 	}
 
-	url := buildURL(serverID, pageSize)
-
-	responseBody, err := ac.SendGetRequest(url)
+	params := map[string]string{
+		"serverID":  serverID,
+		"page_size": fmt.Sprintf("%d", pageSize),
+	}
+	responseBody, err := ac.SendGetRequest(utils.BuildURL(noteURL, "", params))
 	if err != nil {
 		return nil, err
 	}
@@ -78,17 +80,10 @@ func CreateNote(ac *client.AlpaconClient, noteRequest NoteCreateRequest) error {
 }
 
 func DeleteNote(ac *client.AlpaconClient, noteID string) error {
-	_, err := ac.SendDeleteRequest(noteURL + noteID + "/")
+	_, err := ac.SendDeleteRequest(utils.BuildURL(noteURL, noteID, nil))
 	if err != nil {
 		return err
 	}
 
 	return err
-}
-
-func buildURL(serverID string, pageSize int) string {
-	params := url.Values{}
-	params.Add("server", serverID)
-	params.Add("page_size", fmt.Sprintf("%d", pageSize))
-	return noteURL + "?" + params.Encode()
 }

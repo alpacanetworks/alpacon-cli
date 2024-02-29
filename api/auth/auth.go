@@ -10,13 +10,13 @@ import (
 	"github.com/alpacanetworks/alpacon-cli/utils"
 	"io"
 	"net/http"
+	"strconv"
 )
 
 const (
-	loginURL      = "/api/auth/login/"
-	tokenURL      = "/api/auth/tokens/"
-	getTokenIDURL = "/api/auth/tokens/?=name"
-	statusURL     = "/api/status/"
+	loginURL  = "/api/auth/login/"
+	tokenURL  = "/api/auth/tokens/"
+	statusURL = "/api/status/"
 )
 
 func LoginAndSaveCredentials(loginReq *LoginRequest, token string) error {
@@ -106,9 +106,12 @@ func GetAPITokenList(ac *client.AlpaconClient) ([]APITokenAttributes, error) {
 	page := 1
 	const pageSize = 100
 
+	params := map[string]string{
+		"page":      strconv.Itoa(page),
+		"page_size": fmt.Sprintf("%d", pageSize),
+	}
 	for {
-		params := utils.CreatePaginationParams(page, pageSize)
-		responseBody, err := ac.SendGetRequest(tokenURL + "?" + params)
+		responseBody, err := ac.SendGetRequest(utils.BuildURL(tokenURL, "", params))
 		if err != nil {
 			return nil, err
 		}
@@ -137,7 +140,10 @@ func GetAPITokenList(ac *client.AlpaconClient) ([]APITokenAttributes, error) {
 }
 
 func getAPITokenIDByName(ac *client.AlpaconClient, tokenName string) (string, error) {
-	body, err := ac.SendGetRequest(getTokenIDURL + tokenName)
+	params := map[string]string{
+		"name": tokenName,
+	}
+	body, err := ac.SendGetRequest(utils.BuildURL(tokenURL, "", params))
 	if err != nil {
 		return "", err
 	}
@@ -156,7 +162,7 @@ func getAPITokenIDByName(ac *client.AlpaconClient, tokenName string) (string, er
 }
 
 func DeleteAPIToken(ac *client.AlpaconClient, tokenID string) error {
-	_, err := ac.SendDeleteRequest(tokenURL + tokenID + "/")
+	_, err := ac.SendDeleteRequest(utils.BuildURL(tokenURL, tokenID, nil))
 	if err != nil {
 		return err
 	}

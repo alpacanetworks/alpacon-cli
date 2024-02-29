@@ -4,11 +4,12 @@ import (
 	"fmt"
 	"github.com/alpacanetworks/alpacon-cli/api/server"
 	"github.com/alpacanetworks/alpacon-cli/client"
-	"net/url"
+	"github.com/alpacanetworks/alpacon-cli/utils"
+	"path"
 )
 
 const (
-	baseURL        = "/api/servers/servers"
+	baseURL        = "/api/servers/servers/"
 	upgradeAction  = "upgrade_agent"
 	restartAction  = "restart_agent"
 	shutdownAction = "shutdown_agent"
@@ -26,11 +27,6 @@ func RequestAgentAction(ac *client.AlpaconClient, serverName string, action stri
 		return err
 	}
 
-	url, err := buildURL(serverID)
-	if err != nil {
-		return err
-	}
-
 	actionValue, ok := actionMap[action]
 	if !ok {
 		return fmt.Errorf("invalid action: %s. Valid actions are: upgrade, restart, shutdown", action)
@@ -40,15 +36,7 @@ func RequestAgentAction(ac *client.AlpaconClient, serverName string, action stri
 		Action: actionValue,
 	}
 
-	_, err = ac.SendPostRequest(url, request)
+	relativePath := path.Join(serverID, "actions")
+	_, err = ac.SendPostRequest(utils.BuildURL(baseURL, relativePath, nil), request)
 	return err
-}
-
-func buildURL(serverID string) (string, error) {
-	url, err := url.JoinPath(baseURL, serverID, "/actions/")
-	if err != nil {
-		return "", err
-	}
-
-	return url, nil
 }

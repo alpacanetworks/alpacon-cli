@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"github.com/alpacanetworks/alpacon-cli/client"
 	"github.com/alpacanetworks/alpacon-cli/utils"
-	"net/url"
+	"path"
 	"strconv"
 )
 
@@ -65,8 +65,14 @@ func GetCSRList(ac *client.AlpaconClient, state string) ([]CSRAttributes, error)
 	page := 1
 	const pageSize = 100
 
+	params := map[string]string{
+		"state":     state,
+		"page":      strconv.Itoa(page),
+		"page_size": fmt.Sprintf("%d", pageSize),
+	}
+
 	for {
-		responseBody, err := ac.SendGetRequest(buildURL(state, page, pageSize))
+		responseBody, err := ac.SendGetRequest(utils.BuildURL(signRequestURL, "", params))
 		if err != nil {
 			return nil, err
 		}
@@ -104,9 +110,13 @@ func GetAuthorityList(ac *client.AlpaconClient) ([]AuthorityAttributes, error) {
 	page := 1
 	const pageSize = 100
 
+	params := map[string]string{
+		"page":      strconv.Itoa(page),
+		"page_size": fmt.Sprintf("%d", pageSize),
+	}
+
 	for {
-		params := utils.CreatePaginationParams(page, pageSize)
-		responseBody, err := ac.SendGetRequest(authorityURL + "?" + params)
+		responseBody, err := ac.SendGetRequest(utils.BuildURL(authorityURL, "", params))
 		if err != nil {
 			return nil, err
 		}
@@ -141,7 +151,7 @@ func GetAuthorityList(ac *client.AlpaconClient) ([]AuthorityAttributes, error) {
 }
 
 func GetAuthorityDetail(ac *client.AlpaconClient, authorityId string) ([]byte, error) {
-	body, err := ac.SendGetRequest(authorityURL + authorityId)
+	body, err := ac.SendGetRequest(utils.BuildURL(authorityURL, authorityId, nil))
 	if err != nil {
 		return nil, err
 	}
@@ -150,7 +160,7 @@ func GetAuthorityDetail(ac *client.AlpaconClient, authorityId string) ([]byte, e
 }
 
 func GetCSRDetail(ac *client.AlpaconClient, csrId string) ([]byte, error) {
-	body, err := ac.SendGetRequest(signRequestURL + csrId)
+	body, err := ac.SendGetRequest(utils.BuildURL(signRequestURL, csrId, nil))
 	if err != nil {
 		return nil, err
 	}
@@ -159,7 +169,7 @@ func GetCSRDetail(ac *client.AlpaconClient, csrId string) ([]byte, error) {
 }
 
 func GetCertificateDetail(ac *client.AlpaconClient, certId string) ([]byte, error) {
-	body, err := ac.SendGetRequest(certURL + certId)
+	body, err := ac.SendGetRequest(utils.BuildURL(certURL, certId, nil))
 	if err != nil {
 		return nil, err
 	}
@@ -168,7 +178,8 @@ func GetCertificateDetail(ac *client.AlpaconClient, certId string) ([]byte, erro
 }
 
 func ApproveCSR(ac *client.AlpaconClient, csrId string) ([]byte, error) {
-	responseBody, err := ac.SendPostRequest(signRequestURL+csrId+"/approve/", bytes.NewBuffer([]byte("{}")))
+	relativePath := path.Join(csrId, "approve")
+	responseBody, err := ac.SendPostRequest(utils.BuildURL(signRequestURL, relativePath, nil), bytes.NewBuffer([]byte("{}")))
 	if err != nil {
 		return nil, err
 	}
@@ -177,7 +188,8 @@ func ApproveCSR(ac *client.AlpaconClient, csrId string) ([]byte, error) {
 }
 
 func DenyCSR(ac *client.AlpaconClient, csrId string) ([]byte, error) {
-	responseBody, err := ac.SendPostRequest(signRequestURL+csrId+"/deny/", bytes.NewBuffer([]byte("{}")))
+	relativePath := path.Join(csrId, "deny")
+	responseBody, err := ac.SendPostRequest(utils.BuildURL(signRequestURL, relativePath, nil), bytes.NewBuffer([]byte("{}")))
 	if err != nil {
 		return nil, err
 	}
@@ -186,7 +198,7 @@ func DenyCSR(ac *client.AlpaconClient, csrId string) ([]byte, error) {
 }
 
 func DeleteCSR(ac *client.AlpaconClient, csrId string) error {
-	_, err := ac.SendDeleteRequest(signRequestURL + csrId + "/")
+	_, err := ac.SendDeleteRequest(utils.BuildURL(signRequestURL, csrId, nil))
 	if err != nil {
 		return err
 	}
@@ -199,9 +211,12 @@ func GetCertificateList(ac *client.AlpaconClient) ([]CertificateAttributes, erro
 	page := 1
 	const pageSize = 100
 
+	params := map[string]string{
+		"page":      strconv.Itoa(page),
+		"page_size": fmt.Sprintf("%d", pageSize),
+	}
 	for {
-		params := utils.CreatePaginationParams(page, pageSize)
-		responseBody, err := ac.SendGetRequest(certURL + "?" + params)
+		responseBody, err := ac.SendGetRequest(utils.BuildURL(certURL, "", params))
 		if err != nil {
 			return nil, err
 		}
@@ -250,12 +265,4 @@ func DownloadCertificate(ac *client.AlpaconClient, csrId string, filePath string
 	}
 
 	return nil
-}
-
-func buildURL(state string, page int, pageSize int) string {
-	params := url.Values{}
-	params.Add("state", state)
-	params.Add("page", strconv.Itoa(page))
-	params.Add("page_size", fmt.Sprintf("%d", pageSize))
-	return signRequestURL + "?" + params.Encode()
 }

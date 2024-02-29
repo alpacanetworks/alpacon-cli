@@ -4,11 +4,13 @@ import (
 	"bytes"
 	"encoding/json"
 	"errors"
+	"fmt"
 	"github.com/alpacanetworks/alpacon-cli/client"
 	"github.com/alpacanetworks/alpacon-cli/utils"
 	"io"
 	"mime/multipart"
 	"path/filepath"
+	"strconv"
 )
 
 const (
@@ -21,9 +23,12 @@ func GetSystemPackageEntry(ac *client.AlpaconClient) ([]SystemPackage, error) {
 	page := 1
 	const pageSize = 100
 
+	params := map[string]string{
+		"page":      strconv.Itoa(page),
+		"page_size": fmt.Sprintf("%d", pageSize),
+	}
 	for {
-		params := utils.CreatePaginationParams(page, pageSize)
-		responseBody, err := ac.SendGetRequest(systemPackageEntryURL + "?" + params)
+		responseBody, err := ac.SendGetRequest(utils.BuildURL(systemPackageEntryURL, "", params))
 		if err != nil {
 			return nil, err
 		}
@@ -56,9 +61,12 @@ func GetPythonPackageEntry(ac *client.AlpaconClient) ([]PythonPackage, error) {
 	page := 1
 	const pageSize = 100
 
+	params := map[string]string{
+		"page":      strconv.Itoa(page),
+		"page_size": fmt.Sprintf("%d", pageSize),
+	}
 	for {
-		params := utils.CreatePaginationParams(page, pageSize)
-		responseBody, err := ac.SendGetRequest(pythonPackageEntryURL + "?" + params)
+		responseBody, err := ac.SendGetRequest(utils.BuildURL(pythonPackageEntryURL, "", params))
 		if err != nil {
 			return nil, err
 		}
@@ -96,7 +104,10 @@ func GetPackageIDByName(ac *client.AlpaconClient, fileName string, packageType s
 		url = systemPackageEntryURL
 	}
 
-	body, err := ac.SendGetRequest(url + "?name=" + fileName)
+	params := map[string]string{
+		"name": fileName,
+	}
+	body, err := ac.SendGetRequest(utils.BuildURL(url, "", params))
 	if err != nil {
 		return "", err
 	}
@@ -167,7 +178,7 @@ func DownloadPackage(ac *client.AlpaconClient, fileName string, dest string, pac
 
 	var downloadURL DownloadURL
 
-	respBody, err := ac.SendGetRequest(url + packageID)
+	respBody, err := ac.SendGetRequest(utils.BuildURL(url, packageID, nil))
 	if err != nil {
 		return err
 	}

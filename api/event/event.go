@@ -8,7 +8,7 @@ import (
 	"github.com/alpacanetworks/alpacon-cli/api/server"
 	"github.com/alpacanetworks/alpacon-cli/client"
 	"github.com/alpacanetworks/alpacon-cli/utils"
-	"net/url"
+	"path"
 	"time"
 )
 
@@ -31,7 +31,12 @@ func GetEventList(ac *client.AlpaconClient, pageSize int, serverName string, use
 			return nil, err
 		}
 	}
-	responseBody, err := ac.SendGetRequest(buildURL(serverID, userID, pageSize))
+
+	relativePath := path.Join(serverID, userID)
+	params := map[string]string{
+		"page_size": fmt.Sprintf("%d", pageSize),
+	}
+	responseBody, err := ac.SendGetRequest(utils.BuildURL(getEventURL, relativePath, params))
 	if err != nil {
 		return nil, err
 	}
@@ -107,7 +112,7 @@ func PollCommandExecution(ac *client.AlpaconClient, cmdId string) (EventDetails,
 		case <-timer.C:
 			return response, errors.New("command execution timed out")
 		case <-ticker.C:
-			responseBody, err := ac.SendGetRequest(getEventURL + cmdId)
+			responseBody, err := ac.SendGetRequest(utils.BuildURL(getEventURL, cmdId, nil))
 			if err != nil {
 				continue
 			}
@@ -124,12 +129,4 @@ func PollCommandExecution(ac *client.AlpaconClient, cmdId string) (EventDetails,
 			}
 		}
 	}
-}
-
-func buildURL(serverID, userID string, pageSize int) string {
-	params := url.Values{}
-	params.Add("server", serverID)
-	params.Add("requested_by", userID)
-	params.Add("page_size", fmt.Sprintf("%d", pageSize))
-	return getEventURL + "?" + params.Encode()
 }

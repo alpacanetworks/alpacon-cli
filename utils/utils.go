@@ -6,6 +6,7 @@ import (
 	"golang.org/x/term"
 	"net/url"
 	"os"
+	"path"
 	"path/filepath"
 	"strconv"
 	"strings"
@@ -217,6 +218,26 @@ func BoolPointerToString(value *bool) string {
 		return "true"
 	}
 	return "false"
+}
+
+func BuildURL(basePath, relativePath string, params map[string]string) string {
+	u, err := url.Parse(basePath)
+	if err != nil {
+		CliError("Failed to parse base URL")
+	}
+
+	u.Path = path.Join(u.Path, relativePath)
+	if !strings.HasSuffix(u.Path, "/") {
+		u.Path += "/"
+	}
+	q := u.Query()
+
+	for key, value := range params {
+		q.Set(key, value)
+	}
+
+	u.RawQuery = q.Encode()
+	return u.String()
 }
 
 func StringToStringPointer(value string) *string {

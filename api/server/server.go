@@ -6,11 +6,11 @@ import (
 	"fmt"
 	"github.com/alpacanetworks/alpacon-cli/client"
 	"github.com/alpacanetworks/alpacon-cli/utils"
+	"strconv"
 )
 
 const (
-	serverURL      = "/api/servers/servers/"
-	getServerIDURL = "/api/servers/servers/?name="
+	serverURL = "/api/servers/servers/"
 )
 
 func GetServerList(ac *client.AlpaconClient) ([]ServerAttributes, error) {
@@ -18,9 +18,12 @@ func GetServerList(ac *client.AlpaconClient) ([]ServerAttributes, error) {
 	page := 1
 	const pageSize = 100
 
+	params := map[string]string{
+		"page":      strconv.Itoa(page),
+		"page_size": fmt.Sprintf("%d", pageSize),
+	}
 	for {
-		params := utils.CreatePaginationParams(page, pageSize)
-		responseBody, err := ac.SendGetRequest(serverURL + "?" + params)
+		responseBody, err := ac.SendGetRequest(utils.BuildURL(serverURL, "", params))
 		if err != nil {
 			return nil, err
 		}
@@ -55,7 +58,7 @@ func GetServerDetail(ac *client.AlpaconClient, serverName string) ([]byte, error
 		return nil, err
 	}
 
-	body, err := ac.SendGetRequest(serverURL + serverID)
+	body, err := ac.SendGetRequest(utils.BuildURL(serverURL, serverID, nil))
 	if err != nil {
 		return nil, err
 	}
@@ -69,7 +72,7 @@ func DeleteServer(ac *client.AlpaconClient, serverName string) error {
 		return err
 	}
 
-	_, err = ac.SendDeleteRequest(serverURL + serverID + "/")
+	_, err = ac.SendDeleteRequest(utils.BuildURL(serverURL, serverID, nil))
 	if err != nil {
 		return err
 	}
@@ -78,7 +81,10 @@ func DeleteServer(ac *client.AlpaconClient, serverName string) error {
 }
 
 func GetServerIDByName(ac *client.AlpaconClient, serverName string) (string, error) {
-	body, err := ac.SendGetRequest(getServerIDURL + serverName)
+	params := map[string]string{
+		"name": serverName,
+	}
+	body, err := ac.SendGetRequest(utils.BuildURL(serverURL, "", params))
 	if err != nil {
 		return "", err
 	}
@@ -97,7 +103,7 @@ func GetServerIDByName(ac *client.AlpaconClient, serverName string) (string, err
 }
 
 func GetServerNameByID(ac *client.AlpaconClient, serverID string) (string, error) {
-	body, err := ac.SendGetRequest(serverURL + serverID)
+	body, err := ac.SendGetRequest(utils.BuildURL(serverURL, serverID, nil))
 	if err != nil {
 		return "", err
 	}
