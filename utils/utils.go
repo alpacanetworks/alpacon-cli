@@ -3,6 +3,7 @@ package utils
 import (
 	"bufio"
 	"fmt"
+	"github.com/google/uuid"
 	"golang.org/x/term"
 	"net/url"
 	"os"
@@ -246,4 +247,9 @@ func StringToStringPointer(value string) *string {
 	} else {
 		return &value
 	}
+}
+
+func IsUUID(str string) bool {
+	_, err := uuid.Parse(str)
+	return err == nil
 }

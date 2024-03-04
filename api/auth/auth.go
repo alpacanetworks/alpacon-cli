@@ -140,7 +140,7 @@ func GetAPITokenList(ac *client.AlpaconClient) ([]APITokenAttributes, error) {
 	return tokenList, nil
 }
 
-func getAPITokenIDByName(ac *client.AlpaconClient, tokenName string) (string, error) {
+func GetAPITokenIDByName(ac *client.AlpaconClient, tokenName string) (string, error) {
 	params := map[string]string{
 		"name": tokenName,
 	}

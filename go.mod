@@ -4,6 +4,7 @@ go 1.20
 
 require (
 	github.com/google/go-github v17.0.0+incompatible
+	github.com/google/uuid v1.6.0
 	github.com/gookit/color v1.5.4
 	github.com/gorilla/websocket v1.5.1
 	github.com/olekukonko/tablewriter v0.0.5

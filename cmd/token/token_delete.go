@@ -15,22 +15,29 @@ var tokenDeleteCmd = &cobra.Command{
 	This command requires the token name to identify the token to be deleted.
 	`,
 	Example: ` 
-	alpacon token delete [TOKEN NAME]	
+	alpacon token delete [TOKEN_ID_OR_NAME]	
 	`,
 	Args: cobra.ExactArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
-		tokenID := args[0]
+		tokenId := args[0]
 
 		alpaconClient, err := client.NewAlpaconAPIClient()
 		if err != nil {
 			utils.CliError("Connection to Alpacon API failed: %s. Consider re-logging.", err)
 		}
 
-		err = auth.DeleteAPIToken(alpaconClient, tokenID)
-		if err != nil {
-			utils.CliError("Failed to delete the api token %s. ", err)
+		if !utils.IsUUID(tokenId) {
+			tokenId, err = auth.GetAPITokenIDByName(alpaconClient, tokenId)
+			if err != nil {
+				utils.CliError("Failed to delete the api token %s.", err)
+			}
 		}
 
-		utils.CliInfo("API Token successfully deleted: %s", tokenID)
+		err = auth.DeleteAPIToken(alpaconClient, tokenId)
+		if err != nil {
+			utils.CliError("Failed to delete the api token %s.", err)
+		}
+
+		utils.CliInfo("API Token successfully deleted: %s", tokenId)
 	},
 }
