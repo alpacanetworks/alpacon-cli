@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"github.com/alpacanetworks/alpacon-cli/api"
 	"github.com/alpacanetworks/alpacon-cli/api/iam"
 	"github.com/alpacanetworks/alpacon-cli/api/server"
 	"github.com/alpacanetworks/alpacon-cli/client"
@@ -41,7 +42,7 @@ func GetEventList(ac *client.AlpaconClient, pageSize int, serverName string, use
 		return nil, err
 	}
 
-	var response EventListResponse
+	var response api.ListResponse[EventDetails]
 	if err = json.Unmarshal(responseBody, &response); err != nil {
 		return nil, err
 	}

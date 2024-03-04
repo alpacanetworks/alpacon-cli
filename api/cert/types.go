@@ -49,15 +49,6 @@ type AuthorityCreateResponse struct {
 	UpdatedAt        time.Time `json:"updated_at"`
 }
 
-type AuthorityListResponse struct {
-	Count    int                 `json:"count"`
-	Current  int                 `json:"current"`
-	Next     int                 `json:"next"`
-	Previous string              `json:"previous"`
-	Last     int                 `json:"last"`
-	Results  []AuthorityResponse `json:"results"`
-}
-
 type AuthorityResponse struct {
 	Id               string    `json:"id"`
 	Name             string    `json:"name"`
@@ -92,15 +83,6 @@ type CSRSubmit struct {
 	CsrText string `json:"csr_text"`
 }
 
-type CSRListResponse struct {
-	Count    int           `json:"count"`
-	Current  int           `json:"current"`
-	Next     int           `json:"next"`
-	Previous string        `json:"previous"`
-	Last     int           `json:"last"`
-	Results  []CSRResponse `json:"results"`
-}
-
 type CSRResponse struct {
 	Id              string    `json:"id"`
 	Authority       string    `json:"authority"`
@@ -126,15 +108,6 @@ type CSRAttributes struct {
 	RequestedIp   string   `json:"requested_ip"`
 	RequestedBy   string   `json:"requested_by"`
 	RequestedDate string   `json:"requested_date"`
-}
-
-type CertificateListResponse struct {
-	Count    int           `json:"count"`
-	Current  int           `json:"current"`
-	Next     int           `json:"next"`
-	Previous string        `json:"previous"`
-	Last     int           `json:"last"`
-	Results  []Certificate `json:"results"`
 }
 
 type Certificate struct {

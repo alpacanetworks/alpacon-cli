@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"github.com/alpacanetworks/alpacon-cli/api"
 	"github.com/alpacanetworks/alpacon-cli/client"
 	"github.com/alpacanetworks/alpacon-cli/utils"
 	"strconv"
@@ -28,7 +29,7 @@ func GetServerList(ac *client.AlpaconClient) ([]ServerAttributes, error) {
 			return nil, err
 		}
 
-		var response ServerListResponse
+		var response api.ListResponse[ServerDetails]
 		if err = json.Unmarshal(responseBody, &response); err != nil {
 			return nil, err
 		}
@@ -89,7 +90,7 @@ func GetServerIDByName(ac *client.AlpaconClient, serverName string) (string, err
 		return "", err
 	}
 
-	var response ServerListResponse
+	var response api.ListResponse[ServerDetails]
 	err = json.Unmarshal(body, &response)
 	if err != nil {
 		return "", err

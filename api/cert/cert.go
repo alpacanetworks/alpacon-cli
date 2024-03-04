@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"github.com/alpacanetworks/alpacon-cli/api"
 	"github.com/alpacanetworks/alpacon-cli/client"
 	"github.com/alpacanetworks/alpacon-cli/utils"
 	"path"
@@ -77,7 +78,7 @@ func GetCSRList(ac *client.AlpaconClient, state string) ([]CSRAttributes, error)
 			return nil, err
 		}
 
-		var response CSRListResponse
+		var response api.ListResponse[CSRResponse]
 		if err = json.Unmarshal(responseBody, &response); err != nil {
 			return nil, err
 		}
@@ -121,7 +122,7 @@ func GetAuthorityList(ac *client.AlpaconClient) ([]AuthorityAttributes, error) {
 			return nil, err
 		}
 
-		var response AuthorityListResponse
+		var response api.ListResponse[AuthorityResponse]
 		if err = json.Unmarshal(responseBody, &response); err != nil {
 			return nil, err
 		}
@@ -221,7 +222,7 @@ func GetCertificateList(ac *client.AlpaconClient) ([]CertificateAttributes, erro
 			return nil, err
 		}
 
-		var response CertificateListResponse
+		var response api.ListResponse[Certificate]
 		if err = json.Unmarshal(responseBody, &response); err != nil {
 			return nil, err
 		}

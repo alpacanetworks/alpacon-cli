@@ -12,15 +12,6 @@ type EventAttributes struct {
 	RequestedAt string `json:"requested_at"`
 }
 
-type EventListResponse struct {
-	Count    int            `json:"count"`
-	Current  int            `json:"current"`
-	Next     int            `json:"next"`
-	Previous int            `json:"previous"`
-	Last     int            `json:"last"`
-	Results  []EventDetails `json:"results"`
-}
-
 type EventDetails struct {
 	ID              string                 `json:"id"`
 	Shell           string                 `json:"shell"`

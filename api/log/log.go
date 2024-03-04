@@ -3,6 +3,7 @@ package log
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/alpacanetworks/alpacon-cli/api"
 	"github.com/alpacanetworks/alpacon-cli/api/server"
 	"github.com/alpacanetworks/alpacon-cli/client"
 	"github.com/alpacanetworks/alpacon-cli/utils"
@@ -27,7 +28,7 @@ func GetSystemLogList(ac *client.AlpaconClient, serverName string, pageSize int)
 		return nil, err
 	}
 
-	var response LogListResponse
+	var response api.ListResponse[LogEntry]
 	if err = json.Unmarshal(responseBody, &response); err != nil {
 		return nil, err
 	}

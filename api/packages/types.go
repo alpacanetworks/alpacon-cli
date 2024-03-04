@@ -17,24 +17,6 @@ type PythonPackage struct {
 	Owner        string `json:"owner"`
 }
 
-type SystemPackageListResponse struct {
-	Count    int                   `json:"count"`
-	Current  int                   `json:"current"`
-	Next     int                   `json:"next"`
-	Previous string                `json:"previous"`
-	Last     int                   `json:"last"`
-	Results  []SystemPackageDetail `json:"results"`
-}
-
-type PythonPackageListResponse struct {
-	Count    int                   `json:"count"`
-	Current  int                   `json:"current"`
-	Next     int                   `json:"next"`
-	Previous string                `json:"previous"`
-	Last     int                   `json:"last"`
-	Results  []PythonPackageDetail `json:"results"`
-}
-
 type PythonPackageDetail struct {
 	ID          string `json:"id"`
 	Name        string `json:"name"`

@@ -3,6 +3,7 @@ package note
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/alpacanetworks/alpacon-cli/api"
 	"github.com/alpacanetworks/alpacon-cli/api/iam"
 	"github.com/alpacanetworks/alpacon-cli/api/server"
 	"github.com/alpacanetworks/alpacon-cli/client"
@@ -34,7 +35,7 @@ func GetNoteList(ac *client.AlpaconClient, serverName string, pageSize int) ([]N
 		return nil, err
 	}
 
-	var response NoteListResponse
+	var response api.ListResponse[NoteDetails]
 	if err = json.Unmarshal(responseBody, &response); err != nil {
 		return nil, err
 	}

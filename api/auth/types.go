@@ -18,15 +18,6 @@ type APITokenRequest struct {
 	ExpiresAt *string `json:"expires_at"`
 }
 
-type APITokenListResponse struct {
-	Count    int                `json:"count"`
-	Current  int                `json:"current"`
-	Next     int                `json:"next"`
-	Previous string             `json:"previous"`
-	Last     int                `json:"last"`
-	Results  []APITokenResponse `json:"results"`
-}
-
 type APITokenResponse struct {
 	ID        string    `json:"id"`
 	Name      string    `json:"name"`

@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"github.com/alpacanetworks/alpacon-cli/api"
 	"github.com/alpacanetworks/alpacon-cli/client"
 	"github.com/alpacanetworks/alpacon-cli/utils"
 	"io"
@@ -33,7 +34,7 @@ func GetSystemPackageEntry(ac *client.AlpaconClient) ([]SystemPackage, error) {
 			return nil, err
 		}
 
-		var response SystemPackageListResponse
+		var response api.ListResponse[SystemPackageDetail]
 		if err = json.Unmarshal(responseBody, &response); err != nil {
 			return nil, err
 		}
@@ -71,7 +72,7 @@ func GetPythonPackageEntry(ac *client.AlpaconClient) ([]PythonPackage, error) {
 			return nil, err
 		}
 
-		var response PythonPackageListResponse
+		var response api.ListResponse[PythonPackageDetail]
 		if err = json.Unmarshal(responseBody, &response); err != nil {
 			return nil, err
 		}
@@ -97,32 +98,43 @@ func GetPythonPackageEntry(ac *client.AlpaconClient) ([]PythonPackage, error) {
 
 func GetPackageIDByName(ac *client.AlpaconClient, fileName string, packageType string) (string, error) {
 	var url string
-
-	if packageType == "python" {
-		url = pythonPackageEntryURL
-	} else {
-		url = systemPackageEntryURL
-	}
-
 	params := map[string]string{
 		"name": fileName,
 	}
-	body, err := ac.SendGetRequest(utils.BuildURL(url, "", params))
-	if err != nil {
-		return "", err
-	}
 
-	var response PythonPackageListResponse
-	err = json.Unmarshal(body, &response)
-	if err != nil {
-		return "", err
-	}
+	if packageType == "python" {
+		url = pythonPackageEntryURL
+		var response api.ListResponse[PythonPackageDetail]
+		body, err := ac.SendGetRequest(utils.BuildURL(url, "", params))
+		if err != nil {
+			return "", err
+		}
+		err = json.Unmarshal(body, &response)
+		if err != nil {
+			return "", err
+		}
 
-	if response.Count == 0 {
-		return "", errors.New("no server found with the given name")
-	}
+		if response.Count == 0 {
+			return "", errors.New("no server found with the given name")
+		}
+		return response.Results[0].ID, nil
+	} else {
+		url = systemPackageEntryURL
+		var response api.ListResponse[SystemPackageDetail]
+		body, err := ac.SendGetRequest(utils.BuildURL(url, "", params))
+		if err != nil {
+			return "", err
+		}
+		err = json.Unmarshal(body, &response)
+		if err != nil {
+			return "", err
+		}
 
-	return response.Results[0].ID, nil
+		if response.Count == 0 {
+			return "", errors.New("no server found with the given name")
+		}
+		return response.Results[0].ID, nil
+	}
 }
 
 func UploadPackage(ac *client.AlpaconClient, file string, packageType string) error {

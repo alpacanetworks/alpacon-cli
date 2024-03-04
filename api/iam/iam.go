@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"github.com/alpacanetworks/alpacon-cli/api"
 	"github.com/alpacanetworks/alpacon-cli/client"
 	"github.com/alpacanetworks/alpacon-cli/utils"
 	"strconv"
@@ -30,7 +31,7 @@ func GetUserList(ac *client.AlpaconClient) ([]UserAttributes, error) {
 			return nil, err
 		}
 
-		var response UserListResponse
+		var response api.ListResponse[UserResponse]
 		if err = json.Unmarshal(responseBody, &response); err != nil {
 			return nil, err
 		}
@@ -71,7 +72,7 @@ func GetGroupList(ac *client.AlpaconClient) ([]GroupAttributes, error) {
 			return nil, err
 		}
 
-		var response GroupListResponse
+		var response api.ListResponse[GroupResponse]
 		if err = json.Unmarshal(responseBody, &response); err != nil {
 			return nil, err
 		}
@@ -298,7 +299,7 @@ func GetUserIDByName(ac *client.AlpaconClient, userName string) (string, error) 
 		return "", err
 	}
 
-	var response UserListResponse
+	var response api.ListResponse[UserResponse]
 	err = json.Unmarshal(responseBody, &response)
 	if err != nil {
 		return "", err
@@ -335,7 +336,7 @@ func GetGroupIDByName(ac *client.AlpaconClient, groupName string) (string, error
 		return "", err
 	}
 
-	var response GroupListResponse
+	var response api.ListResponse[GroupResponse]
 	err = json.Unmarshal(responseBody, &response)
 	if err != nil {
 		return "", err

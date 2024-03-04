@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"github.com/alpacanetworks/alpacon-cli/api"
 	"github.com/alpacanetworks/alpacon-cli/client"
 	"github.com/alpacanetworks/alpacon-cli/config"
 	"github.com/alpacanetworks/alpacon-cli/utils"
@@ -116,7 +117,7 @@ func GetAPITokenList(ac *client.AlpaconClient) ([]APITokenAttributes, error) {
 			return nil, err
 		}
 
-		var response APITokenListResponse
+		var response api.ListResponse[APITokenResponse]
 		if err = json.Unmarshal(responseBody, &response); err != nil {
 			return nil, err
 		}
@@ -148,7 +149,7 @@ func getAPITokenIDByName(ac *client.AlpaconClient, tokenName string) (string, er
 		return "", err
 	}
 
-	var response APITokenListResponse
+	var response api.ListResponse[APITokenResponse]
 	err = json.Unmarshal(body, &response)
 	if err != nil {
 		return "", err

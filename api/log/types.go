@@ -26,12 +26,3 @@ type LogEntry struct {
 	Server     string    `json:"server"`
 	ServerName string    `json:"server_name"`
 }
-
-type LogListResponse struct {
-	Count    int        `json:"count"`
-	Current  int        `json:"current"`
-	Next     int        `json:"next"`
-	Previous string     `json:"previous"`
-	Last     int        `json:"last"`
-	Results  []LogEntry `json:"results"`
-}

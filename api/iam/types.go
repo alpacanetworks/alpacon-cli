@@ -29,15 +29,6 @@ type UserDetailAttributes struct {
 	LDAPStatus    string   `json:"ldap_status"`
 }
 
-type UserListResponse struct {
-	Count    int            `json:"count"`
-	Current  int            `json:"current"`
-	Next     int            `json:"next"`
-	Previous string         `json:"previous"`
-	Last     int            `json:"last"`
-	Results  []UserResponse `json:"results"`
-}
-
 type UserResponse struct {
 	ID          string    `json:"id"`
 	Username    string    `json:"username"`
@@ -116,15 +107,6 @@ type GroupDetailAttributes struct {
 	LDAPStatus   string   `json:"ldap_status"`
 	Servers      int      `json:"servers"`
 	ServersNames []string `json:"servers_names"`
-}
-
-type GroupListResponse struct {
-	Count    int             `json:"count"`
-	Current  int             `json:"current"`
-	Next     int             `json:"next"`
-	Previous string          `json:"previous"`
-	Last     int             `json:"last"`
-	Results  []GroupResponse `json:"results"`
 }
 
 type GroupResponse struct {
