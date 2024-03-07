@@ -228,6 +228,22 @@ $ alpacon token delete [TOKEN_ID_OR_NAME]
 $ alpacon login -s [SERVER URL] -t [TOKEN KEY]
 ```
 
+#### Command ACL in API Token
+Defines command access for API tokens and enables setting specific commands that each API token can run.
+```bash
+# Add a new command ACL with specific token and command.
+$ alpacon token acl add [TOKEN_ID_OR_NAME] 
+$ alpacon token acl add --token=[TOKEN_ID_OR_NAME] --command=[COMMAND]
+
+
+# Display all command ACLs for an API token.
+$ alpacon token acl ls [TOKEN_ID_OR_NAME]
+
+# Delete the specified command ACL from an API token.
+$ alpacon token acl delete [COMMAND_ACL_ID]
+$ alpacon token acl delete --token=[TOKEN_ID_OR_NAME] --command=[COMMAND]
+```
+
 #### File Transfer Protocol (FTP)
 Facilitate file uploads and downloads:
 ```bash

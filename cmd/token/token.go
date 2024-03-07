@@ -21,4 +21,7 @@ func init() {
 	TokenCmd.AddCommand(tokenCreateCmd)
 	TokenCmd.AddCommand(tokenListCmd)
 	TokenCmd.AddCommand(tokenDeleteCmd)
+
+	// ACL
+	TokenCmd.AddCommand(AclCmd)
 }
