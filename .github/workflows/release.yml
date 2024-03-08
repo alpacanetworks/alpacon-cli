@@ -52,8 +52,8 @@ jobs:
       - name: Upload AMD64 RPM artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: alpacon_${{ github.ref_name }}_linux_amd64.rpm
-          path: dist/alpacon_${{ github.ref_name }}_linux_amd64.rpm
+          name: alpacon-${{ github.ref_name }}-linux_amd64.rpm
+          path: dist/alpacon-${{ github.ref_name }}-linux_amd64.rpm
 
   packagecloud-deploy:
     needs: goreleaser
@@ -62,12 +62,12 @@ jobs:
       - name: Download AMD64 DEB Artifacts
         uses: actions/download-artifact@v3
         with:
-          name: alpacon_${{ github.ref_name }}_linux_amd64.deb
+          name: alpacon-${{ github.ref_name }}-linux_amd64.deb
 
       - name: Download AMD64 RPM Artifacts
         uses: actions/download-artifact@v3
         with:
-          name: alpacon_${{ github.ref_name }}_linux_amd64.rpm
+          name: alpacon-${{ github.ref_name }}-linux_amd64.rpm
 
       - run: ls
 
