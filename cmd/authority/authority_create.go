@@ -41,11 +41,11 @@ func promptForAuthority(ac *client.AlpaconClient) cert.AuthorityRequest {
 	authorityRequest.Name = utils.PromptForRequiredInput("Common name for the CA. (e.g., Alapca Networks' Root CA): ")
 	authorityRequest.Organization = utils.PromptForRequiredInput("Organization name that this CA belongs to. (e.g., Alpaca Networks): ")
 	authorityRequest.Domain = utils.PromptForRequiredInput("Domain name of the root certificate: ")
-	authorityRequest.RootValidDays = utils.PromptForIntInput("A root certificte usually has long valid days. (e.g., 10 years): ")
-	authorityRequest.DefaultValidDays = utils.PromptForIntInput("A child certificte is usually for short term. (e.g., 3 months to 1 year): ")
-	authorityRequest.MaxValidDays = utils.PromptForIntInput("Maximum valid days that users can request.: ")
+	authorityRequest.RootValidDays = utils.PromptForIntInput("Root certificate validity in days (10 years = 3650): ")
+	authorityRequest.DefaultValidDays = utils.PromptForIntInput("Child certificate validity in days (3 months = 90, 1 year = 365): ")
+	authorityRequest.MaxValidDays = utils.PromptForIntInput("Maximum valid days that users can request: ")
 
-	agent := utils.PromptForRequiredInput("Select a sever to run this CA on: ")
+	agent := utils.PromptForRequiredInput("Name of sever to run this CA on: ")
 	agentID, err := server.GetServerIDByName(ac, agent)
 	if err != nil {
 		utils.CliError("Failed to retrieve the server %s", err)

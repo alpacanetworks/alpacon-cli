@@ -79,6 +79,28 @@ type AuthorityAttributes struct {
 	SignedAt         string `json:"signed_at"`
 }
 
+type AuthorityDetails struct {
+	Id               string    `json:"id"`
+	Name             string    `json:"name"`
+	Organization     string    `json:"organization"`
+	Domain           string    `json:"domain"`
+	Storage          string    `json:"storage"`
+	CrtText          string    `json:"crt_text"`
+	RootValidDays    int       `json:"root_valid_days"`
+	DefaultValidDays int       `json:"default_valid_days"`
+	MaxValidDays     int       `json:"max_valid_days"`
+	RemoteIp         string    `json:"remote_ip"`
+	IsConnected      bool      `json:"is_connected"`
+	Status           string    `json:"status"`
+	Agent            string    `json:"agent"`
+	AgentName        string    `json:"agent_name"`
+	Owner            string    `json:"owner"`
+	OwnerName        string    `json:"owner_name"`
+	UpdatedAt        time.Time `json:"updated_at"`
+	SignedAt         time.Time `json:"signed_at"`
+	ExpiresAt        time.Time `json:"expires_at"`
+}
+
 type CSRSubmit struct {
 	CsrText string `json:"csr_text"`
 }

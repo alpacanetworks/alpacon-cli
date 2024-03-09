@@ -357,6 +357,9 @@ $ alpacon cert describe [CERT ID]
 
 # Download a specific Certificate by its ID and save it to the specified file path.
 $ alpacon cert download [CERT ID] --out=/path/to/certificate.crt
+
+# Download a root Certificate by authority's ID and save it to the specified file path.
+$ alpacon cert download [AUTHOIRY ID] --root --out=/path/to/root.crt
 ```
 
 ### Contributing

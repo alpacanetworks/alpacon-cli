@@ -47,7 +47,6 @@ func SubmitCSR(ac *client.AlpaconClient, csr []byte, submitURL string) ([]byte, 
 
 func CreateAuthority(ac *client.AlpaconClient, authorityRequest AuthorityRequest) (AuthorityCreateResponse, error) {
 	var response AuthorityCreateResponse
-
 	responseBody, err := ac.SendPostRequest(authorityURL, authorityRequest)
 	if err != nil {
 		return AuthorityCreateResponse{}, err
@@ -255,6 +254,26 @@ func DownloadCertificate(ac *client.AlpaconClient, csrId string, filePath string
 	}
 
 	var response Certificate
+	err = json.Unmarshal(body, &response)
+	if err != nil {
+		return err
+	}
+
+	err = utils.SaveFile(filePath, []byte(response.CrtText))
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func DownloadRootCertificate(ac *client.AlpaconClient, authorityId string, filePath string) error {
+	body, err := ac.SendGetRequest(utils.BuildURL(authorityURL, authorityId, nil))
+	if err != nil {
+		return err
+	}
+
+	var response AuthorityDetails
 	err = json.Unmarshal(body, &response)
 	if err != nil {
 		return err

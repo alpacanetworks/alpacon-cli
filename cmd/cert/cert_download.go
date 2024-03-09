@@ -20,6 +20,7 @@ var certDownloadCmd = &cobra.Command{
 	Args: cobra.ExactArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
 		csrId := args[0]
+		isRoot, _ := cmd.Flags().GetBool("root")
 		filePath, _ := cmd.Flags().GetString("out")
 		if filePath == "" {
 			filePath = promptForCertificate()
@@ -30,9 +31,16 @@ var certDownloadCmd = &cobra.Command{
 			utils.CliError("Connection to Alpacon API failed: %s. Consider re-logging.", err)
 		}
 
-		err = cert.DownloadCertificate(alpaconClient, csrId, filePath)
-		if err != nil {
-			utils.CliError("Failed to download the certificate from authority: %s", err)
+		if isRoot {
+			err = cert.DownloadRootCertificate(alpaconClient, csrId, filePath) // csrId refers to the authorityId.
+			if err != nil {
+				utils.CliError("Failed to download the certificate from authority: %s", err)
+			}
+		} else {
+			err = cert.DownloadCertificate(alpaconClient, csrId, filePath)
+			if err != nil {
+				utils.CliError("Failed to download the certificate from authority: %s", err)
+			}
 		}
 
 		utils.CliInfo("Certificate downloaded successfully: '%s'", filePath)
@@ -40,7 +48,9 @@ var certDownloadCmd = &cobra.Command{
 }
 
 func init() {
+	var root bool
 	var filePath string
+	certDownloadCmd.Flags().BoolVar(&root, "root", false, "Download the root certificate")
 	certDownloadCmd.Flags().StringVarP(&filePath, "out", "o", "", "path where certificate should be stored")
 
 }
