@@ -52,10 +52,12 @@ var csrCreateCmd = &cobra.Command{
 			utils.CliError("Failed to create CSR file %s", err)
 		}
 
-		_, err = certApi.SubmitCSR(alpaconClient, csr, response.SubmitURL)
+		err = certApi.SubmitCSR(alpaconClient, csr, response.SubmitURL)
 		if err != nil {
 			utils.CliError("Failed to submit CSR file to server %s", err)
 		}
+
+		utils.CliInfo("CSR creation request succeeded. Check the generated CSR (alpacon csr ls)")
 	},
 }
 

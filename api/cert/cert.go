@@ -33,16 +33,16 @@ func CreateSignRequest(ac *client.AlpaconClient, signRequest SignRequest) (SignR
 	return response, nil
 }
 
-func SubmitCSR(ac *client.AlpaconClient, csr []byte, submitURL string) ([]byte, error) {
+func SubmitCSR(ac *client.AlpaconClient, csr []byte, submitURL string) error {
 	var request CSRSubmit
 	request.CsrText = string(csr)
 
-	responseBody, err := ac.SendPatchRequest(submitURL, request)
+	_, err := ac.SendPatchRequest(submitURL, request)
 	if err != nil {
-		return nil, err
+		return err
 	}
 
-	return responseBody, nil
+	return nil
 }
 
 func CreateAuthority(ac *client.AlpaconClient, authorityRequest AuthorityRequest) (AuthorityCreateResponse, error) {
