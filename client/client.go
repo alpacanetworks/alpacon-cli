@@ -115,7 +115,9 @@ func (ac *AlpaconClient) sendRequest(req *http.Request) ([]byte, error) {
 	}
 	defer resp.Body.Close()
 
-	if !strings.Contains(resp.Header.Get("Content-Type"), "application/json") {
+	contentType := resp.Header.Get("Content-Type")
+	// Check for non-empty and non-JSON content types. Empty content type allowed for responses without content (e.g., from PATCH requests).
+	if contentType != "" && !strings.Contains(contentType, "application/json") {
 		return nil, fmt.Errorf("Server error or incorrect request detected")
 	}
 
