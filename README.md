@@ -330,6 +330,9 @@ $ alpacon authority ls
 # Get detailed information about a specific Certificate Authority.
 $ alpacon authority describe [AUTHORITY ID]
 
+# Download a root Certificate by authority's ID and save it to the specified file path.
+$ alpacon authority download-crt [AUTHOIRY ID] --out=/path/to/root.crt
+
 # Generate a new Certificate Signing Request (CSR)
 $ alpacon csr create
 
@@ -357,9 +360,6 @@ $ alpacon cert describe [CERT ID]
 
 # Download a specific Certificate by its ID and save it to the specified file path.
 $ alpacon cert download [CERT ID] --out=/path/to/certificate.crt
-
-# Download a root Certificate by authority's ID and save it to the specified file path.
-$ alpacon cert download [AUTHOIRY ID] --root --out=/path/to/root.crt
 ```
 
 ### Contributing

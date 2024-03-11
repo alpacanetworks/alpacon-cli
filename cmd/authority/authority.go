@@ -21,4 +21,5 @@ func init() {
 	AuthorityCmd.AddCommand(authorityCreateCmd)
 	AuthorityCmd.AddCommand(authorityListCmd)
 	AuthorityCmd.AddCommand(authorityDetailCmd)
+	AuthorityCmd.AddCommand(authorityDownloadCmd)
 }
