@@ -206,6 +206,15 @@ func DeleteCSR(ac *client.AlpaconClient, csrId string) error {
 	return err
 }
 
+func DeleteCA(ac *client.AlpaconClient, authorityId string) error {
+	_, err := ac.SendDeleteRequest(utils.BuildURL(authorityURL, authorityId, nil))
+	if err != nil {
+		return err
+	}
+
+	return err
+}
+
 func GetCertificateList(ac *client.AlpaconClient) ([]CertificateAttributes, error) {
 	var certList []CertificateAttributes
 	page := 1

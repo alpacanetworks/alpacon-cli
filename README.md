@@ -333,6 +333,9 @@ $ alpacon authority describe [AUTHORITY ID]
 # Download a root Certificate by authority's ID and save it to the specified file path.
 $ alpacon authority download-crt [AUTHOIRY ID] --out=/path/to/root.crt
 
+# Delete a CA along with its certificate and CSR
+$ alpacon authority delete [AUTHORITY ID]
+
 # Generate a new Certificate Signing Request (CSR)
 $ alpacon csr create
 
