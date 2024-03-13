@@ -97,95 +97,27 @@ func GetGroupList(ac *client.AlpaconClient) ([]GroupAttributes, error) {
 	return groupList, nil
 }
 
-func GetUserDetail(ac *client.AlpaconClient, userName string) ([]byte, error) {
-	var userDetails UserDetails
-
-	userID, err := GetUserIDByName(ac, userName)
+func GetUserDetail(ac *client.AlpaconClient, userId string) ([]byte, error) {
+	responseBody, err := ac.SendGetRequest(utils.BuildURL(userURL, userId, nil))
 	if err != nil {
 		return nil, err
 	}
 
-	responseBody, err := ac.SendGetRequest(utils.BuildURL(userURL, userID, nil))
-	if err != nil {
-		return nil, err
-	}
-
-	err = json.Unmarshal(responseBody, &userDetails)
-	if err != nil {
-		return nil, err
-	}
-
-	groupNames, err := getGroupNames(ac, userID)
-	if err != nil {
-		return nil, err
-	}
-
-	userDetailAttributes := &UserDetailAttributes{
-		Username:      userDetails.Username,
-		Name:          fmt.Sprintf("%s %s", userDetails.LastName, userDetails.FirstName),
-		Description:   userDetails.Description,
-		Email:         userDetails.Email,
-		Phone:         userDetails.Phone,
-		UID:           userDetails.UID,
-		Shell:         userDetails.Shell,
-		HomeDirectory: userDetails.HomeDirectory,
-		NumGroups:     userDetails.NumGroups,
-		Groups:        groupNames,
-		Tags:          userDetails.Tags,
-		Status:        getUserStatus(userDetails.IsActive, userDetails.IsStaff, userDetails.IsSuperuser),
-		LDAPStatus:    getLDAPStatus(userDetails.IsLDAPUser),
-	}
-
-	userDetailJSON, err := json.Marshal(userDetailAttributes)
-	if err != nil {
-		return nil, err
-	}
-
-	return userDetailJSON, nil
+	return responseBody, nil
 }
 
 func GetGroupDetail(ac *client.AlpaconClient, groupName string) ([]byte, error) {
-	var groupDetails GroupDetails
-
-	groupID, err := GetGroupIDByName(ac, groupName)
+	groupId, err := GetGroupIDByName(ac, groupName)
 	if err != nil {
 		return nil, err
 	}
 
-	responseBody, err := ac.SendGetRequest(utils.BuildURL(groupURL, groupID, nil))
+	responseBody, err := ac.SendGetRequest(utils.BuildURL(groupURL, groupId, nil))
 	if err != nil {
 		return nil, err
 	}
 
-	err = json.Unmarshal(responseBody, &groupDetails)
-	if err != nil {
-		return nil, err
-	}
-
-	memberNames, err := getMemberNames(ac, groupID)
-	if err != nil {
-		return nil, err
-	}
-
-	groupDetailAttributes := &GroupDetailAttributes{
-		Name:         groupDetails.Name,
-		DisplayName:  groupDetails.DisplayName,
-		Tags:         groupDetails.Tags,
-		Description:  groupDetails.Description,
-		NumMembers:   groupDetails.NumMembers,
-		Members:      memberNames,
-		GID:          groupDetails.GID,
-		LDAPStatus:   getLDAPStatus(groupDetails.IsLDAPGroup),
-		Servers:      len(groupDetails.Servers),
-		ServersNames: groupDetails.ServersNames,
-	}
-
-	groupDetailJson, err := json.Marshal(groupDetailAttributes)
-	if err != nil {
-		return nil, err
-	}
-
-	return groupDetailJson, nil
+	return responseBody, nil
 }
 
 func CreateUser(ac *client.AlpaconClient, userRequest UserCreateRequest) error {
@@ -368,50 +300,4 @@ func getLDAPStatus(isLDAP bool) string {
 	}
 
 	return "local"
-}
-
-func getGroupNames(ac *client.AlpaconClient, userID string) ([]string, error) {
-	params := map[string]string{
-		"user": userID,
-	}
-	responseBody, err := ac.SendGetRequest(utils.BuildURL(membershipURL, "", params))
-	if err != nil {
-		return nil, err
-	}
-
-	var membershipResponse []Membership
-	err = json.Unmarshal(responseBody, &membershipResponse)
-	if err != nil {
-		return nil, err
-	}
-
-	var result []string
-	for _, membership := range membershipResponse {
-		result = append(result, membership.GroupName)
-	}
-
-	return result, nil
-}
-
-func getMemberNames(ac *client.AlpaconClient, groupID string) ([]string, error) {
-	params := map[string]string{
-		"group": groupID,
-	}
-	responseBody, err := ac.SendGetRequest(utils.BuildURL(membershipURL, "", params))
-	if err != nil {
-		return nil, err
-	}
-
-	var membershipResponse []Membership
-	err = json.Unmarshal(responseBody, &membershipResponse)
-	if err != nil {
-		return nil, err
-	}
-
-	var result []string
-	for _, membership := range membershipResponse {
-		result = append(result, membership.UserName)
-	}
-
-	return result, nil
 }

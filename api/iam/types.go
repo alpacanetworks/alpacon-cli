@@ -46,30 +46,6 @@ type UserResponse struct {
 	DateJoined  time.Time `json:"date_joined"`
 }
 
-type UserDetails struct {
-	ID            string `json:"id"`
-	Username      string `json:"username"`
-	FirstName     string `json:"first_name"`
-	LastName      string `json:"last_name"`
-	Email         string `json:"email"`
-	Phone         string `json:"phone"`
-	Tags          string `json:"tags"`
-	Description   string `json:"description"`
-	NumGroups     int    `json:"num_groups"`
-	UID           int    `json:"uid"`
-	Shell         string `json:"shell"`
-	HomeDirectory string `json:"home_directory"`
-	IsActive      bool   `json:"is_active"`
-	IsStaff       bool   `json:"is_staff"`
-	IsSuperuser   bool   `json:"is_superuser"`
-	IsLDAPUser    bool   `json:"is_ldap_user"`
-	DateJoined    string `json:"date_joined"`
-	LastLogin     string `json:"last_login"`
-	LastLoginIP   string `json:"last_login_ip"`
-	AddedAt       string `json:"added_at"`
-	UpdatedAt     string `json:"updated_at"`
-}
-
 type UserCreateRequest struct {
 	Username    string `json:"username"`
 	Password    string `json:"password"`
@@ -96,19 +72,6 @@ type GroupAttributes struct {
 	LDAPStatus  string `json:"ldap_status"`
 }
 
-type GroupDetailAttributes struct {
-	Name         string   `json:"name"`
-	DisplayName  string   `json:"display_name"`
-	Tags         string   `json:"tags"`
-	Description  string   `json:"description"`
-	NumMembers   int      `json:"num_members"`
-	Members      []string `json:"members"`
-	GID          int      `json:"gid"`
-	LDAPStatus   string   `json:"ldap_status"`
-	Servers      int      `json:"servers"`
-	ServersNames []string `json:"servers_names"`
-}
-
 type GroupResponse struct {
 	ID           string   `json:"id"`
 	Name         string   `json:"name"`
@@ -119,21 +82,6 @@ type GroupResponse struct {
 	IsLDAPGroup  bool     `json:"is_ldap_group"`
 	Servers      []string `json:"servers"`
 	ServersNames []string `json:"servers_names"`
-}
-
-type GroupDetails struct {
-	ID           string   `json:"id"`
-	Name         string   `json:"name"`
-	DisplayName  string   `json:"display_name"`
-	Tags         string   `json:"tags"`
-	Description  string   `json:"description"`
-	NumMembers   int      `json:"num_members"`
-	GID          int      `json:"gid"`
-	IsLDAPGroup  bool     `json:"is_ldap_group"`
-	Servers      []string `json:"servers"`
-	ServersNames []string `json:"servers_names"`
-	AddedAt      string   `json:"added_at"`
-	UpdatedAt    string   `json:"updated_at"`
 }
 
 type GroupCreateRequest struct {
