@@ -29,9 +29,9 @@ var aclDeleteCmd = &cobra.Command{
 
 		err = security.DeleteCommandAcl(alpaconClient, commandAclId)
 		if err != nil {
-			utils.CliError("Failed to delete the command acl %s.", err)
+			utils.CliError("Failed to delete the command acl: %s.", err)
 		}
 
-		utils.CliInfo("Command ACL successfully deleted: %s", commandAclId)
+		utils.CliInfo("Command ACL successfully deleted: %s.", commandAclId)
 	},
 }

@@ -28,9 +28,9 @@ var authorityDeleteCmd = &cobra.Command{
 
 		err = cert.DeleteCA(alpaconClient, authorityId)
 		if err != nil {
-			utils.CliError("Failed to delete the CA %s. ", err)
+			utils.CliError("Failed to delete the CA: %s.", err)
 		}
 
-		utils.CliInfo("CA successfully deleted: %s", authorityId)
+		utils.CliInfo("CA successfully deleted: %s.", authorityId)
 	},
 }

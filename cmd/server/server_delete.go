@@ -29,9 +29,9 @@ var serverDeleteCmd = &cobra.Command{
 
 		err = server.DeleteServer(alpaconClient, serverName)
 		if err != nil {
-			utils.CliError("Failed to delete the server %s. ", err)
+			utils.CliError("Failed to delete the server: %s.", err)
 		}
 
-		utils.CliInfo("Server successfully deleted: %s", serverName)
+		utils.CliInfo("Server successfully deleted: %s.", serverName)
 	},
 }

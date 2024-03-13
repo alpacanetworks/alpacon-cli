@@ -29,7 +29,7 @@ var groupListCmd = &cobra.Command{
 
 		groupList, err := iam.GetGroupList(alpaconClient)
 		if err != nil {
-			utils.CliError("Failed to retrieve the group list %s", err)
+			utils.CliError("Failed to retrieve the group list: %s.", err)
 		}
 
 		utils.PrintTable(groupList)

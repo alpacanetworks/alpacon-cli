@@ -34,7 +34,7 @@ var LogCmd = &cobra.Command{
 
 		logList, err := log.GetSystemLogList(alpaconClient, serverName, pageSize)
 		if err != nil {
-			utils.CliError("Failed to get logs %s", err)
+			utils.CliError("Failed to get logs: %s.", err)
 		}
 
 		utils.PrintTable(logList)

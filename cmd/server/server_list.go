@@ -28,7 +28,7 @@ var serverListCmd = &cobra.Command{
 
 		serverList, err := server.GetServerList(alpaconClient)
 		if err != nil {
-			utils.CliError("Failed to retrieve the servers %s", err)
+			utils.CliError("Failed to retrieve the servers: %s.", err)
 		}
 
 		utils.PrintTable(serverList)

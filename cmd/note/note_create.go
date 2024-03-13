@@ -42,10 +42,10 @@ var noteCreateCmd = &cobra.Command{
 
 		err = note.CreateNote(alpaconClient, noteRequest)
 		if err != nil {
-			utils.CliError("Failed to create the new note %s", err)
+			utils.CliError("Failed to create the new note: %s.", err)
 		}
 
-		utils.CliInfo("Note successfully created to %s", noteRequest.Server)
+		utils.CliInfo("Note successfully created to %s.", noteRequest.Server)
 	},
 }
 

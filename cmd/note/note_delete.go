@@ -32,6 +32,6 @@ var noteDeleteCmd = &cobra.Command{
 			utils.CliError("Failed to delete the note with ID %s. Error: %s. Please check the note ID and your permissions, and try again.", noteID, err)
 		}
 
-		utils.CliInfo("Note successfully deleted: %s", noteID)
+		utils.CliInfo("Note successfully deleted: %s.", noteID)
 	},
 }

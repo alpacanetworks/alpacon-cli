@@ -28,7 +28,7 @@ var authorityCreateCmd = &cobra.Command{
 
 		response, err := cert.CreateAuthority(alpaconClient, authorityRequest)
 		if err != nil {
-			utils.CliError("Failed to create the new authority %s", err)
+			utils.CliError("Failed to create the new authority: %s.", err)
 		}
 
 		installAuthorityInfo(response)

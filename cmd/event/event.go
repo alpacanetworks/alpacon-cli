@@ -48,7 +48,7 @@ func runEvent(cmd *cobra.Command, args []string) {
 
 	eventList, err := event.GetEventList(alpaconClient, pageSize, serverName, userName)
 	if err != nil {
-		utils.CliError("Failed to get event %s", err)
+		utils.CliError("Failed to get events: %s.", err)
 		return
 	}
 

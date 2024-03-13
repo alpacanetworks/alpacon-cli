@@ -29,7 +29,7 @@ var noteListCmd = &cobra.Command{
 
 		noteList, err := note.GetNoteList(alpaconClient, serverName, pageSize)
 		if err != nil {
-			utils.CliError("Failed to retrieve the notes %s", err)
+			utils.CliError("Failed to retrieve the notes: %s.", err)
 		}
 
 		utils.PrintTable(noteList)

@@ -28,10 +28,10 @@ var memberDeleteCmd = &cobra.Command{
 
 		err = iam.DeleteMember(alpaconClient, memberDeleteRequest)
 		if err != nil {
-			utils.CliError("Failed to add the member to group %s", err)
+			utils.CliError("Failed to add the member to group: %s.", err)
 		}
 
-		utils.CliInfo("%s successfully deleted to %s", memberRequest.User, memberRequest.Group)
+		utils.CliInfo("%s successfully deleted to %s.", memberRequest.User, memberRequest.Group)
 	},
 }
 

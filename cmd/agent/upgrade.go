@@ -22,7 +22,7 @@ var upgradeAgentCmd = &cobra.Command{
 
 		err = agent.RequestAgentAction(alpaconClient, serverName, "upgrade")
 		if err != nil {
-			utils.CliError("Failed to upgrade the agent %s", err)
+			utils.CliError("Failed to upgrade the agent: %s.", err)
 		}
 
 		utils.CliInfo("Agent upgrade request successful. Verify in events.(alpacon events)")

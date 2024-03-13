@@ -32,10 +32,10 @@ var userCreateCmd = &cobra.Command{
 
 		err = iam.CreateUser(alpaconClient, userRequest)
 		if err != nil {
-			utils.CliError("Failed to create the new user %s", err)
+			utils.CliError("Failed to create the new user: %s.", err)
 		}
 
-		utils.CliInfo("%s user successfully created to alpacon", userRequest.Username)
+		utils.CliInfo("%s user successfully created to alpacon.", userRequest.Username)
 	},
 }
 

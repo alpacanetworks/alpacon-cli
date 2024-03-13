@@ -28,9 +28,14 @@ var userDetailCmd = &cobra.Command{
 			utils.CliError("Connection to Alpacon API failed: %s. Consider re-logging.", err)
 		}
 
-		userDetail, err := iam.GetUserDetail(alpaconClient, userName)
+		userId, err := iam.GetUserIDByName(alpaconClient, userName)
 		if err != nil {
-			utils.CliError("Failed to retrieve the user details %s", err)
+			utils.CliError("Failed to retrieve the user details: %s. Please check if the username is correct and try again.", err)
+		}
+
+		userDetail, err := iam.GetUserDetail(alpaconClient, userId)
+		if err != nil {
+			utils.CliError("Failed to retrieve the user details: %s.", err)
 		}
 
 		utils.PrintJson(userDetail)

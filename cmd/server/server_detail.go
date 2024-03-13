@@ -31,7 +31,7 @@ var serverDetailCmd = &cobra.Command{
 
 		serverDetail, err := server.GetServerDetail(alpaconClient, serverName)
 		if err != nil {
-			utils.CliError("Failed to retrieve the server details %s", err)
+			utils.CliError("Failed to retrieve the server details: %s.", err)
 		}
 
 		utils.PrintJson(serverDetail)

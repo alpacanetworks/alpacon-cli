@@ -28,7 +28,7 @@ var pythonPackageListCmd = &cobra.Command{
 
 		packageList, err := packages.GetPythonPackageEntry(alpaconClient)
 		if err != nil {
-			utils.CliError("Failed to retrieve the python package %s", err)
+			utils.CliError("Failed to retrieve the python package: %s.", err)
 		}
 
 		utils.PrintTable(packageList)

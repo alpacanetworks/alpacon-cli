@@ -33,10 +33,10 @@ var authorityDownloadCmd = &cobra.Command{
 
 		err = cert.DownloadRootCertificate(alpaconClient, authorityId, filePath)
 		if err != nil {
-			utils.CliError("Failed to download the root certificate from authority: %s", err)
+			utils.CliError("Failed to download the root certificate from authority: %s.", err)
 		}
 
-		utils.CliInfo("Root certificate downloaded successfully: '%s'", filePath)
+		utils.CliInfo("Root certificate downloaded successfully: '%s'.", filePath)
 	},
 }
 

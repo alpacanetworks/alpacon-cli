@@ -27,14 +27,14 @@ var serverCreateCmd = &cobra.Command{
 
 		groupList, err := iam.GetGroupList(alpaconClient)
 		if err != nil {
-			utils.CliError("Failed to retrieve the group list %s", err)
+			utils.CliError("Failed to retrieve the group list: %s.", err)
 		}
 
 		serverRequest := promptForServer(alpaconClient, groupList)
 
 		response, err := server.CreateServer(alpaconClient, serverRequest)
 		if err != nil {
-			utils.CliError("Failed to create the new server %s", err)
+			utils.CliError("Failed to create the new server: %s.", err)
 		}
 
 		installServerInfo(response)
@@ -84,7 +84,7 @@ func selectAndConvertGroups(ac *client.AlpaconClient, groupList []iam.GroupAttri
 
 		groupID, err := iam.GetGroupIDByName(ac, groupList[groupIndex-1].Name)
 		if err != nil {
-			utils.CliError("No group found with the given name")
+			utils.CliError("No group found with the given name.")
 		}
 
 		groupIDs = append(groupIDs, groupID)

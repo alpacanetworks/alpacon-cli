@@ -30,10 +30,10 @@ var memberAddCmd = &cobra.Command{
 
 		err = iam.AddMember(alpaconClient, memberRequest)
 		if err != nil {
-			utils.CliError("Failed to add the member to group %s", err)
+			utils.CliError("Failed to add the member to group: %s.", err)
 		}
 
-		utils.CliInfo("%s successfully added to %s", memberRequest.User, memberRequest.Group)
+		utils.CliInfo("%s successfully added to %s.", memberRequest.User, memberRequest.Group)
 	},
 }
 

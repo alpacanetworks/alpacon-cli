@@ -83,7 +83,7 @@ func isLocalPaths(paths []string) bool {
 func downloadFile(client *client.AlpaconClient, src, dest, username, groupname string) {
 	err := ftp.DownloadFile(client, src, dest, username, groupname)
 	if err != nil {
-		utils.CliError("Failed to download the file from server: %s", err)
+		utils.CliError("Failed to download the file from server: %s.", err)
 		return
 	}
 	utils.CliInfo("Download request for %s to server %s successful.", src, dest)
@@ -92,7 +92,7 @@ func downloadFile(client *client.AlpaconClient, src, dest, username, groupname s
 func uploadFile(client *client.AlpaconClient, src []string, dest, username, groupname string) {
 	result, err := ftp.UploadFile(client, src, dest, username, groupname)
 	if err != nil {
-		utils.CliError("Failed to upload the file to server %s", err)
+		utils.CliError("Failed to upload the file to server: %s.", err)
 	}
-	utils.CliInfo("Upload request for %s to %s successful. result : %s", src, dest, result)
+	utils.CliInfo("Upload request for %s to %s successful. result: %s.", src, dest, result)
 }

@@ -32,17 +32,17 @@ var groupCreateCmd = &cobra.Command{
 
 		serverList, err := server.GetServerList(alpaconClient)
 		if err != nil {
-			utils.CliError("Failed to retrieve the server list %s", err)
+			utils.CliError("Failed to retrieve the server list: %s.", err)
 		}
 
 		groupRequest := promptForGroup(alpaconClient, serverList)
 
 		err = iam.CreateGroup(alpaconClient, groupRequest)
 		if err != nil {
-			utils.CliError("Failed to create the new group %s", err)
+			utils.CliError("Failed to create the new group: %s.", err)
 		}
 
-		utils.CliInfo("%s group successfully created to alpacon", groupRequest.Name)
+		utils.CliInfo("%s group successfully created to alpacon.", groupRequest.Name)
 	},
 }
 

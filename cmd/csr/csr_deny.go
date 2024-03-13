@@ -26,7 +26,7 @@ var csrDenyCmd = &cobra.Command{
 
 		_, err = cert.DenyCSR(alpaconClient, csrId)
 		if err != nil {
-			utils.CliError("Failed to deny the csr %s", err)
+			utils.CliError("Failed to deny the csr: %s.", err)
 		}
 
 		utils.CliInfo("CSR denial request successful. Please verify the CSR status.")

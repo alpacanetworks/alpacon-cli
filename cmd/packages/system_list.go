@@ -28,7 +28,7 @@ var systemPackageListCmd = &cobra.Command{
 
 		packageList, err := packages.GetSystemPackageEntry(alpaconClient)
 		if err != nil {
-			utils.CliError("Failed to retrieve the system packages %s", err)
+			utils.CliError("Failed to retrieve the system packages: %s.", err)
 		}
 
 		utils.PrintTable(packageList)

@@ -33,13 +33,13 @@ var aclListCmd = &cobra.Command{
 		if !utils.IsUUID(tokenId) {
 			tokenId, err = auth.GetAPITokenIDByName(alpaconClient, tokenId)
 			if err != nil {
-				utils.CliError("Failed to retrieve the command acl %s", err)
+				utils.CliError("Failed to retrieve the command acl: %s.", err)
 			}
 		}
 
 		commandAcl, err := security.GetCommandAclList(alpaconClient, tokenId)
 		if err != nil {
-			utils.CliError("Failed to retrieve the command acl %s", err)
+			utils.CliError("Failed to retrieve the command acl: %s.", err)
 		}
 
 		utils.PrintTable(commandAcl)

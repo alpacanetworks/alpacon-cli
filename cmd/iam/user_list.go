@@ -28,7 +28,7 @@ var userListCmd = &cobra.Command{
 
 		userList, err := iam.GetUserList(alpaconClient)
 		if err != nil {
-			utils.CliError("Failed to retrieve the user list %s", err)
+			utils.CliError("Failed to retrieve the user list: %s.", err)
 		}
 
 		utils.PrintTable(userList)

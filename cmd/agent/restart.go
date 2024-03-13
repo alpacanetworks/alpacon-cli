@@ -22,7 +22,7 @@ var restartAgentCmd = &cobra.Command{
 
 		err = agent.RequestAgentAction(alpaconClient, serverName, "restart")
 		if err != nil {
-			utils.CliError("Failed to restart the agent %s", err)
+			utils.CliError("Failed to restart the agent: %s.", err)
 		}
 
 		utils.CliInfo("Agent restart request successful. Verify in events.(alpacon events)")

@@ -29,7 +29,7 @@ var authorityListCmd = &cobra.Command{
 
 		authorityList, err := cert.GetAuthorityList(alpaconClient)
 		if err != nil {
-			utils.CliError("Failed to retrieve the authority list %s", err)
+			utils.CliError("Failed to retrieve the authority list: %s.", err)
 		}
 
 		utils.PrintTable(authorityList)

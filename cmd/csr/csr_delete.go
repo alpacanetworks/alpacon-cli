@@ -28,9 +28,9 @@ var csrDeleteCmd = &cobra.Command{
 
 		err = cert.DeleteCSR(alpaconClient, csrId)
 		if err != nil {
-			utils.CliError("Failed to delete the CSR %s. ", err)
+			utils.CliError("Failed to delete the CSR: %s. ", err)
 		}
 
-		utils.CliInfo("CSR successfully deleted: %s", csrId)
+		utils.CliInfo("CSR successfully deleted: %s.", csrId)
 	},
 }

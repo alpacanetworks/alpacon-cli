@@ -41,13 +41,13 @@ var aclAddCmd = &cobra.Command{
 		if !utils.IsUUID(commandAclRequest.Token) {
 			commandAclRequest.Token, err = auth.GetAPITokenIDByName(alpaconClient, commandAclRequest.Token)
 			if err != nil {
-				utils.CliError("Failed to add the command ACL to token: %v ", err)
+				utils.CliError("Failed to add the command ACL to token: %v.", err)
 			}
 		}
 
 		err = security.AddCommandAcl(alpaconClient, commandAclRequest)
 		if err != nil {
-			utils.CliError("Failed to add the command ACL to token: %v ", err)
+			utils.CliError("Failed to add the command ACL to token: %v.", err)
 		}
 
 		utils.CliInfo(fmt.Sprintf("Command ACL successfully added to token: %s with command: %s", token, command))

@@ -29,9 +29,9 @@ var pythonPackageUploadCmd = &cobra.Command{
 
 		err = packages.UploadPackage(alpaconClient, file, "python")
 		if err != nil {
-			utils.CliError("Failed to upload the python packages to alpacon %s", err)
+			utils.CliError("Failed to upload the python packages to alpacon: %s.", err)
 		}
 
-		utils.CliInfo("`%s` successfully uploaded to alpacon ", file)
+		utils.CliInfo("`%s` successfully uploaded to alpacon.", file)
 	},
 }

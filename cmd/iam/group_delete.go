@@ -33,7 +33,7 @@ var groupDeleteCmd = &cobra.Command{
 
 		err = iam.DeleteGroup(alpaconClient, groupName)
 		if err != nil {
-			utils.CliError("Failed to delete the group %s. ", err)
+			utils.CliError("Failed to delete the group: %s.", err)
 		}
 
 		utils.CliInfo("Group successfully deleted: %s", groupName)

@@ -29,7 +29,7 @@ var certDetailCmd = &cobra.Command{
 
 		certDetail, err := cert.GetCertificateDetail(alpaconClient, certId)
 		if err != nil {
-			utils.CliError("Failed to retrieve the certificate details %s", err)
+			utils.CliError("Failed to retrieve the certificate details: %s.", err)
 		}
 
 		utils.PrintJson(certDetail)

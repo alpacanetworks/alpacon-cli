@@ -32,9 +32,9 @@ var userDeleteCmd = &cobra.Command{
 
 		err = iam.DeleteUser(alpaconClient, userName)
 		if err != nil {
-			utils.CliError("Failed to delete the user %s. ", err)
+			utils.CliError("Failed to delete the user: %s.", err)
 		}
 
-		utils.CliInfo("User successfully deleted: %s", userName)
+		utils.CliInfo("User successfully deleted: %s.", userName)
 	},
 }

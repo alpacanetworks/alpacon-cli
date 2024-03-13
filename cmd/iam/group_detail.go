@@ -30,7 +30,7 @@ var groupDetailCmd = &cobra.Command{
 
 		groupDetail, err := iam.GetGroupDetail(alpaconClient, groupName)
 		if err != nil {
-			utils.CliError("Failed to retrieve the group details %s", err)
+			utils.CliError("Failed to retrieve the group details: %s.", err)
 		}
 
 		utils.PrintJson(groupDetail)

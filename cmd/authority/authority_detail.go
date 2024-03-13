@@ -29,7 +29,7 @@ var authorityDetailCmd = &cobra.Command{
 
 		authorityDetail, err := cert.GetAuthorityDetail(alpaconClient, authorityId)
 		if err != nil {
-			utils.CliError("Failed to retrieve the authority details %s", err)
+			utils.CliError("Failed to retrieve the authority details: %s.", err)
 		}
 
 		utils.PrintJson(authorityDetail)

@@ -29,7 +29,7 @@ var csrDetailCmd = &cobra.Command{
 
 		csrDetail, err := cert.GetCSRDetail(alpaconClient, csrId)
 		if err != nil {
-			utils.CliError("Failed to retrieve the csr details %s", err)
+			utils.CliError("Failed to retrieve the csr details: %s.", err)
 		}
 
 		utils.PrintJson(csrDetail)
