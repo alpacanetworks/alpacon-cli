@@ -289,7 +289,7 @@ $ alpacon event
 $ alpacon events
 
 # Tail the last 10 events related to a specific server and requested by a specific user
-$ alpacon event -tail 10 -s myserver -u admin
+$ alpacon event -t 10 -s myserver -u admin
 $ alpacon event --tail=10 --server=myserver --user=admin
 ```
 
