@@ -84,7 +84,7 @@ var WebshCmd = &cobra.Command{
 			command := strings.Join(commandArgs, " ")
 			result, err := event.RunCommand(alpaconClient, serverName, command, username, groupname)
 			if err != nil {
-				utils.CliError("Failed to run the '%s' command on the '%s' server: %s.", command, serverName, err)
+				utils.CliError("Failed to run the command on the '%s' server: %s.", serverName, err)
 			}
 			fmt.Println(result)
 		} else {
