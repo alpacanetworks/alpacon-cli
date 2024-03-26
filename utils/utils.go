@@ -2,17 +2,33 @@ package utils
 
 import (
 	"bufio"
+	"errors"
 	"fmt"
 	"github.com/google/uuid"
 	"golang.org/x/term"
 	"net/url"
 	"os"
+	"os/exec"
 	"path"
 	"path/filepath"
 	"strconv"
 	"strings"
 	"time"
 )
+
+func ShowLogo() {
+	alpaconLogo := `
+    (` + "`" + `-')  _           _  (` + "`" + `-') (` + "`" + `-')  _                      <-. (` + "`" + `-')_
+    (OO ).-/    <-.    \-.(OO ) (OO ).-/  _             .->      \( OO) )
+    / ,---.   ,--. )   _.'    \ / ,---.   \-,-----.(` + "`" + `-')----. ,--./ ,--/
+    | \ /` + ".`" + `\  |  (` + "`" + `-')(_...--'' | \ /` + ".`" + `\   |  .--./( OO).-.  '|   \ |  |
+    '-'|_.' | |  |OO )|  |_.' | '-'|_.' | /_) (` + "`" + `-')( _) | |  ||  . '|  |)
+    (|  .-.  |(|  '__ ||  .___.'(|  .-.  | ||  |OO ) \|  |)|  ||  |\    |
+    |  | |  | |     |'|  |      |  | |  |(_'  '--'\  '  '-'  '|  | \   |
+    ` + "`" + `--' ` + "`" + `--' ` + "`" + `-----' ` + "`" + `--'      ` + "`" + `--' ` + "`" + `--'   ` + "`" + `-----'   ` + "`" + `-----' ` + "`" + `--'  ` + "`" + `--'
+    `
+	fmt.Println(alpaconLogo)
+}
 
 func ReadFileFromPath(filePath string) ([]byte, error) {
 	absolutePath, err := filepath.Abs(filePath)
@@ -252,4 +268,29 @@ func StringToStringPointer(value string) *string {
 func IsUUID(str string) bool {
 	_, err := uuid.Parse(str)
 	return err == nil
+}
+
+func CreateAndEditTempFile(data []byte) (string, error) {
+	tmpfile, err := os.CreateTemp("", "example.*.json")
+	if err != nil {
+		return "", errors.New("failed to create temp file for update")
+	}
+	defer tmpfile.Close()
+
+	if _, err := tmpfile.Write(data); err != nil {
+		return "", err
+	}
+
+	if err := tmpfile.Close(); err != nil {
+		return "", err
+	}
+
+	cmd := exec.Command("vim", tmpfile.Name())
+	cmd.Stdin = os.Stdin
+	cmd.Stdout = os.Stdout
+	if err := cmd.Run(); err != nil {
+		return "", err
+	}
+
+	return tmpfile.Name(), nil
 }

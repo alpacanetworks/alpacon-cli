@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"github.com/alpacanetworks/alpacon-cli/api/server"
 	"github.com/alpacanetworks/alpacon-cli/client"
+	"github.com/alpacanetworks/alpacon-cli/utils"
 	"github.com/gorilla/websocket"
 	"golang.org/x/term"
 	"io"
@@ -76,6 +77,8 @@ func OpenNewTerminal(ac *client.AlpaconClient, sessionResponse SessionResponse) 
 }
 
 func websocketClient(conn *websocket.Conn) error {
+	utils.ShowLogo()
+
 	if !term.IsTerminal(int(os.Stdin.Fd())) {
 		return errors.New("websh command should be a terminal")
 	}
