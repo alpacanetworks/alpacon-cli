@@ -7,8 +7,6 @@ import (
 	"github.com/spf13/cobra"
 )
 
-var pageSize int
-
 var LogCmd = &cobra.Command{
 	Use:     "log [SERVER NAME]",
 	Aliases: []string{"logs"},
@@ -26,6 +24,7 @@ var LogCmd = &cobra.Command{
 	Args: cobra.ExactArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
 		serverName := args[0]
+		pageSize, _ := cmd.Flags().GetInt("tail")
 
 		alpaconClient, err := client.NewAlpaconAPIClient()
 		if err != nil {
@@ -42,5 +41,7 @@ var LogCmd = &cobra.Command{
 }
 
 func init() {
+	var pageSize int
+
 	LogCmd.Flags().IntVarP(&pageSize, "tail", "t", 25, "Number of log entries to show from the end")
 }
