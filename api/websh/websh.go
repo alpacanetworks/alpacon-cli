@@ -70,75 +70,84 @@ func OpenNewTerminal(ac *client.AlpaconClient, sessionResponse SessionResponse) 
 	}
 	defer conn.Close()
 
-	if err = websocketClient(conn); err != nil {
+	if err = runWsClient(conn); err != nil {
 		return err
 	}
 	return nil
 }
 
-func websocketClient(conn *websocket.Conn) error {
-	utils.ShowLogo()
-
-	if !term.IsTerminal(int(os.Stdin.Fd())) {
-		return errors.New("websh command should be a terminal")
-	}
-
-	oldState, err := term.MakeRaw(int(os.Stdin.Fd()))
+func runWsClient(conn *websocket.Conn) error {
+	oldState, err := checkTerminal()
 	if err != nil {
 		return err
 	}
 	defer term.Restore(int(os.Stdin.Fd()), oldState)
 
-	done := make(chan error)
+	done := make(chan error, 1)
+	inputChan := make(chan string, 1)
 
-	// Goroutine for reading messages from the server
-	go func() {
-		for {
-			_, message, err := conn.ReadMessage()
-			if err != nil {
-				done <- err
-				return
-			}
-			fmt.Print(string(message))
-		}
-	}()
-
-	// Goroutine for reading user input and sending it to the server
-	inputChan := make(chan string)
-	go func() {
-		var inputBuffer []rune
-		for {
-			select {
-			case <-time.After(time.Millisecond * 5):
-				if len(inputBuffer) > 0 {
-					err := conn.WriteMessage(websocket.TextMessage, []byte(string(inputBuffer)))
-					if err != nil {
-						done <- err
-						return
-					}
-					inputBuffer = []rune{}
-				}
-			case input := <-inputChan:
-				inputBuffer = append(inputBuffer, []rune(input)...)
-			}
-		}
-	}()
-
-	go func() {
-		reader := bufio.NewReader(os.Stdin)
-		for {
-			char, _, err := reader.ReadRune()
-			if err != nil {
-				if err == io.EOF {
-					done <- nil
-					return
-				}
-				done <- err
-				return
-			}
-			inputChan <- string(char)
-		}
-	}()
+	go readFromServer(conn, done)
+	go readUserInput(inputChan, done)
+	go writeToServer(conn, inputChan, done)
 
 	return <-done
+}
+
+func checkTerminal() (*term.State, error) {
+	utils.ShowLogo()
+	if !term.IsTerminal(int(os.Stdin.Fd())) {
+		return nil, errors.New("websh command should be a terminal")
+	}
+	oldState, err := term.MakeRaw(int(os.Stdin.Fd()))
+	if err != nil {
+		return nil, err
+	}
+
+	return oldState, nil
+}
+
+func readFromServer(conn *websocket.Conn, done chan<- error) {
+	for {
+		_, message, err := conn.ReadMessage()
+		if err != nil {
+			done <- err
+			return
+		}
+		fmt.Print(string(message))
+	}
+}
+
+func readUserInput(inputChan chan<- string, done chan<- error) {
+	reader := bufio.NewReader(os.Stdin)
+	for {
+		char, _, err := reader.ReadRune()
+		if err != nil {
+			if err == io.EOF {
+				done <- nil
+				return
+			}
+			done <- err
+			return
+		}
+		inputChan <- string(char)
+	}
+}
+
+func writeToServer(conn *websocket.Conn, inputChan <-chan string, done chan<- error) {
+	var inputBuffer []rune
+	for {
+		select {
+		case input := <-inputChan:
+			inputBuffer = append(inputBuffer, []rune(input)...)
+		case <-time.After(time.Millisecond * 5):
+			if len(inputBuffer) > 0 {
+				err := conn.WriteMessage(websocket.TextMessage, []byte(string(inputBuffer)))
+				if err != nil {
+					done <- err
+					return
+				}
+				inputBuffer = []rune{}
+			}
+		}
+	}
 }
