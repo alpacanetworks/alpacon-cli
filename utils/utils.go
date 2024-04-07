@@ -2,6 +2,8 @@ package utils
 
 import (
 	"bufio"
+	"bytes"
+	"encoding/json"
 	"errors"
 	"fmt"
 	"github.com/google/uuid"
@@ -270,6 +272,39 @@ func IsUUID(str string) bool {
 	return err == nil
 }
 
+// ProcessEditedData facilitates user modifications to original data,
+// formats it, supports editing via a temp file, compares the edited data against the original,
+// and parses it into JSON. If no changes are made, the update is aborted and an error is returned.
+func ProcessEditedData(originalData []byte) (interface{}, error) {
+	prettyJSON, err := PrettyJSON(originalData)
+	if err != nil {
+		return nil, err
+	}
+
+	tmpFile, err := CreateAndEditTempFile(prettyJSON.Bytes())
+	if err != nil {
+		return nil, err
+	}
+	defer os.Remove(tmpFile)
+
+	editedContent, err := os.ReadFile(tmpFile)
+	if err != nil {
+		return nil, err
+	}
+
+	if bytes.Equal(prettyJSON.Bytes(), editedContent) {
+		CliInfoWithExit("No changes made. Aborting update.")
+	}
+
+	var jsonData interface{}
+	err = json.Unmarshal(editedContent, &jsonData)
+	if err != nil {
+		return nil, err
+	}
+
+	return jsonData, nil
+}
+
 func CreateAndEditTempFile(data []byte) (string, error) {
 	tmpfile, err := os.CreateTemp("", "example.*.json")
 	if err != nil {
@@ -285,7 +320,7 @@ func CreateAndEditTempFile(data []byte) (string, error) {
 		return "", err
 	}
 
-	cmd := exec.Command("vim", tmpfile.Name())
+	cmd := exec.Command("vi", tmpfile.Name())
 	cmd.Stdin = os.Stdin
 	cmd.Stdout = os.Stdout
 	if err := cmd.Run(); err != nil {
@@ -293,4 +328,13 @@ func CreateAndEditTempFile(data []byte) (string, error) {
 	}
 
 	return tmpfile.Name(), nil
+}
+
+func PrettyJSON(data []byte) (*bytes.Buffer, error) {
+	var prettyJSON bytes.Buffer
+	if err := json.Indent(&prettyJSON, data, "", "\t"); err != nil {
+		return nil, err
+	}
+
+	return &prettyJSON, nil
 }

@@ -40,9 +40,6 @@ func NewAlpaconAPIClient() (*AlpaconClient, error) {
 		return nil, err
 	}
 
-	// TODO CLI version check
-	// res, err := utils.VersionCheck()
-
 	return client, nil
 }
 
@@ -174,8 +171,6 @@ func (ac *AlpaconClient) SendPatchRequest(url string, body interface{}) ([]byte,
 	if err != nil {
 		return nil, err
 	}
-
-	fmt.Println(jsonValue)
 
 	req, err := ac.createRequest("PATCH", url, bytes.NewBuffer(jsonValue))
 	if err != nil {

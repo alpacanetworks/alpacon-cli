@@ -26,4 +26,5 @@ func init() {
 	UserCmd.AddCommand(userDetailCmd)
 	UserCmd.AddCommand(userDeleteCmd)
 	UserCmd.AddCommand(userCreateCmd)
+	UserCmd.AddCommand(userUpdateCmd)
 }

@@ -19,7 +19,7 @@ import (
 	"github.com/spf13/cobra"
 )
 
-var rootCmd = &cobra.Command{
+var RootCmd = &cobra.Command{
 	Use:     "alpacon",
 	Aliases: []string{"ac"},
 	Short:   "Alpacon CLI: Your Gateway to Alpacon Services",
@@ -31,55 +31,55 @@ var rootCmd = &cobra.Command{
 }
 
 func Execute() {
-	if err := rootCmd.Execute(); err != nil {
+	if err := RootCmd.Execute(); err != nil {
 		utils.CliError("While executing the command: %s", err)
 	}
 }
 
 func init() {
 	// version
-	rootCmd.AddCommand(versionCmd)
+	RootCmd.AddCommand(versionCmd)
 
 	// login
-	rootCmd.AddCommand(loginCmd)
+	RootCmd.AddCommand(loginCmd)
 
 	// iam
-	rootCmd.AddCommand(iam.UserCmd)
-	rootCmd.AddCommand(iam.GroupCmd)
+	RootCmd.AddCommand(iam.UserCmd)
+	RootCmd.AddCommand(iam.GroupCmd)
 
 	// server
-	rootCmd.AddCommand(server.ServerCmd)
+	RootCmd.AddCommand(server.ServerCmd)
 
 	// agent
-	rootCmd.AddCommand(agent.AgentCmd)
+	RootCmd.AddCommand(agent.AgentCmd)
 
 	// websh
-	rootCmd.AddCommand(websh.WebshCmd)
+	RootCmd.AddCommand(websh.WebshCmd)
 
 	// ftp
-	rootCmd.AddCommand(ftp.CpCmd)
+	RootCmd.AddCommand(ftp.CpCmd)
 
 	// packages
-	rootCmd.AddCommand(packages.PackagesCmd)
+	RootCmd.AddCommand(packages.PackagesCmd)
 
 	// log
-	rootCmd.AddCommand(log.LogCmd)
+	RootCmd.AddCommand(log.LogCmd)
 
 	// event
-	rootCmd.AddCommand(event.EventCmd)
+	RootCmd.AddCommand(event.EventCmd)
 
 	// note
-	rootCmd.AddCommand(note.NoteCmd)
+	RootCmd.AddCommand(note.NoteCmd)
 
 	// authority
-	rootCmd.AddCommand(authority.AuthorityCmd)
+	RootCmd.AddCommand(authority.AuthorityCmd)
 
 	// csr
-	rootCmd.AddCommand(csr.CsrCmd)
+	RootCmd.AddCommand(csr.CsrCmd)
 
 	// certificate
-	rootCmd.AddCommand(cert.CertCmd)
+	RootCmd.AddCommand(cert.CertCmd)
 
 	// token
-	rootCmd.AddCommand(token.TokenCmd)
+	RootCmd.AddCommand(token.TokenCmd)
 }

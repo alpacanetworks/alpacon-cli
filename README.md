@@ -188,6 +188,9 @@ $ alpacon user describe [USER NAME]
 # Create a new user
 $ alpacon user create
 
+# Update the user information.
+$ alpacon update [USER NAME]
+
 # Delete user
 $ alpacon user delete [USER NAME]
 

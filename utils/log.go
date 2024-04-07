@@ -34,3 +34,10 @@ func CliWarning(msg string, args ...interface{}) {
 	warningMessage := fmt.Sprintf(msg, args...)
 	fmt.Fprintf(os.Stderr, "%s: %s\n", Yellow("Warning"), warningMessage)
 }
+
+// CliInfoWithExit prints an informational message to stderr and exits the program with a status code of 0
+func CliInfoWithExit(msg string, args ...interface{}) {
+	infoMessage := fmt.Sprintf(msg, args...)
+	fmt.Fprintf(os.Stderr, "%s: %s\n", Blue("Info"), infoMessage)
+	os.Exit(0) // Use exit code 0 to indicate successful completion.
+}
