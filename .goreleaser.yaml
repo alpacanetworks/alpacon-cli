@@ -32,6 +32,18 @@ archives:
       - goos: windows
         format: zip
 
+brews:
+  - name: alpacon-cli
+    tap:
+      owner: alpacanetworks
+      name: homebrew-alpacon-cli
+    commit_author:
+      name: alpacanetworksbot
+      email: bot@alpacanetworks.com
+    folder: Formula
+    homepage: "https://github.com/alpacanetworks/alpacon-cli"
+    description: "CLI for Alpaca Infra Platform"
+
 dockers:
   - goos: linux
     goarch: amd64
