@@ -12,7 +12,9 @@ import (
 	"golang.org/x/term"
 	"io"
 	"net/http"
+	"net/url"
 	"os"
+	"path"
 	"time"
 )
 
@@ -20,18 +22,41 @@ const (
 	createSessionURL = "/api/websh/sessions/"
 )
 
-func CreateWebshConnection(ac *client.AlpaconClient, serverName, username, groupname string) (SessionResponse, error) {
-	var sessionResponse SessionResponse
-	serverID, err := server.GetServerIDByName(ac, serverName)
+func JoinWebshSession(ac *client.AlpaconClient, sharedURL, password string) (SessionResponse, error) {
+	parsedURL, err := url.Parse(sharedURL)
 	if err != nil {
-		return sessionResponse, err
+		return SessionResponse{}, err
 	}
 
-	return createWebshSession(ac, serverID, username, groupname)
+	sessionID := parsedURL.Query().Get("session")
+	if sessionID == "" {
+		return SessionResponse{}, errors.New("Invalid URL format")
+	}
+
+	joinRequest := &JoinRequest{
+		Password: password,
+	}
+
+	responseBody, err := ac.SendPostRequest(utils.BuildURL(createSessionURL, path.Join("", sessionID, "join"), nil), joinRequest)
+	if err != nil {
+		return SessionResponse{}, err
+	}
+	var response SessionResponse
+	err = json.Unmarshal(responseBody, &response)
+	if err != nil {
+		return SessionResponse{}, nil
+	}
+
+	return response, nil
 }
 
 // Create new websh session
-func createWebshSession(ac *client.AlpaconClient, serverID, username, groupname string) (SessionResponse, error) {
+func CreateWebshSession(ac *client.AlpaconClient, serverName, username, groupname string, share, readOnly bool) (SessionResponse, error) {
+	serverID, err := server.GetServerIDByName(ac, serverName)
+	if err != nil {
+		return SessionResponse{}, err
+	}
+
 	width, height, err := term.GetSize(int(os.Stdin.Fd()))
 	if err != nil {
 		return SessionResponse{}, err
@@ -54,6 +79,19 @@ func createWebshSession(ac *client.AlpaconClient, serverID, username, groupname 
 	err = json.Unmarshal(responseBody, &response)
 	if err != nil {
 		return SessionResponse{}, nil
+	}
+
+	if share {
+		shareRequest := &ShareRequest{
+			ReadOnly: readOnly,
+		}
+		var shareResponse ShareResponse
+		responseBody, err = ac.SendPostRequest(utils.BuildURL(createSessionURL, path.Join(response.ID, "share"), nil), shareRequest)
+		err = json.Unmarshal(responseBody, &shareResponse)
+		if err != nil {
+			return SessionResponse{}, nil
+		}
+		sharingInfo(shareResponse)
 	}
 
 	return response, nil
@@ -150,4 +188,25 @@ func writeToServer(conn *websocket.Conn, inputChan <-chan string, done chan<- er
 			}
 		}
 	}
+}
+
+func sharingInfo(response ShareResponse) {
+	header := `Share the following URL to allow access for the current session to someone else.
+**Note: The invitee will be required to enter the provided password to access the websh terminal.**`
+
+	instructions := `
+To join the shared session:
+1. Execute the following command in a terminal:
+   $ alpacon websh join --url="%s" --password="%s"
+	
+2. Or, directly access the session via the shared URL in a web browser.`
+
+	fmt.Println(header)
+	fmt.Printf(instructions, response.SharedURL, response.Password)
+	fmt.Println()
+	fmt.Println("Session Details:")
+	fmt.Println("Share URL:    ", response.SharedURL)
+	fmt.Println("Password:     ", response.Password)
+	fmt.Println("Read Only:    ", response.ReadOnly)
+	fmt.Println("Expiration:   ", utils.TimeUtils(response.Expiration))
 }

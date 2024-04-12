@@ -1,5 +1,7 @@
 package websh
 
+import "time"
+
 type SessionRequest struct {
 	Rows      int    `json:"rows"`
 	Cols      int    `json:"cols"`
@@ -18,4 +20,19 @@ type SessionResponse struct {
 	UserAgent    string `json:"user_agent"`
 	RemoteIP     string `json:"remote_ip"`
 	WebsocketURL string `json:"websocket_url"`
+}
+
+type ShareResponse struct {
+	SharedURL  string    `json:"shared_url"`
+	Password   string    `json:"password"`
+	ReadOnly   bool      `json:"read_only"`
+	Expiration time.Time `json:"expiration"`
+}
+
+type ShareRequest struct {
+	ReadOnly bool `json:"read_only"`
+}
+
+type JoinRequest struct {
+	Password string `json:"password"`
 }
