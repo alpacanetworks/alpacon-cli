@@ -73,7 +73,7 @@ func displayGroups(groupList []iam.GroupAttributes) {
 
 func selectAndConvertGroups(ac *client.AlpaconClient, groupList []iam.GroupAttributes) []string {
 	chosenGroups := utils.PromptForRequiredInput("Select groups that are authorized to access this server. (e.g., 1,2):")
-	intGroups := utils.SplitAndParseInts(chosenGroups)
+	intGroups := utils.SplitAndParseInt(chosenGroups)
 
 	var groupIDs []string
 

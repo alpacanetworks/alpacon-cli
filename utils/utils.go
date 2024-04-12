@@ -61,7 +61,7 @@ func PromptForInput(promptText string) string {
 	fmt.Print(promptText)
 	input, err := reader.ReadString('\n')
 	if err != nil {
-		CliError("Error during input. Please try again.")
+		CliError("Invalid input. Please try again.")
 	}
 	return strings.TrimSpace(input)
 }
@@ -124,7 +124,7 @@ func PromptForBool(prompt string) bool {
 	}
 }
 
-func SplitAndParseInts(input string) []int {
+func SplitAndParseInt(input string) []int {
 	var intValues []int
 
 	stringValues := strings.Split(input, ",")
@@ -140,13 +140,6 @@ func SplitAndParseInts(input string) []int {
 	}
 
 	return intValues
-}
-
-func CreatePaginationParams(page int, pageSize int) string {
-	params := url.Values{}
-	params.Add("page", strconv.Itoa(page))
-	params.Add("page_size", strconv.Itoa(pageSize))
-	return params.Encode()
 }
 
 func TimeUtils(t time.Time) string {
@@ -308,7 +301,7 @@ func ProcessEditedData(originalData []byte) (interface{}, error) {
 func CreateAndEditTempFile(data []byte) (string, error) {
 	tmpfile, err := os.CreateTemp("", "example.*.json")
 	if err != nil {
-		return "", errors.New("failed to create temp file for update")
+		return "", errors.New("Failed to create temp file for update")
 	}
 	defer tmpfile.Close()
 

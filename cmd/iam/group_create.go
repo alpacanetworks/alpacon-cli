@@ -71,7 +71,7 @@ func displayServers(serverList []server.ServerAttributes) {
 
 func selectAndConvertServers(ac *client.AlpaconClient, serverList []server.ServerAttributes) []string {
 	chosenServers := utils.PromptForInput("Select servers that are authorized for this group. (e.g., 1,2):")
-	intServers := utils.SplitAndParseInts(chosenServers)
+	intServers := utils.SplitAndParseInt(chosenServers)
 
 	var serverIDs []string
 

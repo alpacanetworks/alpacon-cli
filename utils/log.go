@@ -5,11 +5,9 @@ import (
 	"os"
 )
 
-var (
+const (
 	gitIssueURL = "https://github.com/alpacanetworks/alpacon-cli/issues"
 )
-
-// TODO VersionCheck()
 
 func reportCLIError() {
 	fmt.Println("For issues, check the latest version or report on", gitIssueURL)
