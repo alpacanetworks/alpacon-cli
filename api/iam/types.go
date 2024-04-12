@@ -93,15 +93,6 @@ type GroupCreateRequest struct {
 	Servers     []string `json:"servers"`
 }
 
-type Membership struct {
-	ID        string `json:"id"`
-	Group     string `json:"group"`
-	GroupName string `json:"group_name"`
-	User      string `json:"user"`
-	UserName  string `json:"user_name"`
-	Role      string `json:"role"`
-}
-
 type MemberAddRequest struct {
 	Group string `json:"group"`
 	User  string `json:"user"`
