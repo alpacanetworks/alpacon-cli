@@ -8,15 +8,17 @@ import (
 )
 
 var groupDeleteCmd = &cobra.Command{
-	Use:   "delete [GROUP NAME]",
-	Short: "Delete a specified group",
+	Use:     "delete [GROUP NAME]",
+	Aliases: []string{"rm"},
+	Short:   "Delete a specified group",
 	Long: `
 	This command is used to permanently delete a specified group from the Alpacon. 
 	The command requires the exact username as an argument.
 	NOTE : alpacon(Alpacon users) group cannot delete or update memberships
 	`,
 	Example: ` 
-	alpacon group delete [GROUP NAME]	
+	alpacon group delete [GROUP NAME]
+	alpacon group rm [GROUP NAME]
 	`,
 	Args: cobra.ExactArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {

@@ -10,8 +10,9 @@ import (
 var memberDeleteRequest iam.MemberDeleteRequest
 
 var memberDeleteCmd = &cobra.Command{
-	Use:   "delete",
-	Short: "Remove a member from a group",
+	Use:     "delete",
+	Aliases: []string{"rm"},
+	Short:   "Remove a member from a group",
 	Long: `
 	This command removes an existing member from the specified group. 
 	It's useful for managing group membership and ensuring only current members have access.

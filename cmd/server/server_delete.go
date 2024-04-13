@@ -8,8 +8,9 @@ import (
 )
 
 var serverDeleteCmd = &cobra.Command{
-	Use:   "delete [SERVER NAME]",
-	Short: "Delete a specified server",
+	Use:     "delete [SERVER NAME]",
+	Aliases: []string{"rm"},
+	Short:   "Delete a specified server",
 	Long: `
 	This command is used to permanently delete a specified server from the Alpacon. 
 	It is crucial to ensure that you have the appropriate permissions to delete a server before attempting this operation. 
@@ -17,6 +18,7 @@ var serverDeleteCmd = &cobra.Command{
 	`,
 	Example: ` 
 	alpacon server delete [SERVER NAME]	
+	alpacon server rm [SERVER NAME]
 	`,
 	Args: cobra.ExactArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {

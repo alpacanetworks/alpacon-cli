@@ -8,14 +8,16 @@ import (
 )
 
 var tokenDeleteCmd = &cobra.Command{
-	Use:   "delete [tok NAME]",
-	Short: "Delete a specified api token",
+	Use:     "delete [TOKEN NAME]",
+	Aliases: []string{"rm"},
+	Short:   "Delete a specified api token",
 	Long: `
 	Removes an existing API token from the system. 
 	This command requires the token name to identify the token to be deleted.
 	`,
 	Example: ` 
-	alpacon token delete [TOKEN_ID_OR_NAME]	
+	alpacon token delete [TOKEN_ID_OR_NAME]
+	alpacon token rm [TOKEN_ID_OR_NAME]
 	`,
 	Args: cobra.ExactArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {

@@ -8,8 +8,9 @@ import (
 )
 
 var noteDeleteCmd = &cobra.Command{
-	Use:   "delete [NOTE ID]",
-	Short: "Delete a specified note",
+	Use:     "delete [NOTE ID]",
+	Aliases: []string{"rm"},
+	Short:   "Delete a specified note",
 	Long: `
 	This command permanently deletes a specified note from the Alpacon server. 
 	It's important to verify that you have the necessary permissions to delete a note before using this command. 
@@ -17,6 +18,7 @@ var noteDeleteCmd = &cobra.Command{
 	`,
 	Example: ` 
 	alpacon server delete [NOTE ID]	
+	alpacon server rm [NOTE ID]
 	`,
 	Args: cobra.ExactArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {

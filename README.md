@@ -137,6 +137,7 @@ $ alpacon server create
 
 # Delete server
 $ alpacon server delete [SERVER NAME]
+$ alpacon server rm [SERVER NAME]
 
 Server Name: 
 Platform(debian, rhel): 
@@ -173,6 +174,18 @@ $ alpacon websh -u [USER NAME] -g [GROUP NAME] [COMMAND]
 $ alpacon websh --username=[USER NAME] --groupname=[GROUP NAME] [COMMAND]
 ```
 
+#### Share your terminal
+You can share the current terminal to others via a temporary link:
+```bash
+# Open a websh terminal and share the current terminal
+$ alpacon websh [SERVER NAME] --share
+$ alpacon websh [SERVER NAME] --share --read-only true
+	
+# Join an existing shared session
+$ alpacon websh join --url [SHARED_URL] --password [PASSWORD]
+```
+
+
 
 #### Identity and Access Management (IAM)
 Efficiently manage user and group resources:
@@ -193,6 +206,7 @@ $ alpacon user update [USER NAME]
 
 # Delete user
 $ alpacon user delete [USER NAME]
+$ alpacon user rm [USER NAME]
 
 # Managing Groups
 
@@ -204,13 +218,15 @@ $ alpacon group describe [GROUP NAME]
 
 # Delete group
 $ alpacon group delete [GROUP NAME]
+$ alpacon group rm [GROUP NAME]
 
 # Add a member to a group with a specific role
 $ alpacon group member add
-$ alpacon group member add --group=[GROUP NAME] --member=[MEMBER NAME] --role=[ROLE]
+$ alpacon group member add --group [GROUP NAME] --member [MEMBER NAME] --role [ROLE]
 
 # Remove a member from a group
-$ alpacon group member delete --group=[GROUP NAME] --member=[MEMBER NAME]
+$ alpacon group member delete --group [GROUP NAME] --member[MEMBER NAME]
+$ alpacon group member rm --group [GROUP NAME] --member [MEMBER NAME]
 ```
 
 #### API tokens
@@ -226,6 +242,7 @@ $ alpacon token ls
 
 # Delete API token
 $ alpacon token delete [TOKEN_ID_OR_NAME]
+$ alpacon token rm [TOKEN_ID_OR_NAME]
 
 # Log in via API token
 $ alpacon login -s [SERVER URL] -t [TOKEN KEY]
@@ -243,6 +260,7 @@ $ alpacon token acl ls [TOKEN_ID_OR_NAME]
 
 # Delete the specified command ACL from an API token.
 $ alpacon token acl delete [COMMAND_ACL_ID]
+$ alpacon token acl rm [COMMAND_ACL_ID]
 $ alpacon token acl delete --token=[TOKEN_ID_OR_NAME] --command=[COMMAND]
 ```
 
@@ -271,7 +289,7 @@ $ alpacon package python upload alpamon-1.1.0-py3-none-any.whl
 $ alpacon package python download alpamon-1.1.0-py3-none-any.whl .
 
 # system
-$ alpacon package system ls / list /all
+$ alpacon package system ls / list / all
 $ alpacon package system upload osquery-5.10.2-1.linux.x86_64.rpm
 $ alpacon package system download osquery-5.10.2-1.linux.x86_64.rpm .
 ```
@@ -318,6 +336,7 @@ $ alpacon note create -s [SERVER NAME] -c [CONTENT] -p [PRIVATE(true or false)]
 
 # Delete a specified note
 $ alpacon note delete [NOTE ID]
+$ alpacon note rm [NOTE ID]
 ```
 
 #### Private CA, Certificate Commands
@@ -337,6 +356,7 @@ $ alpacon authority download-crt [AUTHOIRY ID] --out=/path/to/root.crt
 
 # Delete a CA along with its certificate and CSR
 $ alpacon authority delete [AUTHORITY ID]
+$ alpacon authority rm [AUTHORITY ID]
 
 # Generate a new Certificate Signing Request (CSR)
 $ alpacon csr create
@@ -353,6 +373,7 @@ $ alpacon csr deny [CSR ID]
 
 # Delete a Certificate Signing Request
 $ alpacon csr delete [CSR ID]
+$ alpacon csr rm [CSR ID]
 
 # Get detailed information about a specific Signing Request.
 $ alpacon csr describe [CSR ID]

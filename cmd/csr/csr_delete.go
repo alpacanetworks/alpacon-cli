@@ -8,14 +8,16 @@ import (
 )
 
 var csrDeleteCmd = &cobra.Command{
-	Use:   "delete [CSR ID]",
-	Short: "Delete a CSR",
+	Use:     "delete [CSR ID]",
+	Aliases: []string{"rm"},
+	Short:   "Delete a CSR",
 	Long: `
  	Removes a Certificate Signing Request from the system, 
 	effectively canceling the request and any associated processing.
 	`,
 	Example: ` 
 	alpacon csr delete [CSR ID]	
+	alpacon csr rm [CSR ID]
 	`,
 	Args: cobra.ExactArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {

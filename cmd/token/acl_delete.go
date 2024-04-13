@@ -8,15 +8,17 @@ import (
 )
 
 var aclDeleteCmd = &cobra.Command{
-	Use:   "delete",
-	Short: "Delete the specified command ACL from an API token.",
+	Use:     "delete",
+	Aliases: []string{"rm"},
+	Short:   "Delete the specified command ACL from an API token.",
 	Long: `
 	Removes an existing command acl from the API token
 	This command requires the command acl id to identify the command acl to be deleted.
 	`,
 	Example: `
 	alpacon token acl delete [COMMAND_ACL_ID]
-	alpacon token acl delete --token=[TOKEN_ID_OR_NAME] --command=[COMMAND]
+	alpacon token acl rm [COMMAND_ACL_ID]
+	alpacon token acl rm --token=[TOKEN_ID_OR_NAME] --command=[COMMAND]
 	`,
 	Args: cobra.ExactArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {

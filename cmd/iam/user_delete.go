@@ -8,14 +8,16 @@ import (
 )
 
 var userDeleteCmd = &cobra.Command{
-	Use:   "delete [USER NAME]",
-	Short: "Delete a specified user",
+	Use:     "delete [USER NAME]",
+	Aliases: []string{"rm"},
+	Short:   "Delete a specified user",
 	Long: `
 	This command is used to permanently delete a specified user account from the Alpacon. 
 	The command requires the exact username as an argument.
 	`,
 	Example: ` 
 	alpacon user delete [USER NAME]	
+	alpacon user rm [USER NAME]
 	`,
 	Args: cobra.ExactArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
