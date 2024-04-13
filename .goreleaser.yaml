@@ -34,13 +34,13 @@ archives:
 
 brews:
   - name: alpacon-cli
-    tap:
+    repository:
       owner: alpacanetworks
-      name: homebrew-alpacon-cli
+      name: alpacon-cli
     commit_author:
       name: alpacanetworksbot
       email: bot@alpacanetworks.com
-    folder: Formula
+    directory: Formula
     homepage: "https://github.com/alpacanetworks/alpacon-cli"
     description: "CLI for Alpaca Infra Platform"
 
