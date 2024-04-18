@@ -10,6 +10,8 @@ These components are integral for the CLI to function effectively.
 
 ## Documentation
 
+[Alpacon-CLI Documentation](https://github.com/alpacanetworks/alpacon-cli/blob/main/docs/alpacon.md)
+
 **Note**: Detailed documentation, including usage guides and best practices, is in progress and will be available soon.
 
 ## Installation
@@ -31,6 +33,13 @@ sudo mv alpacon-cli /usr/local/bin/alpacon
 ```
 
 ### macOS
+
+#### Homebrew
+```bash
+brew tap alpacanetworks/cli https://github.com/alpacanetworks/alpacon-cli
+brew install alpacon-cli
+```
+    
 ```bash
 VERSION=<latest-version> # Replace with the actual version
 wget https://github.com/alpacanetworks/alpacon-cli/releases/download/${VERSION}/alpacon-${VERSION}-darwin-arm64.tar.gz
