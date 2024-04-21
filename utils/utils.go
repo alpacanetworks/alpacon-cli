@@ -331,3 +331,8 @@ func PrettyJSON(data []byte) (*bytes.Buffer, error) {
 
 	return &prettyJSON, nil
 }
+
+func SplitPath(path string) (string, string) {
+	parts := strings.SplitN(path, ":", 2)
+	return parts[0], parts[1]
+}

@@ -120,7 +120,6 @@ func GetServerNameByID(ac *client.AlpaconClient, serverID string) (string, error
 
 func CreateServer(ac *client.AlpaconClient, serverRequest ServerRequest) (ServerCreatedResponse, error) {
 	var response ServerCreatedResponse
-
 	responseBody, err := ac.SendPostRequest(serverURL, serverRequest)
 	if err != nil {
 		return ServerCreatedResponse{}, err

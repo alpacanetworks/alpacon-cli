@@ -11,10 +11,9 @@ type ServerAttributes struct {
 }
 
 type ServerRequest struct {
-	Name     string `json:"name"`
-	Platform string `json:"platform"`
-	//	Key      string `json:"key"`
-	Groups []string `json:"groups"`
+	Name     string   `json:"name"`
+	Platform string   `json:"platform"`
+	Groups   []string `json:"groups"`
 }
 
 type ServerCreatedResponse struct {

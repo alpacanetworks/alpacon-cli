@@ -22,7 +22,7 @@ const (
 )
 
 func UploadFile(ac *client.AlpaconClient, src []string, dest, username, groupname string) ([]string, error) {
-	serverName, remotePath := splitPath(dest)
+	serverName, remotePath := utils.SplitPath(dest)
 
 	serverID, err := server.GetServerIDByName(ac, serverName)
 	if err != nil {
@@ -89,7 +89,7 @@ func UploadFile(ac *client.AlpaconClient, src []string, dest, username, groupnam
 }
 
 func DownloadFile(ac *client.AlpaconClient, src, dest, username, groupname string) error {
-	serverName, remotePathStr := splitPath(src)
+	serverName, remotePathStr := utils.SplitPath(src)
 
 	var remotePaths []string
 
@@ -120,9 +120,6 @@ func DownloadFile(ac *client.AlpaconClient, src, dest, username, groupname strin
 			return err
 		}
 
-		maxAttempts := 100
-		var resp *http.Response
-
 		status, err := event.PollCommandExecution(ac, downloadResponse.Command)
 		if err != nil {
 			return err
@@ -136,6 +133,8 @@ func DownloadFile(ac *client.AlpaconClient, src, dest, username, groupname strin
 		}
 		utils.CliWarning(fmt.Sprintf("File Transfer Status: '%s'. Attempting to transfer '%s' from the Alpacon server. Note: Transfer may timeout after 100 seconds.", status.Result, path))
 
+		maxAttempts := 100
+		var resp *http.Response
 		for count := 0; count < maxAttempts; count++ {
 			resp, err = ac.SendGetRequestForDownload(utils.RemovePrefixBeforeAPI(downloadResponse.DownloadURL))
 			if err != nil {
@@ -167,9 +166,4 @@ func DownloadFile(ac *client.AlpaconClient, src, dest, username, groupname strin
 	}
 
 	return nil
-}
-
-func splitPath(path string) (string, string) {
-	parts := strings.SplitN(path, ":", 2)
-	return parts[0], parts[1]
 }
