@@ -56,6 +56,23 @@ func saveConfig(config *Config) error {
 	return nil
 }
 
+func DeleteConfig() error {
+	homeDir, err := os.UserHomeDir()
+	if err != nil {
+		return fmt.Errorf("failed to get user home directory: %v", err)
+	}
+
+	configDir := filepath.Join(homeDir, ConfigFileDir)
+	configFile := filepath.Join(configDir, ConfigFileName)
+
+	err = os.Remove(configFile)
+	if err != nil {
+		return fmt.Errorf("failed to delete config file: %v", err)
+	}
+
+	return nil
+}
+
 func LoadConfig() (Config, error) {
 	homeDir, err := os.UserHomeDir()
 	if err != nil {

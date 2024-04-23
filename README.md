@@ -77,7 +77,7 @@ sudo mv alpacon /usr/local/bin
 Installation instructions for Windows will be provided soon.
 
 
-### Login
+### Login & Logout
 To access and utilize all features of `Alpacon CLI`, first authenticate with the Alpacon API:
 
 ```bash
@@ -87,6 +87,9 @@ $ alpacon login -s [SERVER URL] -u [USERNAME] -p [PASSWORD]
 
 # Log in via API token
 $ alpacon login -s [SERVER URL] -t [TOKEN KEY]
+
+# Logout
+$ alpacon logout
 ```
 A successful login generates a `config.json` file in `~/.alpacon`, which includes the server address, API token, and token expiration time (approximately 1 week).
 This file is crucial for executing commands, and you will need to log in again once the token expires.

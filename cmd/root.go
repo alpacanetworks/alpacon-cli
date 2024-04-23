@@ -43,6 +43,9 @@ func init() {
 	// login
 	RootCmd.AddCommand(loginCmd)
 
+	// logout
+	RootCmd.AddCommand(logoutCmd)
+
 	// iam
 	RootCmd.AddCommand(iam.UserCmd)
 	RootCmd.AddCommand(iam.GroupCmd)

@@ -16,6 +16,7 @@ import (
 
 const (
 	loginURL  = "/api/auth/login/"
+	logoutURL = "/api/auth/logout/"
 	tokenURL  = "/api/auth/tokens/"
 	statusURL = "/api/status/"
 )
@@ -168,5 +169,18 @@ func DeleteAPIToken(ac *client.AlpaconClient, tokenID string) error {
 		return err
 	}
 
+	return nil
+}
+
+func LogoutAndDeleteCredentials(ac *client.AlpaconClient) error {
+	_, err := ac.SendPostRequest(logoutURL, nil)
+	if err != nil {
+		return err
+	}
+
+	err = config.DeleteConfig()
+	if err != nil {
+		return err
+	}
 	return nil
 }
