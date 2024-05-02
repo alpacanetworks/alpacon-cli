@@ -176,15 +176,20 @@ $ alpacon websh -r [SERVER NAME]
 $ alpacon websh -u [USER NAME] -g [GROUP NAME] [SERVER NAME]
 ```
 
+
 ####  Execute a command
 Execute a command directly on a server and retrieve the output:
 ```bash
 $ alpacon websh [SERVER NAME] [COMMAND]
 
-$ alpacon websh -u [USER NAME] -g [GROUP NAME] [COMMAND]
+$ alpacon websh -u [USER NAME] -g [GROUP NAME] [SERVER NAME] [COMMAND]
 
-$ alpacon websh --username=[USER NAME] --groupname=[GROUP NAME] [COMMAND]
+$ alpacon websh --username=[USER NAME] --groupname=[GROUP NAME] [SERVER NAME] [COMMAND]
+
+$ alpacon websh --env="KEY1=VALUE1" --env="KEY2=VALUE2" [SERVER NAME] [COMMAND]
 ```
+- Note: All flags must be placed before the `[SERVER NAME]`.
+
 
 #### Share your terminal
 You can share the current terminal to others via a temporary link:

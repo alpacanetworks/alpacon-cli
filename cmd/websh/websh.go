@@ -63,6 +63,8 @@ var WebshCmd = &cobra.Command{
 			share, readOnly                                bool
 		)
 
+		env := make(map[string]string)
+
 		for i := 0; i < len(args); i++ {
 			switch {
 			case args[i] == "-r" || args[i] == "--root":
@@ -80,6 +82,8 @@ var WebshCmd = &cobra.Command{
 				url, i = extractValue(args, i)
 			case strings.HasPrefix(args[i], "-p") || strings.HasPrefix(args[i], "--password"):
 				password, i = extractValue(args, i)
+			case strings.HasPrefix(args[i], "--env"):
+				i = extractEnvValue(args, i, env)
 			case strings.HasPrefix(args[i], "--read-only"):
 				var value string
 				value, i = extractValue(args, i)
@@ -120,7 +124,7 @@ var WebshCmd = &cobra.Command{
 			websh.OpenNewTerminal(alpaconClient, session)
 		} else if len(commandArgs) > 0 {
 			command := strings.Join(commandArgs, " ")
-			result, err := event.RunCommand(alpaconClient, serverName, command, username, groupname)
+			result, err := event.RunCommand(alpaconClient, serverName, command, username, groupname, env)
 			if err != nil {
 				utils.CliError("Failed to run the command on the '%s' server: %s.", serverName, err)
 			}
@@ -136,12 +140,26 @@ var WebshCmd = &cobra.Command{
 }
 
 func extractValue(args []string, i int) (string, int) {
-	if strings.Contains(args[i], "=") {
+	if strings.Contains(args[i], "=") { // --username=admins
 		parts := strings.SplitN(args[i], "=", 2)
 		return parts[1], i
 	}
-	if i+1 < len(args) {
+	if i+1 < len(args) { // --username admin
 		return args[i+1], i + 1
 	}
 	return "", i
+}
+
+func extractEnvValue(args []string, i int, env map[string]string) int {
+	envString := strings.TrimPrefix(args[i], "--env=")
+	envString = strings.Trim(envString, "\"")
+
+	parts := strings.SplitN(envString, "=", 2)
+	if len(parts) == 2 {
+		env[parts[0]] = parts[1]
+	} else {
+		utils.CliError("Invalid format for --env. Expected '--env=KEY=VALUE'.")
+	}
+
+	return i
 }

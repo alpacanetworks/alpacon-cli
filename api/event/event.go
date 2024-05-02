@@ -62,7 +62,7 @@ func GetEventList(ac *client.AlpaconClient, pageSize int, serverName string, use
 	return eventList, nil
 }
 
-func RunCommand(ac *client.AlpaconClient, serverName, command string, username, groupname string) (string, error) {
+func RunCommand(ac *client.AlpaconClient, serverName, command string, username, groupname string, env map[string]string) (string, error) {
 	serverID, err := server.GetServerIDByName(ac, serverName)
 	if err != nil {
 		return "", err
@@ -71,6 +71,7 @@ func RunCommand(ac *client.AlpaconClient, serverName, command string, username, 
 	commandRequest := &CommandRequest{
 		Shell:     "system",
 		Line:      command,
+		Env:       env,
 		Username:  username,
 		Groupname: groupname,
 		Server:    serverID,

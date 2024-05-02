@@ -14,6 +14,7 @@ func TestCommandParsing(t *testing.T) {
 		expectUsername    string
 		expectGroupname   string
 		expectServerName  string
+		expectEnv         map[string]string
 		expectCommandArgs []string
 		expectShare       bool
 		expectJoin        bool
@@ -26,6 +27,7 @@ func TestCommandParsing(t *testing.T) {
 			args:              []string{"-r", "prod-server", "df", "-h"},
 			expectUsername:    "root",
 			expectGroupname:   "",
+			expectEnv:         map[string]string{},
 			expectServerName:  "prod-server",
 			expectCommandArgs: []string{"df", "-h"},
 		},
@@ -34,6 +36,7 @@ func TestCommandParsing(t *testing.T) {
 			args:              []string{"-u", "admin", "-g", "sysadmin", "update-server", "sudo", "apt-get", "update"},
 			expectUsername:    "admin",
 			expectGroupname:   "sysadmin",
+			expectEnv:         map[string]string{},
 			expectServerName:  "update-server",
 			expectCommandArgs: []string{"sudo", "apt-get", "update"},
 		},
@@ -42,6 +45,7 @@ func TestCommandParsing(t *testing.T) {
 			args:              []string{"deploy-server", "docker-compose", "-f", "/home/admin/deploy/docker-compose.yml", "up", "-d"},
 			expectUsername:    "",
 			expectGroupname:   "",
+			expectEnv:         map[string]string{},
 			expectServerName:  "deploy-server",
 			expectCommandArgs: []string{"docker-compose", "-f", "/home/admin/deploy/docker-compose.yml", "up", "-d"},
 		},
@@ -50,6 +54,7 @@ func TestCommandParsing(t *testing.T) {
 			args:              []string{"file-server", "ls", "-l", "/var/www"},
 			expectUsername:    "",
 			expectGroupname:   "",
+			expectEnv:         map[string]string{},
 			expectServerName:  "file-server",
 			expectCommandArgs: []string{"ls", "-l", "/var/www"},
 		},
@@ -58,6 +63,7 @@ func TestCommandParsing(t *testing.T) {
 			args:              []string{"-r", "df", "-h"},
 			expectUsername:    "root",
 			expectGroupname:   "",
+			expectEnv:         map[string]string{},
 			expectServerName:  "df",
 			expectCommandArgs: []string(nil),
 		},
@@ -66,6 +72,7 @@ func TestCommandParsing(t *testing.T) {
 			args:              []string{"-x", "unknown-server", "echo", "Hello World"},
 			expectUsername:    "",
 			expectGroupname:   "",
+			expectEnv:         map[string]string{},
 			expectServerName:  "-x",
 			expectCommandArgs: []string{"unknown-server", "echo", "Hello World"},
 		},
@@ -74,6 +81,7 @@ func TestCommandParsing(t *testing.T) {
 			args:              []string{"--username=admin", "--groupname=sysadmin", "multi-flag-server", "uptime"},
 			expectUsername:    "admin",
 			expectGroupname:   "sysadmin",
+			expectEnv:         map[string]string{},
 			expectServerName:  "multi-flag-server",
 			expectCommandArgs: []string{"uptime"},
 		},
@@ -82,6 +90,7 @@ func TestCommandParsing(t *testing.T) {
 			args:              []string{"--username", "admin", "server-name", "--fake-flag", "value"},
 			expectUsername:    "admin",
 			expectGroupname:   "",
+			expectEnv:         map[string]string{},
 			expectServerName:  "server-name",
 			expectCommandArgs: []string{"--fake-flag", "value"},
 		},
@@ -90,6 +99,7 @@ func TestCommandParsing(t *testing.T) {
 			args:              []string{"-g=sysadmin", "server-name", "echo", "hello world"},
 			expectUsername:    "",
 			expectGroupname:   "sysadmin",
+			expectEnv:         map[string]string{},
 			expectServerName:  "server-name",
 			expectCommandArgs: []string{"echo", "hello world"},
 		},
@@ -98,6 +108,7 @@ func TestCommandParsing(t *testing.T) {
 			args:              []string{"-rh"},
 			expectUsername:    "",
 			expectGroupname:   "",
+			expectEnv:         map[string]string{},
 			expectServerName:  "-rh",
 			expectCommandArgs: nil,
 		},
@@ -106,6 +117,7 @@ func TestCommandParsing(t *testing.T) {
 			args:              []string{"-u", "user", "-x", "unknown-flag", "server-name", "cmd"},
 			expectUsername:    "user",
 			expectGroupname:   "",
+			expectEnv:         map[string]string{},
 			expectServerName:  "-x",
 			expectCommandArgs: []string{"unknown-flag", "server-name", "cmd"},
 		},
@@ -114,6 +126,7 @@ func TestCommandParsing(t *testing.T) {
 			args:              []string{"-u", "user", "-g", "group", "-x", "server-name", "cmd"},
 			expectUsername:    "user",
 			expectGroupname:   "group",
+			expectEnv:         map[string]string{},
 			expectServerName:  "-x",
 			expectCommandArgs: []string{"server-name", "cmd"},
 		},
@@ -122,6 +135,7 @@ func TestCommandParsing(t *testing.T) {
 			args:              []string{"server-name", "-u", "user", "cmd", "-g", "group"},
 			expectUsername:    "user",
 			expectGroupname:   "",
+			expectEnv:         map[string]string{},
 			expectServerName:  "server-name",
 			expectCommandArgs: []string{"cmd", "-g", "group"},
 		},
@@ -130,6 +144,7 @@ func TestCommandParsing(t *testing.T) {
 			args:              []string{"server-name", "-u", "user", "cmd", "-g", "group"},
 			expectUsername:    "user",
 			expectGroupname:   "",
+			expectEnv:         map[string]string{},
 			expectServerName:  "server-name",
 			expectCommandArgs: []string{"cmd", "-g", "group"},
 		},
@@ -138,6 +153,7 @@ func TestCommandParsing(t *testing.T) {
 			args:              []string{"test-server", "--share"},
 			expectUsername:    "",
 			expectGroupname:   "",
+			expectEnv:         map[string]string{},
 			expectServerName:  "test-server",
 			expectCommandArgs: nil,
 			expectShare:       true,
@@ -151,6 +167,7 @@ func TestCommandParsing(t *testing.T) {
 			args:              []string{"join", "--url", "http://localhost:3000/websh/join?session=abcd", "--password", "1234"},
 			expectUsername:    "",
 			expectGroupname:   "",
+			expectEnv:         map[string]string{},
 			expectServerName:  "join",
 			expectCommandArgs: nil,
 			expectShare:       false,
@@ -164,6 +181,7 @@ func TestCommandParsing(t *testing.T) {
 			args:              []string{"test-server", "--share", "--read-only"},
 			expectUsername:    "",
 			expectGroupname:   "",
+			expectEnv:         map[string]string{},
 			expectServerName:  "test-server",
 			expectCommandArgs: nil,
 			expectShare:       true,
@@ -177,6 +195,7 @@ func TestCommandParsing(t *testing.T) {
 			args:              []string{"test-server", "--share", "--read-only=True"},
 			expectUsername:    "",
 			expectGroupname:   "",
+			expectEnv:         map[string]string{},
 			expectServerName:  "test-server",
 			expectCommandArgs: nil,
 			expectShare:       true,
@@ -190,6 +209,7 @@ func TestCommandParsing(t *testing.T) {
 			args:              []string{"--share", "join", "--url", "http://localhost:3000/websh/join?session=abcd"},
 			expectUsername:    "",
 			expectGroupname:   "",
+			expectEnv:         map[string]string{},
 			expectServerName:  "join",
 			expectCommandArgs: nil,
 			expectShare:       true,
@@ -198,11 +218,29 @@ func TestCommandParsing(t *testing.T) {
 			expectUrl:         "http://localhost:3000/websh/join?session=abcd",
 			expectPassword:    "",
 		},
+		{
+			testName:          "SingleEnvVariable",
+			args:              []string{"--env=KEY1=value1", "server-name", "cmd"},
+			expectUsername:    "",
+			expectGroupname:   "",
+			expectEnv:         map[string]string{"KEY1": "value1"},
+			expectServerName:  "server-name",
+			expectCommandArgs: []string{"cmd"},
+		},
+		{
+			testName:          "MultipleEnvVariables",
+			args:              []string{"--env=KEY1=value1", "--env=KEY2=value2", "server-name", "cmd"},
+			expectUsername:    "",
+			expectGroupname:   "",
+			expectEnv:         map[string]string{"KEY1": "value1", "KEY2": "value2"},
+			expectServerName:  "server-name",
+			expectCommandArgs: []string{"cmd"},
+		},
 	}
 
 	for _, tc := range tests {
 		t.Run(tc.testName, func(t *testing.T) {
-			username, groupname, serverName, commandArgs, share, join, readOnly, url, password := executeTestCommand(tc.args)
+			username, groupname, serverName, commandArgs, share, join, readOnly, url, password, env := executeTestCommand(tc.args)
 
 			assert.Equal(t, tc.expectUsername, username, "Mismatch in username")
 			assert.Equal(t, tc.expectGroupname, groupname, "Mismatch in groupname")
@@ -213,16 +251,19 @@ func TestCommandParsing(t *testing.T) {
 			assert.Equal(t, tc.expectReadOnly, readOnly, "Mismatch in read-only flag")
 			assert.Equal(t, tc.expectUrl, url, "Mismatch in URL for joining")
 			assert.Equal(t, tc.expectPassword, password, "Mismatch in password for joining")
+			assert.Equal(t, tc.expectEnv, env, "Mismatch in env")
 		})
 	}
 }
 
-func executeTestCommand(args []string) (string, string, string, []string, bool, bool, bool, string, string) {
+func executeTestCommand(args []string) (string, string, string, []string, bool, bool, bool, string, string, map[string]string) {
 	var (
 		share, join, readOnly                          bool
 		username, groupname, serverName, url, password string
 		commandArgs                                    []string
 	)
+
+	env := make(map[string]string)
 
 	for i := 0; i < len(args); i++ {
 		switch {
@@ -231,8 +272,7 @@ func executeTestCommand(args []string) (string, string, string, []string, bool, 
 		case args[i] == "-s" || args[i] == "--share":
 			share = true
 		case args[i] == "-h" || args[i] == "--help":
-			return username, groupname, serverName, commandArgs, share, join, readOnly, url, password
-
+			return username, groupname, serverName, commandArgs, share, join, readOnly, url, password, env
 		case strings.HasPrefix(args[i], "-u") || strings.HasPrefix(args[i], "--username"):
 			username, i = extractValue(args, i)
 		case strings.HasPrefix(args[i], "-g") || strings.HasPrefix(args[i], "--groupname"):
@@ -241,6 +281,8 @@ func executeTestCommand(args []string) (string, string, string, []string, bool, 
 			url, i = extractValue(args, i)
 		case strings.HasPrefix(args[i], "-p") || strings.HasPrefix(args[i], "--password"):
 			password, i = extractValue(args, i)
+		case strings.HasPrefix(args[i], "--env"):
+			i = extractEnvValue(args, i, env)
 		case strings.HasPrefix(args[i], "--read-only"):
 			var value string
 			value, i = extractValue(args, i)
@@ -265,5 +307,5 @@ func executeTestCommand(args []string) (string, string, string, []string, bool, 
 		join = true
 	}
 
-	return username, groupname, serverName, commandArgs, share, join, readOnly, url, password
+	return username, groupname, serverName, commandArgs, share, join, readOnly, url, password, env
 }
