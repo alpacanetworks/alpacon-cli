@@ -187,6 +187,9 @@ $ alpacon websh -u [USER NAME] -g [GROUP NAME] [SERVER NAME] [COMMAND]
 $ alpacon websh --username=[USER NAME] --groupname=[GROUP NAME] [SERVER NAME] [COMMAND]
 
 $ alpacon websh --env="KEY1=VALUE1" --env="KEY2=VALUE2" [SERVER NAME] [COMMAND]
+
+# Use the current shell's value for the environment variable 'KEY'.
+$ alpacon websh --env="KEY" [SERVER NAME] [COMMAND]
 ```
 - Note: All flags must be placed before the `[SERVER NAME]`.
 

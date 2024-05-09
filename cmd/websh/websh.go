@@ -7,6 +7,7 @@ import (
 	"github.com/alpacanetworks/alpacon-cli/client"
 	"github.com/alpacanetworks/alpacon-cli/utils"
 	"github.com/spf13/cobra"
+	"os"
 	"strings"
 )
 
@@ -23,6 +24,12 @@ var WebshCmd = &cobra.Command{
 
 	// Execute a command directly on a server and retrieve the output
 	alpacon websh [SERVER_NAME] [COMMAND]
+	
+	// Set the environment variable 'KEY' to 'VALUE' for the command.
+	alpacon websh --env="KEY1=VALUE1" --env="KEY2=VALUE2" [SERVER NAME] [COMMAND]
+
+	// Use the current shell's value for the environment variable 'KEY'.
+	alpacon websh --env="KEY" [SERVER NAME] [COMMAND]
 
 	// Open a websh terminal as a root user
 	alpacon websh -r [SERVER_NAME]
@@ -45,6 +52,8 @@ var WebshCmd = &cobra.Command{
 	-r          					   Run the websh terminal as the root user.
 	-u / --username [USER_NAME]        Specify the username under which the command should be executed.
 	-g / --groupname [GROUP_NAME]      Specify the group name under which the command should be executed.
+	--env="KEY=VALUE"                  Set the environment variable 'KEY' to 'VALUE' for the command.
+	--env="KEY"                        Use the current shell's value for the environment variable 'KEY'.	
 	
 	-s, --share                        Share the current terminal to others via a temporary link.
 	--url [SHARED_URL]                 Specify the URL of the shared session to join.
@@ -157,6 +166,13 @@ func extractEnvValue(args []string, i int, env map[string]string) int {
 	parts := strings.SplitN(envString, "=", 2)
 	if len(parts) == 2 {
 		env[parts[0]] = parts[1]
+	} else if len(parts) == 1 {
+		value, exists := os.LookupEnv(parts[0])
+		if !exists {
+			utils.CliWarning("No environment variable found for key '%s'\n", parts[0])
+		} else {
+			env[parts[0]] = value
+		}
 	} else {
 		utils.CliError("Invalid format for --env. Expected '--env=KEY=VALUE'.")
 	}
