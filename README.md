@@ -40,6 +40,16 @@ brew tap alpacanetworks/cli https://github.com/alpacanetworks/alpacon-cli
 brew install alpacon-cli
 ```
 
+#### Download from GitHub Releases
+```bash
+VERSION=<latest-version> # Replace with the actual version
+wget https://github.com/alpacanetworks/alpacon-cli/releases/download/${VERSION}/alpacon-${VERSION}-darwin-arm64.tar.gz
+tar -xvf alpacon-${VERSION}-darwin-arm64.tar.gz
+chmod +x alpacon
+sudo mv alpacon /usr/local/bin
+```
+
+
 ### Linux
 
 #### Debian and Ubuntu
@@ -56,7 +66,7 @@ curl -s https://packagecloud.io/install/repositories/alpacanetworks/alpacon/scri
 sudo yum install alpacon
 ```
 
-#### Download from GitHub Releases:
+#### Download from GitHub Releases
 ```bash
 VERSION=<latest-version> # Replace with the actual version
 wget https://github.com/alpacanetworks/alpacon-cli/releases/download/${VERSION}/alpacon-${VERSION}-linux-amd64.tar.gz
