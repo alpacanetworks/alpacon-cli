@@ -39,14 +39,6 @@ sudo mv alpacon-cli /usr/local/bin/alpacon
 brew tap alpacanetworks/cli https://github.com/alpacanetworks/alpacon-cli
 brew install alpacon-cli
 ```
-    
-```bash
-VERSION=<latest-version> # Replace with the actual version
-wget https://github.com/alpacanetworks/alpacon-cli/releases/download/${VERSION}/alpacon-${VERSION}-darwin-arm64.tar.gz
-tar -xvf alpacon-${VERSION}-darwin-arm64.tar.gz
-chmod +x alpacon
-sudo mv alpacon /usr/local/bin
-```
 
 ### Linux
 
