@@ -17,7 +17,7 @@ type SignRequestResponse struct {
 	DomainList   []string `json:"domain_list"`
 	IpList       []string `json:"ip_list"`
 	ValidDays    int      `json:"valid_days"`
-	State        string   `json:"state"`
+	Status       string   `json:"status"`
 	RequestedIp  string   `json:"requested_ip"`
 	RequestedBy  string   `json:"requested_by"`
 	SubmitURL    string   `json:"submit_url"`
@@ -113,7 +113,7 @@ type CSRResponse struct {
 	DomainList      []string  `json:"domain_list"`
 	IpList          []string  `json:"ip_list"`
 	ValidDays       int       `json:"valid_days"`
-	State           string    `json:"state"`
+	Status          string    `json:"status"`
 	RequestedIp     string    `json:"requested_ip"`
 	RequestedBy     string    `json:"requested_by"`
 	RequestedByName string    `json:"requested_by_name"`
@@ -126,7 +126,7 @@ type CSRAttributes struct {
 	Authority     string   `json:"authority"`
 	DomainList    []string `json:"domain_list"`
 	IpList        []string `json:"ip_list"`
-	State         string   `json:"state"`
+	Status        string   `json:"status"`
 	RequestedIp   string   `json:"requested_ip"`
 	RequestedBy   string   `json:"requested_by"`
 	RequestedDate string   `json:"requested_date"`
@@ -141,6 +141,7 @@ type Certificate struct {
 	SignedAt  time.Time `json:"signed_at"`
 	ExpiresAt time.Time `json:"expires_at"`
 	SignedBy  string    `json:"signed_by"`
+	RenewedBy string    `json:"renewed_by"`
 }
 
 type CertificateAttributes struct {
@@ -151,4 +152,5 @@ type CertificateAttributes struct {
 	SignedAt  string `json:"signed_at"`
 	ExpiresAt string `json:"expires_at"`
 	SignedBy  string `json:"signed_by"`
+	RenewedBy string `json:"renewed_by"`
 }

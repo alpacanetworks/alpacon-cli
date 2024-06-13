@@ -21,14 +21,14 @@ var csrListCmd = &cobra.Command{
 	alpacon csr all
 	`,
 	Run: func(cmd *cobra.Command, args []string) {
-		state, _ := cmd.Flags().GetString("state")
+		status, _ := cmd.Flags().GetString("status")
 
 		alpaconClient, err := client.NewAlpaconAPIClient()
 		if err != nil {
 			utils.CliError("Connection to Alpacon API failed: %s. Consider re-logging.", err)
 		}
 
-		csrList, err := cert.GetCSRList(alpaconClient, state)
+		csrList, err := cert.GetCSRList(alpaconClient, status)
 		if err != nil {
 			utils.CliError("Failed to retrieve the csr list: %s.", err)
 		}

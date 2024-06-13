@@ -383,9 +383,9 @@ $ alpacon authority rm [AUTHORITY ID]
 # Generate a new Certificate Signing Request (CSR)
 $ alpacon csr create
 
-# Display a list of CSRs, optionally filtered by state
+# Display a list of CSRs, optionally filtered by status
 $ alpacon csr ls
-$ alpacon csr ls --state=signed
+$ alpacon csr ls --status=signed
 
 # Approve a Certificate Signing Request
 $ alpacon csr approve [CSR ID]

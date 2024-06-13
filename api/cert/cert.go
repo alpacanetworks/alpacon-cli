@@ -60,13 +60,13 @@ func CreateAuthority(ac *client.AlpaconClient, authorityRequest AuthorityRequest
 	return response, nil
 }
 
-func GetCSRList(ac *client.AlpaconClient, state string) ([]CSRAttributes, error) {
+func GetCSRList(ac *client.AlpaconClient, status string) ([]CSRAttributes, error) {
 	var csrList []CSRAttributes
 	page := 1
 	const pageSize = 100
 
 	params := map[string]string{
-		"state":     state,
+		"status":    status,
 		"page":      strconv.Itoa(page),
 		"page_size": fmt.Sprintf("%d", pageSize),
 	}
@@ -89,7 +89,7 @@ func GetCSRList(ac *client.AlpaconClient, state string) ([]CSRAttributes, error)
 				Authority:     csr.AuthorityName,
 				DomainList:    csr.DomainList,
 				IpList:        csr.IpList,
-				State:         csr.State,
+				Status:        csr.Status,
 				RequestedIp:   csr.RequestedIp,
 				RequestedBy:   csr.RequestedByName,
 				RequestedDate: utils.TimeUtils(csr.AddedAt),
@@ -244,6 +244,7 @@ func GetCertificateList(ac *client.AlpaconClient) ([]CertificateAttributes, erro
 				SignedAt:  utils.TimeUtils(cert.SignedAt),
 				ExpiresAt: utils.TimeUtils(cert.ExpiresAt),
 				SignedBy:  cert.SignedBy,
+				RenewedBy: cert.RenewedBy,
 			})
 		}
 
