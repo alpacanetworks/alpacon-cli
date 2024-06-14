@@ -184,17 +184,12 @@ func DownloadPackage(ac *client.AlpaconClient, fileName string, dest string, pac
 		url = systemPackageEntryURL
 	}
 
-	type DownloadURL struct {
-		DownloadURL string `json:"download_url"`
-	}
-
-	var downloadURL DownloadURL
-
 	respBody, err := ac.SendGetRequest(utils.BuildURL(url, packageID, nil))
 	if err != nil {
 		return err
 	}
 
+	var downloadURL DownloadURL
 	err = json.Unmarshal(respBody, &downloadURL)
 	if err != nil {
 		return err

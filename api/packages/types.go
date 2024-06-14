@@ -43,3 +43,7 @@ type SystemPackageDetail struct {
 	AddedAt     string `json:"added_at"`
 	DownloadURL string `json:"download_url"`
 }
+
+type DownloadURL struct {
+	DownloadURL string `json:"download_url"`
+}
