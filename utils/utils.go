@@ -86,6 +86,13 @@ func PromptForIntInput(promptText string) int {
 	return inputInt
 }
 
+func PromptForIntInputNoValidation(promptText string) (int, error) {
+	inputStr := PromptForInput(promptText)
+	inputInt, err := strconv.Atoi(inputStr)
+
+	return inputInt, err
+}
+
 func PromptForListInput(promptText string) []string {
 	inputStr := PromptForInput(promptText)
 	inputList := strings.Split(inputStr, ",")

@@ -5,7 +5,7 @@ import "time"
 type SignRequest struct {
 	DomainList  []string `json:"domain_list"`
 	IpList      []string `json:"ip_list"`
-	ValidDays   string   `json:"valid_days"`
+	ValidDays   int      `json:"valid_days"`
 	CsrText     string   `json:"csr_text"`
 	RequestedBy string   `json:"requested_by"`
 }

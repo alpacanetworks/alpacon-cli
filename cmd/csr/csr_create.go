@@ -77,11 +77,17 @@ func promptForCert() (certApi.SignRequest, cert.CertificatePath) {
 
 	signRequest.DomainList = utils.PromptForListInput("domain list (e.g., domain1.com, domain2.com): ")
 	signRequest.IpList = utils.PromptForListInput("ip list (e.g., 192.168.1.1, 10.0.0.1): ")
-	if len(signRequest.DomainList) == 0 && len(signRequest.IpList) == 0 {
+
+	if len(signRequest.DomainList[0]) == 0 && len(signRequest.IpList[0]) == 0 {
 		utils.CliError("You must enter at least a domain list or an IP list.")
 	}
 
-	signRequest.ValidDays = utils.PromptForRequiredInput("valid days: ")
+	var err error
+	signRequest.ValidDays, err = utils.PromptForIntInputNoValidation("valid days: ")
+
+	if signRequest.ValidDays == 0 || err != nil {
+		signRequest.ValidDays = 365
+	}
 
 	domainName := signRequest.DomainList[0]
 	defaultKeyPath := fmt.Sprintf("%s/%s.key", defaultPrivateKeyDir, domainName)
