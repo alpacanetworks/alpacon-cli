@@ -83,7 +83,7 @@ func promptForCert() (certApi.SignRequest, cert.CertificatePath) {
 	}
 
 	var err error
-	signRequest.ValidDays, err = utils.PromptForIntInputNoValidation("valid days: ")
+	signRequest.ValidDays, err = utils.PromptForIntInputNoValidation("valid days (default : 365): ")
 
 	if signRequest.ValidDays == 0 || err != nil {
 		signRequest.ValidDays = 365
