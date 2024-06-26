@@ -78,29 +78,30 @@ func promptForCert() (certApi.SignRequest, cert.CertificatePath) {
 	signRequest.DomainList = utils.PromptForListInput("domain list (e.g., domain1.com, domain2.com): ")
 	signRequest.IpList = utils.PromptForListInput("ip list (e.g., 192.168.1.1, 10.0.0.1): ")
 
-	if len(signRequest.DomainList[0]) == 0 && len(signRequest.IpList[0]) == 0 {
+	if (len(signRequest.DomainList) == 0) && (len(signRequest.IpList) == 0) {
 		utils.CliError("You must enter at least a domain list or an IP list.")
 	}
 
-	var err error
-	signRequest.ValidDays, err = utils.PromptForIntInputNoValidation("valid days (default : 365): ")
+	signRequest.ValidDays = utils.PromptForIntInput("valid days (default: 365): ", 365)
 
-	if signRequest.ValidDays == 0 || err != nil {
-		signRequest.ValidDays = 365
+	var commonName string
+	if len(signRequest.DomainList) > 0 {
+		commonName = signRequest.DomainList[0]
+	} else {
+		commonName = signRequest.IpList[0]
 	}
 
-	domainName := signRequest.DomainList[0]
-	defaultKeyPath := fmt.Sprintf("%s/%s.key", defaultPrivateKeyDir, domainName)
-	defaultCSRPath := fmt.Sprintf("%s/%s.csr", defaultCSRDir, domainName)
+	defaultKeyPath := fmt.Sprintf("%s/%s.key", defaultPrivateKeyDir, commonName)
+	defaultCSRPath := fmt.Sprintf("%s/%s.csr", defaultCSRDir, commonName)
 
 	utils.CliInfo(infoMessage)
 
-	certPath.PrivateKeyPath = utils.PromptForInput(fmt.Sprintf("Path for the Private Key file[`%s`]: ", defaultKeyPath))
+	certPath.PrivateKeyPath = utils.PromptForInput(fmt.Sprintf("Path for the Private Key file (default: `%s`): ", defaultKeyPath))
 	if certPath.PrivateKeyPath == "" {
 		certPath.PrivateKeyPath = defaultKeyPath
 	}
 
-	certPath.CSRPath = utils.PromptForInput(fmt.Sprintf("Path for the CSR file[`%s`]: ", defaultCSRPath))
+	certPath.CSRPath = utils.PromptForInput(fmt.Sprintf("Path for the CSR file (default: `%s`): ", defaultCSRPath))
 	if certPath.CSRPath == "" {
 		certPath.CSRPath = defaultCSRPath
 	}

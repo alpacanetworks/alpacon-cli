@@ -76,21 +76,28 @@ func PromptForRequiredInput(promptText string) string {
 	}
 }
 
-func PromptForIntInput(promptText string) int {
+func PromptForRequiredIntInput(promptText string) int {
 	inputStr := PromptForInput(promptText)
 	inputInt, err := strconv.Atoi(inputStr)
 	if err != nil {
 		fmt.Println("Only integers are allowed. Please try again.")
-		return PromptForIntInput(promptText)
+		return PromptForRequiredIntInput(promptText)
 	}
 	return inputInt
 }
 
-func PromptForIntInputNoValidation(promptText string) (int, error) {
+func PromptForIntInput(promptText string, defaultValue int) int {
 	inputStr := PromptForInput(promptText)
+	inputStr = strings.TrimSpace(inputStr)
+	if inputStr == "" {
+		return defaultValue
+	}
 	inputInt, err := strconv.Atoi(inputStr)
-
-	return inputInt, err
+	if err != nil {
+		fmt.Printf("Invalid input. Using default value: %d\n", defaultValue)
+		return defaultValue
+	}
+	return inputInt
 }
 
 func PromptForListInput(promptText string) []string {
@@ -99,6 +106,10 @@ func PromptForListInput(promptText string) []string {
 	for i, item := range inputList {
 		inputList[i] = strings.TrimSpace(item)
 	}
+	if len(inputList) == 1 && inputList[0] == "" {
+		return []string{}
+	}
+
 	return inputList
 }
 

@@ -41,9 +41,9 @@ func promptForAuthority(ac *client.AlpaconClient) cert.AuthorityRequest {
 	authorityRequest.Name = utils.PromptForRequiredInput("Common name for the CA. (e.g., Alapca Networks' Root CA): ")
 	authorityRequest.Organization = utils.PromptForRequiredInput("Organization name that this CA belongs to. (e.g., Alpaca Networks): ")
 	authorityRequest.Domain = utils.PromptForRequiredInput("Domain name of the root certificate: ")
-	authorityRequest.RootValidDays = utils.PromptForIntInput("Root certificate validity in days (10 years = 3650): ")
-	authorityRequest.DefaultValidDays = utils.PromptForIntInput("Child certificate validity in days (3 months = 90, 1 year = 365): ")
-	authorityRequest.MaxValidDays = utils.PromptForIntInput("Maximum valid days that users can request: ")
+	authorityRequest.RootValidDays = utils.PromptForIntInput("Root certificate validity in days (default: 3650): ", 365*10)
+	authorityRequest.DefaultValidDays = utils.PromptForIntInput("Child certificate validity in days (default: 365): ", 365)
+	authorityRequest.MaxValidDays = utils.PromptForIntInput("Maximum valid days that users can request (default: 730)", 365*2)
 
 	agent := utils.PromptForRequiredInput("Name of sever to run this CA on: ")
 	agentID, err := server.GetServerIDByName(ac, agent)
@@ -53,11 +53,10 @@ func promptForAuthority(ac *client.AlpaconClient) cert.AuthorityRequest {
 	authorityRequest.Agent = agentID
 
 	owner := utils.PromptForRequiredInput("Owner(username): ")
-	ownerID, err := iam.GetUserIDByName(ac, owner)
+	authorityRequest.Owner, err = iam.GetUserIDByName(ac, owner)
 	if err != nil {
 		utils.CliError("Failed to retrieve the user %s", err)
 	}
-	authorityRequest.Owner = ownerID
 
 	return authorityRequest
 }
