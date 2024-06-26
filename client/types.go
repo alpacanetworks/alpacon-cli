@@ -7,6 +7,7 @@ type AlpaconClient struct {
 	BaseURL    string
 	Token      string
 	Privileges string
+	UserAgent  string
 }
 
 type CheckAuthResponse struct {

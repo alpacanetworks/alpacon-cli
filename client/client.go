@@ -6,6 +6,7 @@ import (
 	"errors"
 	"fmt"
 	"github.com/alpacanetworks/alpacon-cli/config"
+	"github.com/alpacanetworks/alpacon-cli/utils"
 	"io"
 	"mime/multipart"
 	"net/http"
@@ -28,6 +29,7 @@ func NewAlpaconAPIClient() (*AlpaconClient, error) {
 		HTTPClient: &http.Client{},
 		BaseURL:    config.ServerAddress,
 		Token:      config.Token,
+		UserAgent:  utils.SetUserAgent(),
 	}
 
 	err = client.checkAuth()
@@ -90,14 +92,28 @@ func getUserPrivileges(isStaff, isSuperuser bool) string {
 	return "general"
 }
 
+func (ac *AlpaconClient) SetWebsocketHeader() http.Header {
+	headers := http.Header{}
+	headers.Set("Origin", ac.BaseURL)
+	headers.Set("User-Agent", ac.UserAgent)
+
+	return headers
+}
+
+func (ac *AlpaconClient) setHTTPHeader(req *http.Request) *http.Request {
+	req.Header.Set("User-Agent", ac.UserAgent)
+	req.Header.Set("Authorization", fmt.Sprintf("token=\"%s\"", ac.Token))
+
+	return req
+}
+
 func (ac *AlpaconClient) createRequest(method, url string, body io.Reader) (*http.Request, error) {
 	req, err := http.NewRequest(method, ac.BaseURL+url, body)
 	if err != nil {
 		return nil, err
 	}
 
-	authHeaderValue := fmt.Sprintf("token=\"%s\"", ac.Token)
-	req.Header.Add("Authorization", authHeaderValue)
+	req = ac.setHTTPHeader(req)
 	if method == "POST" || method == "PATCH" || method == "PUT" {
 		req.Header.Add("Content-Type", "application/json")
 	}

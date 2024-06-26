@@ -11,7 +11,6 @@ import (
 	"github.com/gorilla/websocket"
 	"golang.org/x/term"
 	"io"
-	"net/http"
 	"net/url"
 	"os"
 	"path"
@@ -100,7 +99,7 @@ func CreateWebshSession(ac *client.AlpaconClient, serverName, username, groupnam
 // Handles graceful termination of the websh terminal.
 // Exits on error without further error handling.
 func OpenNewTerminal(ac *client.AlpaconClient, sessionResponse SessionResponse) error {
-	headers := http.Header{"Origin": []string{ac.BaseURL}}
+	headers := ac.SetWebsocketHeader()
 
 	conn, _, err := websocket.DefaultDialer.Dial(sessionResponse.WebsocketURL, headers)
 	if err != nil {

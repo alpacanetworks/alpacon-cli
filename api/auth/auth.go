@@ -28,6 +28,7 @@ func LoginAndSaveCredentials(loginReq *LoginRequest, token string) error {
 			HTTPClient: &http.Client{},
 			BaseURL:    loginReq.ServerAddress,
 			Token:      token,
+			UserAgent:  utils.SetUserAgent(),
 		}
 
 		_, err := client.SendGetRequest(statusURL)
@@ -59,6 +60,7 @@ func LoginAndSaveCredentials(loginReq *LoginRequest, token string) error {
 	}
 
 	httpReq.Header.Add("Content-Type", "application/json")
+	httpReq.Header.Set("User-Agent", utils.SetUserAgent())
 
 	resp, err := httpClient.Do(httpReq)
 	if err != nil {

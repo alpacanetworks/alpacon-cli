@@ -7,21 +7,19 @@ import (
 	"github.com/spf13/cobra"
 )
 
-const VersionCli = "0.1.9"
-
 var versionCmd = &cobra.Command{
 	Use:   "version",
 	Short: "Displays the current CLI version.",
 	Long:  "Displays the current version of the CLI and checks if there is an available update.",
 	Run: func(cmd *cobra.Command, args []string) {
-		utils.CliInfo("Current version: %s", VersionCli)
+		utils.CliInfo("Current version: %s", utils.VersionCli)
 		release, skip := versionCheck()
 		if skip == false {
 			utils.CliWarning("Upgrade available. Current version: %s. Latest version: %s \n"+
-				"Visit %s for update instructions and release notes.", VersionCli, release.GetTagName(), release.GetHTMLURL())
+				"Visit %s for update instructions and release notes.", utils.VersionCli, release.GetTagName(), release.GetHTMLURL())
 			return
 		} else {
-			utils.CliInfo("You are up to date! %s is the latest version available.", VersionCli)
+			utils.CliInfo("You are up to date! %s is the latest version available.", utils.VersionCli)
 		}
 
 		return
@@ -38,7 +36,7 @@ func versionCheck() (*github.RepositoryRelease, bool) {
 		return nil, true
 	}
 
-	if release.GetTagName() != VersionCli {
+	if release.GetTagName() != utils.VersionCli {
 		return release, false
 	}
 

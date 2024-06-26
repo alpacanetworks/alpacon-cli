@@ -70,3 +70,12 @@ func PrintJson(body []byte) {
 func PrintHeader(header string) {
 	fmt.Println(Blue(header))
 }
+
+func PrettyJSON(data []byte) (*bytes.Buffer, error) {
+	var prettyJSON bytes.Buffer
+	if err := json.Indent(&prettyJSON, data, "", "\t"); err != nil {
+		return nil, err
+	}
+
+	return &prettyJSON, nil
+}
