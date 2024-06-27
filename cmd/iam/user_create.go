@@ -1,6 +1,7 @@
 package iam
 
 import (
+	"fmt"
 	"github.com/alpacanetworks/alpacon-cli/api/iam"
 	"github.com/alpacanetworks/alpacon-cli/client"
 	"github.com/alpacanetworks/alpacon-cli/utils"
@@ -43,7 +44,17 @@ func promptForUser(ac *client.AlpaconClient) iam.UserCreateRequest {
 	var userRequest iam.UserCreateRequest
 
 	userRequest.Username = utils.PromptForRequiredInput("Username(required): ")
-	userRequest.Password = utils.PromptForPassword("Password(required)")
+	for {
+		password := utils.PromptForPassword("Password(required): ")
+		confirmPassword := utils.PromptForPassword("Confirm Password: ")
+
+		if password == confirmPassword {
+			userRequest.Password = password
+			break
+		} else {
+			fmt.Println("Passwords do not match. Please try again.")
+		}
+	}
 	userRequest.FirstName = utils.PromptForRequiredInput("First name(required): ")
 	userRequest.LastName = utils.PromptForRequiredInput("Last name(required): ")
 	userRequest.Email = utils.PromptForRequiredInput("Email(required): ")
