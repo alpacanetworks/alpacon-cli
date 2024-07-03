@@ -19,7 +19,7 @@ var certDownloadCmd = &cobra.Command{
 	`,
 	Args: cobra.ExactArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
-		csrId := args[0]
+		certId := args[0]
 		filePath, _ := cmd.Flags().GetString("out")
 		if filePath == "" {
 			filePath = promptForCertificate()
@@ -30,7 +30,7 @@ var certDownloadCmd = &cobra.Command{
 			utils.CliError("Connection to Alpacon API failed: %s. Consider re-logging.", err)
 		}
 
-		err = cert.DownloadCertificate(alpaconClient, csrId, filePath)
+		err = cert.DownloadCertificate(alpaconClient, certId, filePath)
 		if err != nil {
 			utils.CliError("Failed to download the certificate from authority: %s.", err)
 		}
@@ -42,7 +42,6 @@ var certDownloadCmd = &cobra.Command{
 func init() {
 	var filePath string
 	certDownloadCmd.Flags().StringVarP(&filePath, "out", "o", "", "path where certificate should be stored")
-
 }
 
 func promptForCertificate() string {

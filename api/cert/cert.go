@@ -257,8 +257,8 @@ func GetCertificateList(ac *client.AlpaconClient) ([]CertificateAttributes, erro
 	return certList, nil
 }
 
-func DownloadCertificate(ac *client.AlpaconClient, csrId string, filePath string) error {
-	body, err := GetCertificateDetail(ac, csrId)
+func DownloadCertificate(ac *client.AlpaconClient, certId string, filePath string) error {
+	body, err := GetCertificateDetail(ac, certId)
 	if err != nil {
 		return err
 	}
