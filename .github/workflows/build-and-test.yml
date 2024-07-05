@@ -4,8 +4,12 @@ on:
     branches: [main]
     paths-ignore:
       - "docs/**"
+
   pull_request:
     types: [opened, ready_for_review]
+
+  workflow_call:
+    secrets: inherit
 
 jobs:
   build-and-test:

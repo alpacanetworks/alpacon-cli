@@ -7,7 +7,11 @@ on:
 
 
 jobs:
+  build-and-test:
+    uses: ./.github/workflows/build-and-test.yml
+
   goreleaser:
+    needs: [build-and-test]
     runs-on: ubuntu-latest
     steps:
       - name: Check out code
@@ -51,7 +55,7 @@ jobs:
           path: dist/alpacon_${{ github.ref_name }}_linux_amd64.rpm
 
   packagecloud-deploy:
-    needs: goreleaser
+    needs: [goreleaser]
     runs-on: ubuntu-latest
     steps:
       - name: Download AMD64 DEB Artifacts
