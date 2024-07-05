@@ -1,5 +1,11 @@
 name: Build and Test
-on: [push, pull_request]
+on:
+  push:
+    branches: [main]
+    paths-ignore:
+      - "docs/**"
+  pull_request:
+    types: [opened, ready_for_review]
 
 jobs:
   build-and-test:
