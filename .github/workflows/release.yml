@@ -1,11 +1,14 @@
-name: goreleaser
+name: Release
 
 on:
   push:
     # run only against tags
     tags:
       - "*"
-
+  workflow_run:
+    workflows: ["Build and Test"]
+    types:
+      - completed
   # permissions:
   # contents: write
   # packages: write
@@ -14,6 +17,7 @@ on:
 jobs:
   goreleaser:
     runs-on: ubuntu-latest
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
     steps:
       - name: Check out code
         uses: actions/checkout@v3
