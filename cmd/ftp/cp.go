@@ -1,6 +1,7 @@
 package ftp
 
 import (
+	"fmt"
 	"github.com/alpacanetworks/alpacon-cli/api/ftp"
 	"github.com/alpacanetworks/alpacon-cli/client"
 	"github.com/alpacanetworks/alpacon-cli/utils"
@@ -94,5 +95,6 @@ func uploadFile(client *client.AlpaconClient, src []string, dest, username, grou
 	if err != nil {
 		utils.CliError("Failed to upload the file to server: %s.", err)
 	}
-	utils.CliInfo("Upload request for %s to %s successful. result: %s.", src, dest, result)
+	utils.CliInfo("Upload request for %s to %s successful.", src, dest)
+	fmt.Printf("Result: %s.\n", result)
 }
