@@ -99,35 +99,40 @@ func CreateWebshSession(ac *client.AlpaconClient, serverName, username, groupnam
 // Handles graceful termination of the websh terminal.
 // Exits on error without further error handling.
 func OpenNewTerminal(ac *client.AlpaconClient, sessionResponse SessionResponse) error {
-	headers := ac.SetWebsocketHeader()
+	wsClient := &WebsocketClient{
+		Header: ac.SetWebsocketHeader(),
+		Done:   make(chan error, 1),
+	}
 
-	conn, _, err := websocket.DefaultDialer.Dial(sessionResponse.WebsocketURL, headers)
+	var err error
+	wsClient.conn, _, err = websocket.DefaultDialer.Dial(sessionResponse.WebsocketURL, wsClient.Header)
+	if err != nil {
+		utils.CliError("websocket connection faiied %v", err)
+	}
+	defer wsClient.conn.Close()
+
+	err = wsClient.runWsClient()
 	if err != nil {
 		return err
 	}
-	defer conn.Close()
 
-	if err = runWsClient(conn); err != nil {
-		return err
-	}
 	return nil
 }
 
-func runWsClient(conn *websocket.Conn) error {
+func (wsClient *WebsocketClient) runWsClient() error {
 	oldState, err := checkTerminal()
 	if err != nil {
-		return err
+		utils.CliError("websocket connection faiild %v", err)
 	}
 	defer term.Restore(int(os.Stdin.Fd()), oldState)
 
-	done := make(chan error, 1)
 	inputChan := make(chan string, 1)
 
-	go readFromServer(conn, done)
-	go readUserInput(inputChan, done)
-	go writeToServer(conn, inputChan, done)
+	go wsClient.readFromServer()
+	go wsClient.readUserInput(inputChan)
+	go wsClient.writeToServer(inputChan)
 
-	return <-done
+	return <-wsClient.Done
 }
 
 func checkTerminal() (*term.State, error) {
@@ -143,34 +148,34 @@ func checkTerminal() (*term.State, error) {
 	return oldState, nil
 }
 
-func readFromServer(conn *websocket.Conn, done chan<- error) {
+func (wsClient *WebsocketClient) readFromServer() {
 	for {
-		_, message, err := conn.ReadMessage()
+		_, message, err := wsClient.conn.ReadMessage()
 		if err != nil {
-			done <- err
+			wsClient.Done <- err
 			return
 		}
 		fmt.Print(string(message))
 	}
 }
 
-func readUserInput(inputChan chan<- string, done chan<- error) {
+func (wsClient *WebsocketClient) readUserInput(inputChan chan<- string) {
 	reader := bufio.NewReader(os.Stdin)
 	for {
 		char, _, err := reader.ReadRune()
 		if err != nil {
 			if err == io.EOF {
-				done <- nil
+				wsClient.Done <- nil
 				return
 			}
-			done <- err
+			wsClient.Done <- err
 			return
 		}
 		inputChan <- string(char)
 	}
 }
 
-func writeToServer(conn *websocket.Conn, inputChan <-chan string, done chan<- error) {
+func (wsClient *WebsocketClient) writeToServer(inputChan <-chan string) {
 	var inputBuffer []rune
 	for {
 		select {
@@ -178,9 +183,9 @@ func writeToServer(conn *websocket.Conn, inputChan <-chan string, done chan<- er
 			inputBuffer = append(inputBuffer, []rune(input)...)
 		case <-time.After(time.Millisecond * 5):
 			if len(inputBuffer) > 0 {
-				err := conn.WriteMessage(websocket.TextMessage, []byte(string(inputBuffer)))
+				err := wsClient.conn.WriteMessage(websocket.TextMessage, []byte(string(inputBuffer)))
 				if err != nil {
-					done <- err
+					wsClient.Done <- err
 					return
 				}
 				inputBuffer = []rune{}

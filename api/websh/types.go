@@ -1,6 +1,16 @@
 package websh
 
-import "time"
+import (
+	"github.com/gorilla/websocket"
+	"net/http"
+	"time"
+)
+
+type WebsocketClient struct {
+	Header http.Header
+	conn   *websocket.Conn
+	Done   chan error
+}
 
 type SessionRequest struct {
 	Rows      int    `json:"rows"`
