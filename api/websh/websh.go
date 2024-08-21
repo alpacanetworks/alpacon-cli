@@ -109,7 +109,7 @@ func OpenNewTerminal(ac *client.AlpaconClient, sessionResponse SessionResponse) 
 	if err != nil {
 		utils.CliError("websocket connection faiied %v", err)
 	}
-	defer wsClient.conn.Close()
+	defer func() { _ = wsClient.conn.Close() }()
 
 	err = wsClient.runWsClient()
 	if err != nil {
@@ -124,7 +124,7 @@ func (wsClient *WebsocketClient) runWsClient() error {
 	if err != nil {
 		utils.CliError("websocket connection faiild %v", err)
 	}
-	defer term.Restore(int(os.Stdin.Fd()), oldState)
+	defer func() { _ = term.Restore(int(os.Stdin.Fd()), oldState) }()
 
 	inputChan := make(chan string, 1)
 

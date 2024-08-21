@@ -126,7 +126,7 @@ func (ac *AlpaconClient) sendRequest(req *http.Request) ([]byte, error) {
 	if err != nil {
 		return nil, err
 	}
-	defer resp.Body.Close()
+	defer func() { _ = resp.Body.Close() }()
 
 	contentType := resp.Header.Get("Content-Type")
 	// Check for non-empty and non-JSON content types. Empty content type allowed for responses without content (e.g., from PATCH requests).
@@ -206,7 +206,7 @@ func (ac *AlpaconClient) SendMultipartRequest(url string, multiPartWriter *multi
 	if err != nil {
 		return nil, err
 	}
-	defer resp.Body.Close()
+	defer func() { _ = resp.Body.Close() }()
 
 	contentType := resp.Header.Get("Content-Type")
 	// Check for non-empty and non-JSON content types. Empty content type allowed for responses without content (e.g., from PATCH requests).

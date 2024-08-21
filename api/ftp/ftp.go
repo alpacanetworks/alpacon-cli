@@ -59,10 +59,7 @@ func UploadFile(ac *client.AlpaconClient, src []string, dest, username, groupnam
 		if err != nil {
 			return nil, err
 		}
-		err = writer.Close()
-		if err != nil {
-			return nil, err
-		}
+		defer func() { _ = writer.Close() }()
 		respBody, err := ac.SendMultipartRequest(uploadAPIURL, writer, requestBody)
 		if err != nil {
 			return nil, err
@@ -152,7 +149,7 @@ func DownloadFile(ac *client.AlpaconClient, src, dest, username, groupname strin
 			}
 		}
 
-		defer resp.Body.Close()
+		defer func() { _ = resp.Body.Close() }()
 
 		respBody, err := io.ReadAll(resp.Body)
 		if err != nil {
