@@ -144,9 +144,9 @@ func UploadPackage(ac *client.AlpaconClient, file string, packageType string) er
 	}
 
 	var requestBody bytes.Buffer
-	multiPartWriter := multipart.NewWriter(&requestBody)
+	writer := multipart.NewWriter(&requestBody)
 
-	fileWriter, err := multiPartWriter.CreateFormFile("content", file)
+	fileWriter, err := writer.CreateFormFile("content", file)
 	if err != nil {
 		return err
 	}
@@ -154,7 +154,7 @@ func UploadPackage(ac *client.AlpaconClient, file string, packageType string) er
 	if err != nil {
 		return err
 	}
-	multiPartWriter.Close()
+	_ = writer.Close()
 
 	var requestURL string
 	if packageType == "python" {
@@ -163,7 +163,7 @@ func UploadPackage(ac *client.AlpaconClient, file string, packageType string) er
 		requestURL = systemPackageEntryURL
 	}
 
-	_, err = ac.SendMultipartRequest(requestURL, multiPartWriter, requestBody)
+	_, err = ac.SendMultipartRequest(requestURL, writer, requestBody)
 	if err != nil {
 		return err
 	}

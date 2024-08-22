@@ -59,7 +59,8 @@ func UploadFile(ac *client.AlpaconClient, src []string, dest, username, groupnam
 		if err != nil {
 			return nil, err
 		}
-		defer func() { _ = writer.Close() }()
+		_ = writer.Close()
+
 		respBody, err := ac.SendMultipartRequest(uploadAPIURL, writer, requestBody)
 		if err != nil {
 			return nil, err
