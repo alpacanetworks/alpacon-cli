@@ -114,7 +114,7 @@ func (ac *AlpaconClient) createRequest(method, url string, body io.Reader) (*htt
 	}
 
 	req = ac.setHTTPHeader(req)
-	if method == "POST" || method == "PATCH" || method == "PUT" {
+	if method == http.MethodPost || method == http.MethodPatch || method == http.MethodPut {
 		req.Header.Add("Content-Type", "application/json")
 	}
 
@@ -139,9 +139,9 @@ func (ac *AlpaconClient) sendRequest(req *http.Request) ([]byte, error) {
 		return nil, err
 	}
 
-	if req.Method == "POST" && (resp.StatusCode != http.StatusCreated && resp.StatusCode != http.StatusOK) {
+	if req.Method == http.MethodPost && (resp.StatusCode != http.StatusCreated && resp.StatusCode != http.StatusOK) {
 		return nil, errors.New(string(respBody))
-	} else if req.Method == "DELETE" && resp.StatusCode != http.StatusNoContent {
+	} else if req.Method == http.MethodDelete && resp.StatusCode != http.StatusNoContent {
 		return nil, errors.New(string(respBody))
 	} else if resp.StatusCode < http.StatusOK || resp.StatusCode >= http.StatusMultipleChoices {
 		return nil, errors.New(string(respBody))
@@ -152,7 +152,7 @@ func (ac *AlpaconClient) sendRequest(req *http.Request) ([]byte, error) {
 
 // Get Request to Alpacon Server
 func (ac *AlpaconClient) SendGetRequest(url string) ([]byte, error) {
-	req, err := ac.createRequest("GET", url, nil)
+	req, err := ac.createRequest(http.MethodGet, url, nil)
 	if err != nil {
 		return nil, err
 	}
@@ -166,7 +166,7 @@ func (ac *AlpaconClient) SendPostRequest(url string, body interface{}) ([]byte, 
 		return nil, err
 	}
 
-	req, err := ac.createRequest("POST", url, bytes.NewBuffer(jsonValue))
+	req, err := ac.createRequest(http.MethodPost, url, bytes.NewBuffer(jsonValue))
 	if err != nil {
 		return nil, err
 	}
@@ -174,7 +174,7 @@ func (ac *AlpaconClient) SendPostRequest(url string, body interface{}) ([]byte, 
 }
 
 func (ac *AlpaconClient) SendDeleteRequest(url string) ([]byte, error) {
-	req, err := ac.createRequest("DELETE", url, nil)
+	req, err := ac.createRequest(http.MethodDelete, url, nil)
 	if err != nil {
 		return nil, err
 	}
@@ -188,7 +188,7 @@ func (ac *AlpaconClient) SendPatchRequest(url string, body interface{}) ([]byte,
 		return nil, err
 	}
 
-	req, err := ac.createRequest("PATCH", url, bytes.NewBuffer(jsonValue))
+	req, err := ac.createRequest(http.MethodPatch, url, bytes.NewBuffer(jsonValue))
 	if err != nil {
 		return nil, err
 	}
@@ -196,7 +196,7 @@ func (ac *AlpaconClient) SendPatchRequest(url string, body interface{}) ([]byte,
 }
 
 func (ac *AlpaconClient) SendMultipartRequest(url string, multiPartWriter *multipart.Writer, body bytes.Buffer) ([]byte, error) {
-	req, err := ac.createRequest("POST", url, &body)
+	req, err := ac.createRequest(http.MethodPost, url, &body)
 	if err != nil {
 		return nil, err
 	}
@@ -228,7 +228,7 @@ func (ac *AlpaconClient) SendMultipartRequest(url string, multiPartWriter *multi
 
 // This function returns response for custom error handling in each function, unlike direct error throwing in sendRequest.
 func (ac *AlpaconClient) SendGetRequestForDownload(url string) (*http.Response, error) {
-	req, err := ac.createRequest("GET", url, nil)
+	req, err := ac.createRequest(http.MethodGet, url, nil)
 	if err != nil {
 		return nil, err
 	}
