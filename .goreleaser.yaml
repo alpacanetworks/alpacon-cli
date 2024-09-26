@@ -38,8 +38,8 @@ brews:
       owner: alpacanetworks
       name: alpacon-cli
     commit_author:
-      name: alpacanetworksbot
-      email: bot@alpacanetworks.com
+      name: alpacaxbot
+      email: bot@alpacax.com
     directory: Formula
     homepage: "https://github.com/alpacanetworks/alpacon-cli"
     description: "CLI for Alpaca Infra Platform"
@@ -55,7 +55,7 @@ dockers:
     dockerfile: Dockerfile
 
 nfpms:
-  - maintainer: Younghwan Kim <yh.kim@alpacanetworks.com>
+  - maintainer: Younghwan Kim <yh.kim@alpacax.com>
     description: Alpacon-CLI
     homepage: https://github.com/alpacanetworks/alpacon-cli
     license: MIT
