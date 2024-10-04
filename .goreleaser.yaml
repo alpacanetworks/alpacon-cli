@@ -42,7 +42,7 @@ brews:
       email: bot@alpacax.com
     directory: Formula
     homepage: "https://github.com/alpacanetworks/alpacon-cli"
-    description: "CLI for Alpaca Infra Platform"
+    description: "CLI for Alpacon"
 
 dockers:
   - goos: linux

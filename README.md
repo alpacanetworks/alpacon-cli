@@ -1,6 +1,6 @@
 # Alpacon-CLI
 
-`Alpacon CLI` is a powerful command-line tool designed for managing **AIP** (Alpaca Infra Platform) seamlessly from the terminal. This tool simplifies complex operations, making it easier for developers to interact with Alpacon services.
+`Alpacon CLI` is a powerful command-line tool designed for managing **Alpacon** seamlessly from the terminal. This tool simplifies complex operations, making it easier for developers to interact with Alpacon services.
 
 **NOTE** :  `Alpacon CLI` is currently in its test release phase. We're focusing on collecting user feedback and refining features
 
