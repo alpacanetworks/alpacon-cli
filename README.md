@@ -2,10 +2,9 @@
 
 `Alpacon CLI` is a powerful command-line tool designed for managing **Alpacon** seamlessly from the terminal. This tool simplifies complex operations, making it easier for developers to interact with Alpacon services.
 
-**NOTE** :  `Alpacon CLI` is currently in its test release phase. We're focusing on collecting user feedback and refining features
 
 ## Prerequisites
-For the optimal use of `Alpacon CLI`, ensure that both [**Alpacon-Server**](https://github.com/alpacanetworks/alpacon-server) and [**Alpamon**](https://github.com/alpacanetworks/alpamon) are operational.
+For the optimal use of `Alpacon CLI`, ensure that both [**Alpacon-Server**](https://github.com/alpacanetworks/alpacon-server) and [**Alpamon**](https://github.com/alpacanetworks/alpamon-go) are operational.
 These components are integral for the CLI to function effectively.
 
 ## Documentation
