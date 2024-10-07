@@ -8,6 +8,8 @@ before:
 builds:
   - env:
       - CGO_ENABLED=0
+    ldflags:
+      - -X utils.VersionCli={{.Version}}
     goos:
       - linux
       - darwin
@@ -63,6 +65,7 @@ nfpms:
     formats:
       - deb
       - rpm
+    bindir: /usr/local/bin/
 
 changelog:
   sort: asc

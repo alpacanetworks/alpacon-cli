@@ -1,6 +1,6 @@
 package utils
 
-const VersionCli = "0.2.0"
+const VersionCli = "dev"
 
 func GetCLIVersion() string {
 	return VersionCli
