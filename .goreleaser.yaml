@@ -9,7 +9,7 @@ builds:
   - env:
       - CGO_ENABLED=0
     ldflags:
-      - -X utils.VersionCli={{.Version}}
+      - -X github.com/alpacanetworks/alpacon-cli/utils.VersionCli={{.Version}}
     goos:
       - linux
       - darwin
