@@ -79,7 +79,7 @@ func selectAndConvertGroups(ac *client.AlpaconClient, groupList []iam.GroupAttri
 
 	for _, groupIndex := range intGroups {
 		if groupIndex < 1 || groupIndex > len(groupList) {
-			utils.CliError(fmt.Sprintf("Invalid group index: %d", groupIndex))
+			utils.CliError("Invalid group index: %d", groupIndex)
 		}
 
 		groupID, err := iam.GetGroupIDByName(ac, groupList[groupIndex-1].Name)

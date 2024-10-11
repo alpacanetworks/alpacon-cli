@@ -1,7 +1,6 @@
 package token
 
 import (
-	"fmt"
 	"github.com/alpacanetworks/alpacon-cli/api/auth"
 	"github.com/alpacanetworks/alpacon-cli/api/security"
 	"github.com/alpacanetworks/alpacon-cli/client"
@@ -50,7 +49,7 @@ var aclAddCmd = &cobra.Command{
 			utils.CliError("Failed to add the command ACL to token: %v.", err)
 		}
 
-		utils.CliInfo(fmt.Sprintf("Command ACL successfully added to token: %s with command: %s", token, command))
+		utils.CliInfo("Command ACL successfully added to token: %s with command: %s", token, command)
 	},
 }
 

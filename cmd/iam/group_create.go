@@ -77,7 +77,7 @@ func selectAndConvertServers(ac *client.AlpaconClient, serverList []server.Serve
 
 	for _, serverIndex := range intServers {
 		if serverIndex < 1 || serverIndex > len(serverList) {
-			utils.CliError(fmt.Sprintf("Invalid server index: %d", serverIndex))
+			utils.CliError("Invalid server index: %d", serverIndex)
 		}
 
 		serverID, err := server.GetServerIDByName(ac, serverList[serverIndex-1].Name)

@@ -81,7 +81,7 @@ var WebshCmd = &cobra.Command{
 			case args[i] == "-s" || args[i] == "--share":
 				share = true
 			case args[i] == "-h" || args[i] == "--help":
-				cmd.Help()
+				_ = cmd.Help()
 				return
 			case strings.HasPrefix(args[i], "-u") || strings.HasPrefix(args[i], "--username"):
 				username, i = extractValue(args, i)
@@ -130,7 +130,7 @@ var WebshCmd = &cobra.Command{
 			if err != nil {
 				utils.CliError("Failed to join the session: %s.", err)
 			}
-			websh.OpenNewTerminal(alpaconClient, session)
+			_ = websh.OpenNewTerminal(alpaconClient, session)
 		} else if len(commandArgs) > 0 {
 			command := strings.Join(commandArgs, " ")
 			result, err := event.RunCommand(alpaconClient, serverName, command, username, groupname, env)
@@ -143,7 +143,7 @@ var WebshCmd = &cobra.Command{
 			if err != nil {
 				utils.CliError("Failed to create the websh connection: %s.", err)
 			}
-			websh.OpenNewTerminal(alpaconClient, session)
+			_ = websh.OpenNewTerminal(alpaconClient, session)
 		}
 	},
 }

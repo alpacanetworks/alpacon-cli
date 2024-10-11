@@ -69,7 +69,7 @@ func LoginAndSaveCredentials(loginReq *LoginRequest, token string) error {
 	defer resp.Body.Close()
 
 	if resp.StatusCode < http.StatusOK || resp.StatusCode > http.StatusFound {
-		return fmt.Errorf(resp.Status)
+		return fmt.Errorf("response status: %s", resp.Status)
 	}
 
 	body, err := io.ReadAll(resp.Body)

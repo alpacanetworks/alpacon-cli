@@ -86,6 +86,9 @@ func CreateWebshSession(ac *client.AlpaconClient, serverName, username, groupnam
 		}
 		var shareResponse ShareResponse
 		responseBody, err = ac.SendPostRequest(utils.BuildURL(createSessionURL, path.Join(response.ID, "share"), nil), shareRequest)
+		if err != nil {
+			return SessionResponse{}, err
+		}
 		err = json.Unmarshal(responseBody, &shareResponse)
 		if err != nil {
 			return SessionResponse{}, nil
@@ -107,7 +110,7 @@ func OpenNewTerminal(ac *client.AlpaconClient, sessionResponse SessionResponse) 
 	var err error
 	wsClient.conn, _, err = websocket.DefaultDialer.Dial(sessionResponse.WebsocketURL, wsClient.Header)
 	if err != nil {
-		utils.CliError("websocket connection faiied %v", err)
+		utils.CliError("websocket connection failed %v", err)
 	}
 	defer func() { _ = wsClient.conn.Close() }()
 

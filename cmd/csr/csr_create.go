@@ -64,7 +64,7 @@ var csrCreateCmd = &cobra.Command{
 func init() {
 	usr, err := user.Current()
 	if err != nil {
-		utils.CliError("Failed to obtain the current user information: " + err.Error())
+		utils.CliError("Failed to obtain the current user information: %v", err)
 	}
 
 	defaultPrivateKeyDir = filepath.Join(usr.HomeDir, "tmp/private/")

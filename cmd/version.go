@@ -14,15 +14,13 @@ var versionCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		utils.CliInfo("Current version: %s", utils.VersionCli)
 		release, skip := versionCheck()
-		if skip == false {
+		if !skip {
 			utils.CliWarning("Upgrade available. Current version: %s. Latest version: %s \n"+
 				"Visit %s for update instructions and release notes.", utils.VersionCli, release.GetTagName(), release.GetHTMLURL())
 			return
 		} else {
 			utils.CliInfo("You are up to date! %s is the latest version available.", utils.VersionCli)
 		}
-
-		return
 	},
 }
 

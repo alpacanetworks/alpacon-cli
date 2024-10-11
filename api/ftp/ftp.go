@@ -124,12 +124,12 @@ func DownloadFile(ac *client.AlpaconClient, src, dest, username, groupname strin
 		}
 
 		if status.Status["text"] == "Stuck" || status.Status["text"] == "Error" {
-			utils.CliError(status.Status["message"].(string))
+			utils.CliError("%s", status.Status["message"].(string))
 		}
 		if status.Status["text"] == "Failed" {
-			utils.CliError(status.Result)
+			utils.CliError("%s", status.Result)
 		}
-		utils.CliWarning(fmt.Sprintf("File Transfer Status: '%s'. Attempting to transfer '%s' from the Alpacon server. Note: Transfer may timeout after 100 seconds.", status.Result, path))
+		utils.CliWarning("File Transfer Status: '%s'. Attempting to transfer '%s' from the Alpacon server. Note: Transfer may timeout after 100 seconds.", status.Result, path)
 
 		maxAttempts := 100
 		var resp *http.Response
