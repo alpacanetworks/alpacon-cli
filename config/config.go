@@ -9,9 +9,9 @@ import (
 
 // Config describes the configuration for Alpacon-CLI
 type Config struct {
-	ServerAddress string `json:"server_address"`
-	Token         string `json:"token"`
-	ExpiresAt     string `json:"expires_at"`
+	WorkspaceURL string `json:"workspace_url"`
+	Token        string `json:"token"`
+	ExpiresAt    string `json:"expires_at"`
 }
 
 const (
@@ -19,11 +19,11 @@ const (
 	ConfigFileDir  = ".alpacon"
 )
 
-func CreateConfig(serverAddress string, token string, expiresAt string) error {
+func CreateConfig(workspaceURL string, token string, expiresAt string) error {
 	config := Config{
-		ServerAddress: serverAddress,
-		Token:         token,
-		ExpiresAt:     expiresAt,
+		WorkspaceURL: workspaceURL,
+		Token:        token,
+		ExpiresAt:    expiresAt,
 	}
 
 	return saveConfig(&config)
@@ -45,7 +45,7 @@ func saveConfig(config *Config) error {
 	if err != nil {
 		return fmt.Errorf("failed to create config file: %v", err)
 	}
-	defer file.Close()
+	defer func() { _ = file.Close() }()
 
 	encoder := json.NewEncoder(file)
 	encoder.SetIndent("", "    ")
@@ -89,7 +89,7 @@ func LoadConfig() (Config, error) {
 		}
 		return Config{}, fmt.Errorf("failed to open config file: %v", err)
 	}
-	defer file.Close()
+	defer func() { _ = file.Close() }()
 
 	var config Config
 	decoder := json.NewDecoder(file)

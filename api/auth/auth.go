@@ -24,19 +24,19 @@ const (
 func LoginAndSaveCredentials(loginReq *LoginRequest, token string) error {
 	if token != "" {
 
-		client := &client.AlpaconClient{
+		alpaconClient := &client.AlpaconClient{
 			HTTPClient: &http.Client{},
-			BaseURL:    loginReq.ServerAddress,
+			BaseURL:    loginReq.WorkspaceURL,
 			Token:      token,
 			UserAgent:  utils.SetUserAgent(),
 		}
 
-		_, err := client.SendGetRequest(statusURL)
+		_, err := alpaconClient.SendGetRequest(statusURL)
 		if err != nil {
 			return err
 		}
 
-		err = config.CreateConfig(loginReq.ServerAddress, token, "")
+		err = config.CreateConfig(loginReq.WorkspaceURL, token, "")
 		if err != nil {
 			return err
 		}
@@ -44,7 +44,7 @@ func LoginAndSaveCredentials(loginReq *LoginRequest, token string) error {
 		return nil
 	}
 
-	serverAddress := loginReq.ServerAddress
+	workspaceURL := loginReq.WorkspaceURL
 
 	reqBody, err := json.Marshal(loginReq)
 	if err != nil {
@@ -54,7 +54,7 @@ func LoginAndSaveCredentials(loginReq *LoginRequest, token string) error {
 	httpClient := &http.Client{}
 
 	// Log in to Alpacon server
-	httpReq, err := http.NewRequest("POST", serverAddress+loginURL, bytes.NewBuffer(reqBody))
+	httpReq, err := http.NewRequest("POST", workspaceURL+loginURL, bytes.NewBuffer(reqBody))
 	if err != nil {
 		return err
 	}
@@ -83,7 +83,7 @@ func LoginAndSaveCredentials(loginReq *LoginRequest, token string) error {
 		return err
 	}
 
-	err = config.CreateConfig(serverAddress, loginResponse.Token, loginResponse.ExpiresAt)
+	err = config.CreateConfig(workspaceURL, loginResponse.Token, loginResponse.ExpiresAt)
 	if err != nil {
 		return err
 	}

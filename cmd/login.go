@@ -7,26 +7,51 @@ import (
 	"github.com/alpacanetworks/alpacon-cli/config"
 	"github.com/alpacanetworks/alpacon-cli/utils"
 	"github.com/spf13/cobra"
+	"strings"
 )
-
-var (
-	loginRequest auth.LoginRequest
-)
-
-const defaultServerURL = "https://alpacon.io"
 
 var loginCmd = &cobra.Command{
 	Use:   "login",
-	Short: "Log in to Alpacon Server",
-	Long:  "Log in to Alpacon Server. To access Alpacon Server, server address is must specified",
-	Run: func(cmd *cobra.Command, args []string) {
-		token, _ := cmd.Flags().GetString("token")
+	Short: "Log in to Alpacon",
+	Long:  "Log in to Alpacon. To access Alpacon, workspace url is must specified",
+	Example: `
+	alpacon login
 
-		if (loginRequest.Username == "" || loginRequest.Password == "" || loginRequest.ServerAddress == "") && token == "" {
-			promptForCredentials()
+	alpacon login [WORKSPACE_URL] -u [USERNAME] -p [PASSWORD]
+	alpacon login example.alpacon.io 
+	
+	# Login via API Token
+	alpacon login -w [WORKSPACE_URL] -t [TOKEN_KEY]
+	`,
+	Args: cobra.MaximumNArgs(1),
+	Run: func(cmd *cobra.Command, args []string) {
+		var workspaceURL string
+		if len(args) > 0 {
+			workspaceURL = args[0]
+		} else {
+			workspaceURL = ""
 		}
 
-		err := auth.LoginAndSaveCredentials(&loginRequest, token)
+		username, _ := cmd.Flags().GetString("username")
+		password, _ := cmd.Flags().GetString("password")
+		token, _ := cmd.Flags().GetString("token")
+
+		if (workspaceURL == "" || username == "" || password == "") && token == "" {
+			workspaceURL, username, password = promptForCredentials(workspaceURL, username, password)
+		}
+
+		if !strings.HasPrefix(workspaceURL, "https") {
+			workspaceURL = "https://" + workspaceURL
+		}
+
+		loginRequest := &auth.LoginRequest{
+			WorkspaceURL: workspaceURL,
+			Username:     username,
+			Password:     password,
+		}
+
+		fmt.Printf("Logging in to %s...\n", workspaceURL)
+		err := auth.LoginAndSaveCredentials(loginRequest, token)
 		if err != nil {
 			utils.CliError("Login failed %v. Please check your credentials and try again.\n", err)
 		}
@@ -35,35 +60,37 @@ var loginCmd = &cobra.Command{
 		if err != nil {
 			utils.CliError("Connection to Alpacon API failed: %s. Consider re-logging.", err)
 		}
+
 		fmt.Println("Login succeeded!")
 	},
 }
 
 func init() {
-	var token string
+	var username, password, token string
 
-	loginCmd.Flags().StringVarP(&loginRequest.ServerAddress, "server", "s", "defaultServerURL", "URL of the server to login, default: https://alpacon.io")
-	loginCmd.Flags().StringVarP(&loginRequest.Username, "username", "u", "", "Username for login")
-	loginCmd.Flags().StringVarP(&loginRequest.Password, "password", "p", "", "Password for login")
+	loginCmd.Flags().StringVarP(&username, "username", "u", "", "Username for login")
+	loginCmd.Flags().StringVarP(&password, "password", "p", "", "Password for login")
 	loginCmd.Flags().StringVarP(&token, "token", "t", "", "API token for login")
 }
 
-func promptForCredentials() {
-	configFile, err := config.LoadConfig()
-	if err == nil && configFile.ServerAddress != "" {
-		loginRequest.ServerAddress = configFile.ServerAddress
-		fmt.Println("Using server address from config:", configFile.ServerAddress, ". Modify it in `~/.alpacon/config.json` or use all flags (-s, -u, -p) for changes.")
-	} else {
-		loginRequest.ServerAddress = utils.PromptForInput("Server Address[https://alpacon.io]: ")
-		if loginRequest.ServerAddress == "" {
-			loginRequest.ServerAddress = defaultServerURL
+func promptForCredentials(workspaceURL, username, password string) (string, string, string) {
+	if workspaceURL == "" {
+		configFile, err := config.LoadConfig()
+		if err == nil && configFile.WorkspaceURL != "" {
+			workspaceURL = configFile.WorkspaceURL
+			fmt.Printf("Using Workspace URL %s from config file.\n", configFile.WorkspaceURL)
+			fmt.Println("If you want to change the workspace, specify workspace url: alpacon login [WORKSPACE_URL] -u [USERNAME] -p [PASSWORD]")
+			fmt.Println()
 		}
 	}
 
-	if loginRequest.Username == "" {
-		loginRequest.Username = utils.PromptForRequiredInput("Username: ")
+	if username == "" {
+		username = utils.PromptForRequiredInput("Username: ")
 	}
-	if loginRequest.Password == "" {
-		loginRequest.Password = utils.PromptForPassword("Password: ")
+
+	if password == "" {
+		password = utils.PromptForPassword("Password: ")
 	}
+
+	return workspaceURL, username, password
 }

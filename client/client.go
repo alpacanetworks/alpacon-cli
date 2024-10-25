@@ -20,15 +20,15 @@ const (
 )
 
 func NewAlpaconAPIClient() (*AlpaconClient, error) {
-	config, err := config.LoadConfig()
+	validConfig, err := config.LoadConfig()
 	if err != nil {
 		return nil, err
 	}
 
 	client := &AlpaconClient{
 		HTTPClient: &http.Client{},
-		BaseURL:    config.ServerAddress,
-		Token:      config.Token,
+		BaseURL:    validConfig.WorkspaceURL,
+		Token:      validConfig.Token,
 		UserAgent:  utils.SetUserAgent(),
 	}
 

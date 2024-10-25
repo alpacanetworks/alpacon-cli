@@ -84,23 +84,18 @@ To access and utilize all features of `Alpacon CLI`, first authenticate with the
 ```bash
 $ alpacon login
 
-$ alpacon login -s [SERVER URL] -u [USERNAME] -p [PASSWORD]
+$ alpacon login [WORKSPACE_URL] -u [USERNAME] -p [PASSWORD]
 
 # Log in via API token
-$ alpacon login -s [SERVER URL] -t [TOKEN KEY]
+$ alpacon login -w [WORKSPACE_URL] -t [TOKEN_KEY]
 
 # Logout
 $ alpacon logout
 ```
-A successful login generates a `config.json` file in `~/.alpacon`, which includes the server address, API token, and token expiration time (approximately 1 week).
+A successful login generates a `config.json` file in `~/.alpacon`, which includes the workspace url, API token, and token expiration time (approximately 1 week).
 This file is crucial for executing commands, and you will need to log in again once the token expires.
 
-Upon re-login, the Alpacon CLI will automatically reuse the server address from `config.json`, unless you provide all the flags (-s, -u, -p).
-If you need to connect to a different server or change the server address, you can either directly modify the `config.json` file in `~/.alpacon` or provide all flags to specify a new server URL.
-
-#### Default Server URL
-If you do not explicitly specify the server URL (-s) in the command, the default value `https://alpacon.io` is used.
-Therefore, you only need to use the `-s` option to specify a server URL if you wish to connect to a server other than the default one.
+Upon re-login, the Alpacon CLI will automatically reuse the workspace URL from `config.json`, unless you provide a workspace URL as an argument.
 
 ## Usage
 Explore Alpacon CLI's capabilities with the `-h` or `help` command.
