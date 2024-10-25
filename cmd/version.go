@@ -12,14 +12,14 @@ var versionCmd = &cobra.Command{
 	Short: "Displays the current CLI version.",
 	Long:  "Displays the current version of the CLI and checks if there is an available update.",
 	Run: func(cmd *cobra.Command, args []string) {
-		utils.CliInfo("Current version: %s", utils.VersionCli)
+		utils.CliInfo("Current version: %s", utils.Version)
 		release, skip := versionCheck()
 		if !skip {
 			utils.CliWarning("Upgrade available. Current version: %s. Latest version: %s \n"+
-				"Visit %s for update instructions and release notes.", utils.VersionCli, release.GetTagName(), release.GetHTMLURL())
+				"Visit %s for update instructions and release notes.", utils.Version, release.GetTagName(), release.GetHTMLURL())
 			return
 		} else {
-			utils.CliInfo("You are up to date! %s is the latest version available.", utils.VersionCli)
+			utils.CliInfo("You are up to date! %s is the latest version available.", utils.Version)
 		}
 	},
 }
@@ -34,7 +34,7 @@ func versionCheck() (*github.RepositoryRelease, bool) {
 		return nil, true
 	}
 
-	if release.GetTagName() != utils.VersionCli {
+	if release.GetTagName() != utils.Version {
 		return release, false
 	}
 

@@ -1,7 +1,7 @@
 package utils
 
-const VersionCli = "dev"
+var Version string = "dev"
 
 func GetCLIVersion() string {
-	return VersionCli
+	return Version
 }
