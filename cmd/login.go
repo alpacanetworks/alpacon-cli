@@ -18,7 +18,10 @@ var loginCmd = &cobra.Command{
 	alpacon login
 
 	alpacon login [WORKSPACE_URL] -u [USERNAME] -p [PASSWORD]
-	alpacon login example.alpacon.io 
+	alpacon login example.alpacon.io g
+	
+	# Include http if using localhost.
+	alppacon login http://localhost:8000
 	
 	# Login via API Token
 	alpacon login -w [WORKSPACE_URL] -t [TOKEN_KEY]
@@ -40,7 +43,7 @@ var loginCmd = &cobra.Command{
 			workspaceURL, username, password = promptForCredentials(workspaceURL, username, password)
 		}
 
-		if !strings.HasPrefix(workspaceURL, "https") {
+		if !strings.HasPrefix(workspaceURL, "http") {
 			workspaceURL = "https://" + workspaceURL
 		}
 
