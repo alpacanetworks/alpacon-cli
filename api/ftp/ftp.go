@@ -17,8 +17,8 @@ import (
 )
 
 const (
-	uploadAPIURL   = "/api/websh/uploads/"
-	downloadAPIURL = "/api/websh/downloads/"
+	uploadAPIURL   = "/api/webftp/uploads/"
+	downloadAPIURL = "/api/webftp/downloads/"
 )
 
 func UploadFile(ac *client.AlpaconClient, src []string, dest, username, groupname string) ([]string, error) {
