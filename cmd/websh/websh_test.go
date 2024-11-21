@@ -241,9 +241,18 @@ func TestCommandParsing(t *testing.T) {
 			args:              []string{"--env=KEY", "server-name", "cmd"},
 			expectUsername:    "",
 			expectGroupname:   "",
-			expectEnv:         map[string]string{}, // Assume no environment variable exists for 'KEY'
+			expectEnv:         map[string]string{},
 			expectServerName:  "server-name",
 			expectCommandArgs: []string{"cmd"},
+		},
+		{
+			testName:          "ShellCommand",
+			args:              []string{"server-name", "ls; cat /etc/passwd"},
+			expectUsername:    "",
+			expectGroupname:   "",
+			expectEnv:         map[string]string{},
+			expectServerName:  "server-name",
+			expectCommandArgs: []string{"ls; cat /etc/passwd"},
 		},
 	}
 
