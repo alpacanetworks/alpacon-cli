@@ -136,7 +136,7 @@ func SaveFile(fileName string, data []byte) error {
 	if err != nil {
 		return fmt.Errorf("failed to create file: %v", err)
 	}
-	defer file.Close()
+	defer func() { _ = file.Close() }()
 
 	_, err = file.Write(data)
 	if err != nil {
@@ -176,14 +176,6 @@ func BuildURL(basePath, relativePath string, params map[string]string) string {
 	return u.String()
 }
 
-func StringToStringPointer(value string) *string {
-	if value == "" {
-		return nil
-	} else {
-		return &value
-	}
-}
-
 func IsUUID(str string) bool {
 	_, err := uuid.Parse(str)
 	return err == nil
@@ -202,7 +194,7 @@ func ProcessEditedData(originalData []byte) (interface{}, error) {
 	if err != nil {
 		return nil, err
 	}
-	defer os.Remove(tmpFile)
+	defer func() { _ = os.Remove(tmpFile) }()
 
 	editedContent, err := os.ReadFile(tmpFile)
 	if err != nil {
@@ -223,28 +215,28 @@ func ProcessEditedData(originalData []byte) (interface{}, error) {
 }
 
 func CreateAndEditTempFile(data []byte) (string, error) {
-	tmpfile, err := os.CreateTemp("", "example.*.json")
+	tmpl, err := os.CreateTemp("", "example.*.json")
 	if err != nil {
 		return "", errors.New("Failed to create temp file for update")
 	}
-	defer tmpfile.Close()
+	defer func() { _ = tmpl.Close() }()
 
-	if _, err := tmpfile.Write(data); err != nil {
+	if _, err = tmpl.Write(data); err != nil {
 		return "", err
 	}
 
-	if err := tmpfile.Close(); err != nil {
+	if err = tmpl.Close(); err != nil {
 		return "", err
 	}
 
-	cmd := exec.Command("vi", tmpfile.Name())
+	cmd := exec.Command("vi", tmpl.Name())
 	cmd.Stdin = os.Stdin
 	cmd.Stdout = os.Stdout
-	if err := cmd.Run(); err != nil {
+	if err = cmd.Run(); err != nil {
 		return "", err
 	}
 
-	return tmpfile.Name(), nil
+	return tmpl.Name(), nil
 }
 
 func SplitPath(path string) (string, string) {
