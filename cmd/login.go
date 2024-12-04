@@ -24,7 +24,7 @@ var loginCmd = &cobra.Command{
 	alppacon login http://localhost:8000
 	
 	# Login via API Token
-	alpacon login -w [WORKSPACE_URL] -t [TOKEN_KEY]
+	alpacon login [WORKSPACE_URL] -t [TOKEN_KEY]
 	`,
 	Args: cobra.MaximumNArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {

@@ -87,7 +87,7 @@ $ alpacon login
 $ alpacon login [WORKSPACE_URL] -u [USERNAME] -p [PASSWORD]
 
 # Log in via API token
-$ alpacon login -w [WORKSPACE_URL] -t [TOKEN_KEY]
+$ alpacon login [WORKSPACE_URL] -t [TOKEN_KEY]
 
 # Logout
 $ alpacon logout
