@@ -37,7 +37,7 @@ archives:
 brews:
   - name: alpacon-cli
     repository:
-      owner: alpacax
+      owner: alpacanetworks
       name: alpacon-cli
     commit_author:
       name: alpacaxbot
