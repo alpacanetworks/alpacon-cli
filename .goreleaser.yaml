@@ -37,7 +37,7 @@ archives:
 brews:
   - name: alpacon-cli
     repository:
-      owner: alpacanetworks
+      owner: alpacax
       name: alpacon-cli
     commit_author:
       name: alpacaxbot
@@ -52,8 +52,8 @@ dockers:
     ids:
       - alpacon
     image_templates:
-      - "alpacanetworks/alpacon-cli:latest"
-      - "alpacanetworks/alpacon-cli:{{ .Tag }}"
+      - "alpacax/alpacon-cli:latest"
+      - "alpacax/alpacon-cli:{{ .Tag }}"
     dockerfile: Dockerfile
 
 nfpms:
