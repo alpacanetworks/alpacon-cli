@@ -17,10 +17,10 @@ These components are integral for the CLI to function effectively.
 Download the latest `Alpacon CLI` directly from our releases page or install it using package managers on Linux.
 
 ### Docker
-For every release and Release Candidate (RC), we push a corresponding container image to our Docker Hub repository at `alpacanetworks/alpacon-cli`. For example:
+For every release and Release Candidate (RC), we push a corresponding container image to our Docker Hub repository at `alpacax/alpacon-cli`. For example:
 
 ```bash
-docker run --rm -it alpacanetworks/alpacon-cli version  
+docker run --rm -it alpacax/alpacon-cli version  
 ```
 
 ### Build the binary
