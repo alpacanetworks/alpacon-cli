@@ -107,8 +107,7 @@ var WebshCmd = &cobra.Command{
 				if serverName == "" {
 					serverName = args[i]
 				} else {
-					commandArgs = append(commandArgs, args[i:]...)
-					i = len(args)
+					commandArgs = append(commandArgs, args[i])
 				}
 			}
 		}
