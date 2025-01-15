@@ -10,7 +10,7 @@ import (
 
 const (
 	baseURL       = "/api/security/"
-	commandAclURL = "command_acl/"
+	commandAclURL = "command-acl/"
 )
 
 func GetCommandAclList(ac *client.AlpaconClient, tokenId string) ([]CommandAclResponse, error) {

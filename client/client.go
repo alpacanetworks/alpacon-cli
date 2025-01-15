@@ -15,7 +15,7 @@ import (
 )
 
 const (
-	checkAuthURL       = "/api/auth/is_authenticated/"
+	checkAuthURL       = "/api/auth/is-authenticated/"
 	checkPrivilegesURL = "/api/iam/users/-"
 )
 

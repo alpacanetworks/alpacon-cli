@@ -13,7 +13,7 @@ import (
 
 const (
 	authorityURL   = "/api/cert/authorities/"
-	signRequestURL = "/api/cert/sign_requests/"
+	signRequestURL = "/api/cert/sign-requests/"
 	certURL        = "/api/cert/certificates/"
 )
 
