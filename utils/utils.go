@@ -44,7 +44,7 @@ func ReadFileFromPath(filePath string) ([]byte, error) {
 	return content, nil
 }
 
-func SetUserAgent() string {
+func GetUserAgent() string {
 	return fmt.Sprintf("%s/%s", "alpacon-cli", GetCLIVersion())
 }
 

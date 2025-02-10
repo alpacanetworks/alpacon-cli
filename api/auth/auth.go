@@ -28,7 +28,7 @@ func LoginAndSaveCredentials(loginReq *LoginRequest, token string) error {
 			HTTPClient: &http.Client{},
 			BaseURL:    loginReq.WorkspaceURL,
 			Token:      token,
-			UserAgent:  utils.SetUserAgent(),
+			UserAgent:  utils.GetUserAgent(),
 		}
 
 		_, err := alpaconClient.SendGetRequest(statusURL)
@@ -60,7 +60,7 @@ func LoginAndSaveCredentials(loginReq *LoginRequest, token string) error {
 	}
 
 	httpReq.Header.Add("Content-Type", "application/json")
-	httpReq.Header.Set("User-Agent", utils.SetUserAgent())
+	httpReq.Header.Set("User-Agent", utils.GetUserAgent())
 
 	resp, err := httpClient.Do(httpReq)
 	if err != nil {

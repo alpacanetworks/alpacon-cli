@@ -29,7 +29,7 @@ func NewAlpaconAPIClient() (*AlpaconClient, error) {
 		HTTPClient: &http.Client{},
 		BaseURL:    validConfig.WorkspaceURL,
 		Token:      validConfig.Token,
-		UserAgent:  utils.SetUserAgent(),
+		UserAgent:  utils.GetUserAgent(),
 	}
 
 	err = client.checkAuth()
