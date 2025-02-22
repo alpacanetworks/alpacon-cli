@@ -53,14 +53,14 @@ sudo mv alpacon /usr/local/bin
 
 #### Debian and Ubuntu
 ```bash
-curl -s https://packagecloud.io/install/repositories/alpacanetworks/alpacon/script.deb.sh?any=true | sudo bash
+curl -s https://packagecloud.io/install/repositories/alpacax/alpacon/script.deb.sh?any=true | sudo bash
 
 sudo apt-get install alpacon
 ```
 
 #### CentOS and RHEL
 ```bash
-curl -s https://packagecloud.io/install/repositories/alpacanetworks/alpacon/script.rpm.sh?any=true | sudo bash
+curl -s https://packagecloud.io/install/repositories/alpacax/alpacon/script.rpm.sh?any=true | sudo bash
 
 sudo yum install alpacon
 ```
