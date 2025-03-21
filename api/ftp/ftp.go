@@ -164,7 +164,6 @@ func DownloadFile(ac *client.AlpaconClient, src, dest, username, groupname strin
 		}
 		utils.CliWarning("File Transfer Status: '%s'. Attempting to transfer '%s' from the Alpacon server. Note: Transfer may timeout after 100 seconds.", status.Result, path)
 
-		fmt.Println(downloadResponse.DownloadURL)
 		maxAttempts := 100
 		var resp *http.Response
 		for count := 0; count < maxAttempts; count++ {
