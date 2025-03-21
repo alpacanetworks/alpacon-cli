@@ -1,6 +1,7 @@
 package ftp
 
 import (
+	"archive/zip"
 	"bytes"
 	"encoding/json"
 	"fmt"
@@ -12,6 +13,7 @@ import (
 	"io"
 	"mime/multipart"
 	"net/http"
+	"os"
 	"path/filepath"
 	"strings"
 	"time"
@@ -27,8 +29,6 @@ func uploadToS3(uploadUrl string, file io.Reader) error {
 	if err != nil {
 		return err
 	}
-
-	req.Header.Set("Content-Type", "application/octet-stream")
 
 	client := &http.Client{}
 	resp, err := client.Do(req)
@@ -93,6 +93,82 @@ func UploadFile(ac *client.AlpaconClient, src []string, dest, username, groupnam
 
 		if response.UploadUrl != "" {
 			err = uploadToS3(response.UploadUrl, bytes.NewReader(file))
+			if err != nil {
+				return nil, err
+			}
+		}
+
+		_, err = ac.SendGetRequest(uploadAPIURL + response.Id + "/upload")
+		if err != nil {
+			return nil, err
+		}
+
+		status, err := event.PollCommandExecution(ac, response.Command)
+		if err != nil {
+			return nil, err
+		}
+		if status.Status["text"] == "Stuck" || status.Status["text"] == "Error" {
+			result = append(result, status.Status["message"].(string))
+		} else {
+			result = append(result, status.Result)
+		}
+	}
+
+	return result, nil
+}
+
+func UploadFolder(ac *client.AlpaconClient, src []string, dest, username, groupname string) ([]string, error) {
+	serverName, remotePath := utils.SplitPath(dest)
+
+	serverID, err := server.GetServerIDByName(ac, serverName)
+	if err != nil {
+		return nil, err
+	}
+
+	var result []string
+	for _, folderPath := range src {
+		zipBytes, err := compressFolder(folderPath)
+		if err != nil {
+			return nil, err
+		}
+		zipName := filepath.Base(folderPath) + ".zip"
+
+		var requestBody bytes.Buffer
+		writer := multipart.NewWriter(&requestBody)
+
+		fileWriter, err := writer.CreateFormFile("content", zipName)
+		if err != nil {
+			return nil, err
+		}
+		_, err = fileWriter.Write(zipBytes)
+		if err != nil {
+			return nil, err
+		}
+		_ = writer.Close()
+
+		body := map[string]string{
+			"id":          uuid.New().String(),
+			"allow_unzip": "true",
+			"name":        zipName,
+			"path":        remotePath,
+			"server":      serverID,
+			"username":    username,
+			"groupname":   groupname,
+		}
+
+		respBody, err := ac.SendPostRequest(uploadAPIURL, body)
+		if err != nil {
+			return nil, err
+		}
+
+		var response UploadResponse
+		err = json.Unmarshal(respBody, &response)
+		if err != nil {
+			return nil, err
+		}
+
+		if response.UploadUrl != "" {
+			err = uploadToS3(response.UploadUrl, bytes.NewReader(zipBytes))
 			if err != nil {
 				return nil, err
 			}
@@ -197,4 +273,65 @@ func DownloadFile(ac *client.AlpaconClient, src, dest, username, groupname strin
 	}
 
 	return nil
+}
+
+func compressFolder(folderPath string) ([]byte, error) {
+	var buf bytes.Buffer
+	zipWriter := zip.NewWriter(&buf)
+
+	err := filepath.Walk(folderPath, func(path string, info os.FileInfo, err error) error {
+		if err != nil {
+			return err
+		}
+
+		relPath, err := filepath.Rel(folderPath, path)
+		if err != nil {
+			return err
+		}
+
+		if info.IsDir() {
+			relPath += "/"
+		}
+
+		header, err := zip.FileInfoHeader(info)
+		if err != nil {
+			return err
+		}
+		header.Name = relPath
+
+		if !info.IsDir() {
+			header.Method = zip.Deflate
+		}
+
+		writer, err := zipWriter.CreateHeader(header)
+		if err != nil {
+			return err
+		}
+
+		if !info.IsDir() {
+			file, err := os.Open(path)
+			if err != nil {
+				return err
+			}
+			defer file.Close()
+
+			_, err = io.Copy(writer, file)
+			if err != nil {
+				return err
+			}
+		}
+
+		return nil
+	})
+	if err != nil {
+		zipWriter.Close()
+		return nil, err
+	}
+
+	err = zipWriter.Close()
+	if err != nil {
+		return nil, err
+	}
+
+	return buf.Bytes(), nil
 }
