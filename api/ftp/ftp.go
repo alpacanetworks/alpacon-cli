@@ -167,7 +167,6 @@ func DownloadFile(ac *client.AlpaconClient, src, dest, username, groupname strin
 		maxAttempts := 100
 		var resp *http.Response
 		for count := 0; count < maxAttempts; count++ {
-			//resp, err = ac.SendGetRequestForDownload(utils.RemovePrefixBeforeAPI(downloadResponse.DownloadURL))
 			resp, err = http.Get(downloadResponse.DownloadURL)
 			if err != nil {
 				return err
