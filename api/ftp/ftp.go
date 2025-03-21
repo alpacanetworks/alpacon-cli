@@ -8,6 +8,7 @@ import (
 	"github.com/alpacanetworks/alpacon-cli/api/server"
 	"github.com/alpacanetworks/alpacon-cli/client"
 	"github.com/alpacanetworks/alpacon-cli/utils"
+	"github.com/google/uuid"
 	"io"
 	"mime/multipart"
 	"net/http"
@@ -20,6 +21,27 @@ const (
 	uploadAPIURL   = "/api/webftp/uploads/"
 	downloadAPIURL = "/api/webftp/downloads/"
 )
+
+func uploadToS3(uploadUrl string, file io.Reader) error {
+	req, err := http.NewRequest("PUT", uploadUrl, file)
+	if err != nil {
+		return fmt.Errorf("failed to create PUT request: %w", err)
+	}
+	// 필요에 따라 적절한 Content-Type을 설정하세요.
+	req.Header.Set("Content-Type", "application/octet-stream")
+
+	client := &http.Client{}
+	resp, err := client.Do(req)
+	if err != nil {
+		return fmt.Errorf("failed to execute PUT request: %w", err)
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode != http.StatusOK && resp.StatusCode != http.StatusNoContent {
+		return fmt.Errorf("upload failed, status: %s", resp.Status)
+	}
+	return nil
+}
 
 func UploadFile(ac *client.AlpaconClient, src []string, dest, username, groupname string) ([]string, error) {
 	serverName, remotePath := utils.SplitPath(dest)
@@ -39,18 +61,6 @@ func UploadFile(ac *client.AlpaconClient, src []string, dest, username, groupnam
 		var requestBody bytes.Buffer
 		writer := multipart.NewWriter(&requestBody)
 
-		params := map[string]string{
-			"path":      remotePath,
-			"server":    serverID,
-			"username":  username,
-			"groupname": groupname,
-		}
-		for key, value := range params {
-			if err := writer.WriteField(key, value); err != nil {
-				return nil, err
-			}
-		}
-
 		fileWriter, err := writer.CreateFormFile("content", filepath.Base(filePath))
 		if err != nil {
 			return nil, err
@@ -61,13 +71,34 @@ func UploadFile(ac *client.AlpaconClient, src []string, dest, username, groupnam
 		}
 		_ = writer.Close()
 
-		respBody, err := ac.SendMultipartRequest(uploadAPIURL, writer, requestBody)
+		body := map[string]string{
+			"id":        uuid.New().String(),
+			"name":      filepath.Base(filePath),
+			"path":      remotePath,
+			"server":    serverID,
+			"username":  username,
+			"groupname": groupname,
+		}
+
+		respBody, err := ac.SendPostRequest(uploadAPIURL, body)
 		if err != nil {
 			return nil, err
 		}
 
 		var response UploadResponse
 		err = json.Unmarshal(respBody, &response)
+		if err != nil {
+			return nil, err
+		}
+
+		if response.UploadUrl != "" {
+			err = uploadToS3(response.UploadUrl, bytes.NewReader(file))
+			if err != nil {
+				return nil, fmt.Errorf("failed to upload to S3: %w", err)
+			}
+		}
+
+		_, err = ac.SendGetRequest(uploadAPIURL + response.Id + "/upload")
 		if err != nil {
 			return nil, err
 		}
