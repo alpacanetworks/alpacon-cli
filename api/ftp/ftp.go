@@ -25,15 +25,17 @@ const (
 func uploadToS3(uploadUrl string, file io.Reader) error {
 	req, err := http.NewRequest("PUT", uploadUrl, file)
 	if err != nil {
-		return fmt.Errorf("failed to create PUT request: %w", err)
+		utils.CliError("Failed to create PUT request: %w", err)
+		return nil
 	}
-	// 필요에 따라 적절한 Content-Type을 설정하세요.
+
 	req.Header.Set("Content-Type", "application/octet-stream")
 
 	client := &http.Client{}
 	resp, err := client.Do(req)
 	if err != nil {
-		return fmt.Errorf("failed to execute PUT request: %w", err)
+		utils.CliError("Failed to execute PUT request: %w", err)
+		return nil
 	}
 	defer resp.Body.Close()
 
