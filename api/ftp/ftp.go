@@ -25,8 +25,7 @@ const (
 func uploadToS3(uploadUrl string, file io.Reader) error {
 	req, err := http.NewRequest("PUT", uploadUrl, file)
 	if err != nil {
-		utils.CliError("Failed to create PUT request: %w", err)
-		return nil
+		return err
 	}
 
 	req.Header.Set("Content-Type", "application/octet-stream")
@@ -34,13 +33,12 @@ func uploadToS3(uploadUrl string, file io.Reader) error {
 	client := &http.Client{}
 	resp, err := client.Do(req)
 	if err != nil {
-		utils.CliError("Failed to execute PUT request: %w", err)
-		return nil
+		return err
 	}
 	defer resp.Body.Close()
 
 	if resp.StatusCode != http.StatusOK && resp.StatusCode != http.StatusNoContent {
-		return fmt.Errorf("upload failed, status: %s", resp.Status)
+		return err
 	}
 	return nil
 }
@@ -96,7 +94,7 @@ func UploadFile(ac *client.AlpaconClient, src []string, dest, username, groupnam
 		if response.UploadUrl != "" {
 			err = uploadToS3(response.UploadUrl, bytes.NewReader(file))
 			if err != nil {
-				return nil, fmt.Errorf("failed to upload to S3: %w", err)
+				return nil, err
 			}
 		}
 
