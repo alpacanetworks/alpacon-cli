@@ -3,17 +3,19 @@ package ftp
 import "time"
 
 type DownloadRequest struct {
-	Path      string `json:"path"`
-	Server    string `json:"server"`
-	Username  string `json:"username"`
-	Groupname string `json:"groupname"`
+	Path         string `json:"path"`
+	Name         string `json:"name"`
+	Server       string `json:"server"`
+	Username     string `json:"username"`
+	Groupname    string `json:"groupname"`
+	ResourceType string `json:"resource_type"`
 }
 
 type DownloadResponse struct {
 	ID          string `json:"id"`
 	Name        string `json:"name"`
 	Path        string `json:"path"`
-	Size        string `json:"size"`
+	Size        int    `json:"size"`
 	Server      string `json:"server"`
 	User        string `json:"user"`
 	Username    string `json:"username"`

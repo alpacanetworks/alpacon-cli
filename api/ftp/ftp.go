@@ -132,10 +132,12 @@ func DownloadFile(ac *client.AlpaconClient, src, dest, username, groupname strin
 
 	for _, path := range remotePaths {
 		downloadRequest := &DownloadRequest{
-			Path:      path,
-			Server:    serverID,
-			Username:  username,
-			Groupname: groupname,
+			Path:         path,
+			Name:         filepath.Base(path),
+			Server:       serverID,
+			Username:     username,
+			Groupname:    groupname,
+			ResourceType: "file",
 		}
 
 		postBody, err := ac.SendPostRequest(downloadAPIURL, downloadRequest)
@@ -162,10 +164,12 @@ func DownloadFile(ac *client.AlpaconClient, src, dest, username, groupname strin
 		}
 		utils.CliWarning("File Transfer Status: '%s'. Attempting to transfer '%s' from the Alpacon server. Note: Transfer may timeout after 100 seconds.", status.Result, path)
 
+		fmt.Println(downloadResponse.DownloadURL)
 		maxAttempts := 100
 		var resp *http.Response
 		for count := 0; count < maxAttempts; count++ {
-			resp, err = ac.SendGetRequestForDownload(utils.RemovePrefixBeforeAPI(downloadResponse.DownloadURL))
+			//resp, err = ac.SendGetRequestForDownload(utils.RemovePrefixBeforeAPI(downloadResponse.DownloadURL))
+			resp, err = http.Get(downloadResponse.DownloadURL)
 			if err != nil {
 				return err
 			}
