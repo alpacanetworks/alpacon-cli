@@ -53,7 +53,7 @@ var CpCmd = &cobra.Command{
 		if isLocalPaths(sources) && isRemotePath(dest) {
 			uploadObject(alpaconClient, sources, dest, username, groupname, recursive)
 		} else if isRemotePath(sources[0]) && isLocalPath(dest) {
-			downloadFile(alpaconClient, sources[0], dest, username, groupname)
+			downloadObject(alpaconClient, sources[0], dest, username, groupname, recursive)
 		} else {
 			utils.CliError("Invalid combination of source and destination paths.")
 		}
@@ -104,8 +104,10 @@ func uploadObject(client *client.AlpaconClient, src []string, dest, username, gr
 	fmt.Printf("Result: %s.\n", result)
 }
 
-func downloadFile(client *client.AlpaconClient, src, dest, username, groupname string) {
-	err := ftp.DownloadFile(client, src, dest, username, groupname)
+func downloadObject(client *client.AlpaconClient, src, dest, username, groupname string, recursive bool) {
+	var err error
+	err = ftp.DownloadFile(client, src, dest, username, groupname, recursive)
+
 	if err != nil {
 		utils.CliError("Failed to download the file from server: %s.", err)
 		return

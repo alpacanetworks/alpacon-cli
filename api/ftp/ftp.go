@@ -193,10 +193,11 @@ func UploadFolder(ac *client.AlpaconClient, src []string, dest, username, groupn
 	return result, nil
 }
 
-func DownloadFile(ac *client.AlpaconClient, src, dest, username, groupname string) error {
+func DownloadFile(ac *client.AlpaconClient, src, dest, username, groupname string, recursive bool) error {
 	serverName, remotePathStr := utils.SplitPath(src)
 
 	var remotePaths []string
+	var resourceType string
 
 	trimmedPathStr := strings.Trim(remotePathStr, "\"")
 	remotePaths = strings.Fields(trimmedPathStr)
@@ -206,6 +207,12 @@ func DownloadFile(ac *client.AlpaconClient, src, dest, username, groupname strin
 		return err
 	}
 
+	if recursive {
+		resourceType = "folder"
+	} else {
+		resourceType = "file"
+	}
+
 	for _, path := range remotePaths {
 		downloadRequest := &DownloadRequest{
 			Path:         path,
@@ -213,7 +220,7 @@ func DownloadFile(ac *client.AlpaconClient, src, dest, username, groupname strin
 			Server:       serverID,
 			Username:     username,
 			Groupname:    groupname,
-			ResourceType: "file",
+			ResourceType: resourceType,
 		}
 
 		postBody, err := ac.SendPostRequest(downloadAPIURL, downloadRequest)
@@ -266,10 +273,21 @@ func DownloadFile(ac *client.AlpaconClient, src, dest, username, groupname strin
 			return err
 		}
 
-		err = utils.SaveFile(filepath.Join(dest, filepath.Base(path)), respBody)
+		var fileName string
+		if recursive {
+			fileName = filepath.Base(path) + ".zip"
+		} else {
+			fileName = filepath.Base(path)
+		}
+		err = utils.SaveFile(filepath.Join(dest, fileName), respBody)
 		if err != nil {
 			return err
 		}
+		err = utils.Unzip(filepath.Join(dest, fileName), dest)
+		if err != nil {
+			return err
+		}
+		err = utils.DeleteFile(filepath.Join(dest, fileName))
 	}
 
 	return nil
