@@ -286,6 +286,9 @@ func DownloadFile(ac *client.AlpaconClient, src, dest, username, groupname strin
 			return err
 		}
 		err = utils.DeleteFile(filepath.Join(dest, fileName))
+		if err != nil {
+			return err
+		}
 	}
 
 	return nil
