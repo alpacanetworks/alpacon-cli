@@ -244,7 +244,10 @@ func Unzip(src string, dest string) error {
 	for _, f := range r.File {
 		fpath := filepath.Join(dest, f.Name)
 		if f.FileInfo().IsDir() {
-			os.MkdirAll(fpath, os.ModePerm)
+			err := os.MkdirAll(fpath, os.ModePerm)
+			if err != nil {
+				return err
+			}
 			continue
 		}
 
