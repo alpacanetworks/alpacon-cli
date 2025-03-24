@@ -20,7 +20,11 @@ var CpCmd = &cobra.Command{
 	Example usages:
 	- To upload multiple files to a remote server:
 	  alpacon cp /local/path/file1.txt /local/path/file2.txt [SERVER_NAME]:/remote/path/
-	
+
+	- To upload or download directory:
+      alpacon cp -r /local/path/directory [SERVER_NAME]:/remote/path/
+      alpacon cp -r [SERVER_NAME]:/remote/path/directory /local/path/
+
 	- To download files from a remote server to a local destination:
 	  alpacon cp [SERVER_NAME]:/remote/path1 /remote/path2 /local/destination/path
 	
@@ -30,14 +34,15 @@ var CpCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		username, _ := cmd.Flags().GetString("username")
 		groupname, _ := cmd.Flags().GetString("groupname")
+		recursive, _ := cmd.Flags().GetBool("recursive")
 
 		if len(args) < 2 {
 			utils.CliError("You must specify at least two arguments.")
 			return
 		}
 
-		dest := args[len(args)-1]
 		sources := args[:len(args)-1]
+		dest := args[len(args)-1]
 
 		alpaconClient, err := client.NewAlpaconAPIClient()
 		if err != nil {
@@ -46,9 +51,9 @@ var CpCmd = &cobra.Command{
 		}
 
 		if isLocalPaths(sources) && isRemotePath(dest) {
-			uploadFile(alpaconClient, sources, dest, username, groupname)
+			uploadObject(alpaconClient, sources, dest, username, groupname, recursive)
 		} else if isRemotePath(sources[0]) && isLocalPath(dest) {
-			downloadFile(alpaconClient, sources[0], dest, username, groupname)
+			downloadObject(alpaconClient, sources[0], dest, username, groupname, recursive)
 		} else {
 			utils.CliError("Invalid combination of source and destination paths.")
 		}
@@ -58,6 +63,7 @@ var CpCmd = &cobra.Command{
 func init() {
 	var username, groupname string
 
+	CpCmd.Flags().BoolP("recursive", "r", false, "Recursively copy directories")
 	CpCmd.Flags().StringVarP(&username, "username", "u", "", "Specify username")
 	CpCmd.Flags().StringVarP(&groupname, "groupname", "g", "", "Specify groupname")
 }
@@ -81,20 +87,29 @@ func isLocalPaths(paths []string) bool {
 	return true
 }
 
-func downloadFile(client *client.AlpaconClient, src, dest, username, groupname string) {
-	err := ftp.DownloadFile(client, src, dest, username, groupname)
-	if err != nil {
-		utils.CliError("Failed to download the file from server: %s.", err)
-		return
-	}
-	utils.CliInfo("Download request for %s to server %s successful.", src, dest)
-}
+func uploadObject(client *client.AlpaconClient, src []string, dest, username, groupname string, recursive bool) {
+	var result []string
+	var err error
 
-func uploadFile(client *client.AlpaconClient, src []string, dest, username, groupname string) {
-	result, err := ftp.UploadFile(client, src, dest, username, groupname)
+	if recursive {
+		result, err = ftp.UploadFolder(client, src, dest, username, groupname)
+	} else {
+		result, err = ftp.UploadFile(client, src, dest, username, groupname)
+	}
 	if err != nil {
 		utils.CliError("Failed to upload the file to server: %s.", err)
 	}
-	utils.CliInfo("Upload request for %s to %s successful.", src, dest)
+	wrappedSrc := fmt.Sprintf("[%s]", strings.Join(src, ", "))
+	utils.CliInfo("Upload request for %s to %s successful.", wrappedSrc, dest)
 	fmt.Printf("Result: %s.\n", result)
+}
+
+func downloadObject(client *client.AlpaconClient, src, dest, username, groupname string, recursive bool) {
+	var err error
+	err = ftp.DownloadFile(client, src, dest, username, groupname, recursive)
+
+	if err != nil {
+		utils.CliError("Failed to download the file from server: %s.", err)
+	}
+	utils.CliInfo("Download request for %s to server %s successful.", src, dest)
 }

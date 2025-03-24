@@ -1,11 +1,13 @@
 package utils
 
 import (
+	"archive/zip"
 	"bytes"
 	"encoding/json"
 	"errors"
 	"fmt"
 	"github.com/google/uuid"
+	"io"
 	"net/url"
 	"os"
 	"os/exec"
@@ -143,6 +145,139 @@ func SaveFile(fileName string, data []byte) error {
 		return fmt.Errorf("failed to write data to file: %v", err)
 	}
 
+	return nil
+}
+
+func DeleteFile(path string) error {
+	info, err := os.Stat(path)
+	if os.IsNotExist(err) {
+		return nil
+	}
+	if err != nil {
+		return err
+	}
+
+	if info.IsDir() {
+		return os.RemoveAll(path)
+	}
+
+	return os.Remove(path)
+}
+
+func Zip(folderPath string) ([]byte, error) {
+	var buf bytes.Buffer
+	zipWriter := zip.NewWriter(&buf)
+	folderName := filepath.Base(folderPath)
+
+	err := filepath.Walk(folderPath, func(path string, info os.FileInfo, err error) error {
+		if err != nil {
+			return err
+		}
+
+		if path == folderPath {
+			return nil
+		}
+
+		relPath, err := filepath.Rel(folderPath, path)
+		if err != nil {
+			return err
+		}
+
+		zipPath := filepath.Join(folderName, relPath)
+		zipPath = filepath.ToSlash(zipPath)
+
+		if info.IsDir() {
+			zipPath += "/"
+		}
+
+		header, err := zip.FileInfoHeader(info)
+		if err != nil {
+			return err
+		}
+		header.Name = zipPath
+
+		if !info.IsDir() {
+			header.Method = zip.Deflate
+		}
+
+		writer, err := zipWriter.CreateHeader(header)
+		if err != nil {
+			return err
+		}
+
+		if !info.IsDir() {
+			file, err := os.Open(path)
+			if err != nil {
+				return err
+			}
+			defer file.Close()
+
+			_, err = io.Copy(writer, file)
+			if err != nil {
+				return err
+			}
+		}
+
+		return nil
+	})
+
+	if err != nil {
+		zipWriter.Close()
+		return nil, err
+	}
+
+	err = zipWriter.Close()
+	if err != nil {
+		return nil, err
+	}
+
+	return buf.Bytes(), nil
+}
+
+func Unzip(src string, dest string) error {
+	r, err := zip.OpenReader(src)
+	if err != nil {
+		return err
+	}
+	defer r.Close()
+
+	for _, f := range r.File {
+		fpath := filepath.Join(dest, f.Name)
+		if f.FileInfo().IsDir() {
+			err := os.MkdirAll(fpath, os.ModePerm)
+			if err != nil {
+				return err
+			}
+			continue
+		}
+
+		if err := os.MkdirAll(filepath.Dir(fpath), os.ModePerm); err != nil {
+			return err
+		}
+
+		outFile, err := os.OpenFile(fpath, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, f.Mode())
+		if err != nil {
+			return err
+		}
+
+		rc, err := f.Open()
+		if err != nil {
+			return err
+		}
+
+		_, err = io.Copy(outFile, rc)
+
+		err = outFile.Close()
+		if err != nil {
+			return err
+		}
+
+		err = rc.Close()
+		if err != nil {
+			return err
+		}
+
+	}
 	return nil
 }
 
