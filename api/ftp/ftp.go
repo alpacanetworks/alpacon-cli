@@ -12,6 +12,7 @@ import (
 	"io"
 	"mime/multipart"
 	"net/http"
+	"path"
 	"path/filepath"
 	"strings"
 	"time"
@@ -96,7 +97,8 @@ func UploadFile(ac *client.AlpaconClient, src []string, dest, username, groupnam
 			}
 		}
 
-		_, err = ac.SendGetRequest(uploadAPIURL + response.Id + "/upload")
+		fullURL := utils.BuildURL(uploadAPIURL, path.Join(response.Id, "upload"), nil)
+		_, err = ac.SendGetRequest(fullURL)
 		if err != nil {
 			return nil, err
 		}
