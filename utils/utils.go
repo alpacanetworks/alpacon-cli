@@ -267,12 +267,16 @@ func Unzip(src string, dest string) error {
 
 		_, err = io.Copy(outFile, rc)
 
-		outFile.Close()
-		rc.Close()
-
+		err = outFile.Close()
 		if err != nil {
 			return err
 		}
+
+		err = rc.Close()
+		if err != nil {
+			return err
+		}
+
 	}
 	return nil
 }
