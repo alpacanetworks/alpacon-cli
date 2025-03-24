@@ -70,16 +70,16 @@ func UploadFile(ac *client.AlpaconClient, src []string, dest, username, groupnam
 		}
 		_ = writer.Close()
 
-		body := map[string]string{
-			"id":        uuid.New().String(),
-			"name":      filepath.Base(filePath),
-			"path":      remotePath,
-			"server":    serverID,
-			"username":  username,
-			"groupname": groupname,
+		uploadRequest := &UploadRequest{
+			Id:        uuid.New().String(),
+			Name:      filepath.Base(filePath),
+			Path:      remotePath,
+			Server:    serverID,
+			Username:  username,
+			Groupname: groupname,
 		}
 
-		respBody, err := ac.SendPostRequest(uploadAPIURL, body)
+		respBody, err := ac.SendPostRequest(uploadAPIURL, uploadRequest)
 		if err != nil {
 			return nil, err
 		}
@@ -146,17 +146,17 @@ func UploadFolder(ac *client.AlpaconClient, src []string, dest, username, groupn
 		}
 		_ = writer.Close()
 
-		body := map[string]string{
-			"id":          uuid.New().String(),
-			"allow_unzip": "true",
-			"name":        zipName,
-			"path":        remotePath,
-			"server":      serverID,
-			"username":    username,
-			"groupname":   groupname,
+		uploadRequest := &UploadRequest{
+			Id:         uuid.New().String(),
+			AllowUnzip: "true",
+			Name:       zipName,
+			Path:       remotePath,
+			Server:     serverID,
+			Username:   username,
+			Groupname:  groupname,
 		}
 
-		respBody, err := ac.SendPostRequest(uploadAPIURL, body)
+		respBody, err := ac.SendPostRequest(uploadAPIURL, uploadRequest)
 		if err != nil {
 			return nil, err
 		}

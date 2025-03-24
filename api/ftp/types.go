@@ -26,6 +26,16 @@ type DownloadResponse struct {
 	Command     string `json:"command"`
 }
 
+type UploadRequest struct {
+	Id         string `json:"id"`
+	Name       string `json:"name"`
+	Path       string `json:"path"`
+	Server     string `json:"server"`
+	Username   string `json:"username"`
+	Groupname  string `json:"groupname"`
+	AllowUnzip string `json:"allow_unzip"`
+}
+
 type UploadResponse struct {
 	Id        string    `json:"id"`
 	Name      string    `json:"name"`
