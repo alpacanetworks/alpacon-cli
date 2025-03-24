@@ -1,7 +1,6 @@
 package ftp
 
 import (
-	"archive/zip"
 	"bytes"
 	"encoding/json"
 	"fmt"
@@ -13,7 +12,6 @@ import (
 	"io"
 	"mime/multipart"
 	"net/http"
-	"os"
 	"path/filepath"
 	"strings"
 	"time"
@@ -127,7 +125,7 @@ func UploadFolder(ac *client.AlpaconClient, src []string, dest, username, groupn
 
 	var result []string
 	for _, folderPath := range src {
-		zipBytes, err := compressFolder(folderPath)
+		zipBytes, err := utils.Zip(folderPath)
 		if err != nil {
 			return nil, err
 		}
@@ -291,65 +289,4 @@ func DownloadFile(ac *client.AlpaconClient, src, dest, username, groupname strin
 	}
 
 	return nil
-}
-
-func compressFolder(folderPath string) ([]byte, error) {
-	var buf bytes.Buffer
-	zipWriter := zip.NewWriter(&buf)
-
-	err := filepath.Walk(folderPath, func(path string, info os.FileInfo, err error) error {
-		if err != nil {
-			return err
-		}
-
-		relPath, err := filepath.Rel(folderPath, path)
-		if err != nil {
-			return err
-		}
-
-		if info.IsDir() {
-			relPath += "/"
-		}
-
-		header, err := zip.FileInfoHeader(info)
-		if err != nil {
-			return err
-		}
-		header.Name = relPath
-
-		if !info.IsDir() {
-			header.Method = zip.Deflate
-		}
-
-		writer, err := zipWriter.CreateHeader(header)
-		if err != nil {
-			return err
-		}
-
-		if !info.IsDir() {
-			file, err := os.Open(path)
-			if err != nil {
-				return err
-			}
-			defer file.Close()
-
-			_, err = io.Copy(writer, file)
-			if err != nil {
-				return err
-			}
-		}
-
-		return nil
-	})
-	if err != nil {
-		zipWriter.Close()
-		return nil, err
-	}
-
-	err = zipWriter.Close()
-	if err != nil {
-		return nil, err
-	}
-
-	return buf.Bytes(), nil
 }

@@ -164,6 +164,76 @@ func DeleteFile(path string) error {
 	return os.Remove(path)
 }
 
+func Zip(folderPath string) ([]byte, error) {
+	var buf bytes.Buffer
+	zipWriter := zip.NewWriter(&buf)
+	folderName := filepath.Base(folderPath)
+
+	err := filepath.Walk(folderPath, func(path string, info os.FileInfo, err error) error {
+		if err != nil {
+			return err
+		}
+
+		if path == folderPath {
+			return nil
+		}
+
+		relPath, err := filepath.Rel(folderPath, path)
+		if err != nil {
+			return err
+		}
+
+		zipPath := filepath.Join(folderName, relPath)
+		zipPath = filepath.ToSlash(zipPath)
+
+		if info.IsDir() {
+			zipPath += "/"
+		}
+
+		header, err := zip.FileInfoHeader(info)
+		if err != nil {
+			return err
+		}
+		header.Name = zipPath
+
+		if !info.IsDir() {
+			header.Method = zip.Deflate
+		}
+
+		writer, err := zipWriter.CreateHeader(header)
+		if err != nil {
+			return err
+		}
+
+		if !info.IsDir() {
+			file, err := os.Open(path)
+			if err != nil {
+				return err
+			}
+			defer file.Close()
+
+			_, err = io.Copy(writer, file)
+			if err != nil {
+				return err
+			}
+		}
+
+		return nil
+	})
+
+	if err != nil {
+		zipWriter.Close()
+		return nil, err
+	}
+
+	err = zipWriter.Close()
+	if err != nil {
+		return nil, err
+	}
+
+	return buf.Bytes(), nil
+}
+
 func Unzip(src string, dest string) error {
 	r, err := zip.OpenReader(src)
 	if err != nil {
