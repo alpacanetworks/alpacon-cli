@@ -109,7 +109,6 @@ func downloadObject(client *client.AlpaconClient, src, dest, username, groupname
 
 	if err != nil {
 		utils.CliError("Failed to download the file from server: %s.", err)
-		return
 	}
 	utils.CliInfo("Download request for %s to server %s successful.", src, dest)
 }
