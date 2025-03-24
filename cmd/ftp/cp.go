@@ -99,7 +99,8 @@ func uploadObject(client *client.AlpaconClient, src []string, dest, username, gr
 	if err != nil {
 		utils.CliError("Failed to upload the file to server: %s.", err)
 	}
-	utils.CliInfo("Upload request for %s to %s successful.", src, dest)
+	wrappedSrc := fmt.Sprintf("[%s]", strings.Join(src, ", "))
+	utils.CliInfo("Upload request for %s to %s successful.", wrappedSrc, dest)
 	fmt.Printf("Result: %s.\n", result)
 }
 
