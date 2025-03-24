@@ -24,7 +24,7 @@ const (
 )
 
 func uploadToS3(uploadUrl string, file io.Reader) error {
-	req, err := http.NewRequest("PUT", uploadUrl, file)
+	req, err := http.NewRequest(http.MethodPut, uploadUrl, file)
 	if err != nil {
 		return err
 	}
