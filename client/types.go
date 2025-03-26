@@ -3,11 +3,12 @@ package client
 import "net/http"
 
 type AlpaconClient struct {
-	HTTPClient *http.Client
-	BaseURL    string
-	Token      string
-	Privileges string
-	UserAgent  string
+	HTTPClient  *http.Client
+	BaseURL     string
+	Token       string
+	AccessToken string
+	Privileges  string
+	UserAgent   string
 }
 
 type CheckAuthResponse struct {

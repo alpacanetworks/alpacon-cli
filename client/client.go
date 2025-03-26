@@ -5,13 +5,16 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"github.com/alpacanetworks/alpacon-cli/config"
-	"github.com/alpacanetworks/alpacon-cli/utils"
 	"io"
 	"mime/multipart"
 	"net/http"
 	"net/url"
 	"strings"
+	"time"
+
+	"github.com/alpacanetworks/alpacon-cli/api/auth0"
+	"github.com/alpacanetworks/alpacon-cli/config"
+	"github.com/alpacanetworks/alpacon-cli/utils"
 )
 
 const (
@@ -26,10 +29,21 @@ func NewAlpaconAPIClient() (*AlpaconClient, error) {
 	}
 
 	client := &AlpaconClient{
-		HTTPClient: &http.Client{},
-		BaseURL:    validConfig.WorkspaceURL,
-		Token:      validConfig.Token,
-		UserAgent:  utils.GetUserAgent(),
+		HTTPClient:  &http.Client{},
+		BaseURL:     validConfig.WorkspaceURL,
+		Token:       validConfig.Token,
+		AccessToken: validConfig.AccessToken,
+		UserAgent:   utils.GetUserAgent(),
+	}
+
+	if isAccessTokenExpired(validConfig) {
+		fmt.Println("Refereshing access token")
+		tokenRes, err := auth0.RefreshAccessToken(validConfig.WorkspaceURL, validConfig.RefreshToken)
+		if err != nil {
+			return nil, fmt.Errorf("failed to refresh access token: %w", err)
+		}
+		config.SaveRefreshedAuth0Token(tokenRes.AccessToken, tokenRes.ExpiresIn)
+		client.AccessToken = tokenRes.AccessToken
 	}
 
 	err = client.checkAuth()
@@ -102,7 +116,11 @@ func (ac *AlpaconClient) SetWebsocketHeader() http.Header {
 
 func (ac *AlpaconClient) setHTTPHeader(req *http.Request) *http.Request {
 	req.Header.Set("User-Agent", ac.UserAgent)
-	req.Header.Set("Authorization", fmt.Sprintf("token=\"%s\"", ac.Token))
+	if ac.AccessToken != "" {
+		req.Header.Set("Authorization", fmt.Sprintf("Bearer %s", ac.AccessToken))
+	} else if ac.Token != "" {
+		req.Header.Set("Authorization", fmt.Sprintf("token=\"%s\"", ac.Token))
+	}
 
 	return req
 }
@@ -252,4 +270,21 @@ func (ac *AlpaconClient) IsUsingHTTPS() (bool, error) {
 	}
 
 	return false, nil
+}
+
+func isAccessTokenExpired(cfg config.Config) bool {
+	if cfg.AccessToken == "" {
+		return false
+	}
+
+	if cfg.AccessTokenExpiresAt == "" {
+		return true
+	}
+
+	expireTime, err := time.Parse(time.RFC3339, cfg.AccessTokenExpiresAt)
+	if err != nil {
+		return true
+	}
+
+	return time.Now().After(expireTime.Add(-10 * time.Second))
 }

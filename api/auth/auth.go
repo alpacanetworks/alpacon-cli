@@ -5,19 +5,22 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"github.com/alpacanetworks/alpacon-cli/api"
-	"github.com/alpacanetworks/alpacon-cli/client"
-	"github.com/alpacanetworks/alpacon-cli/config"
-	"github.com/alpacanetworks/alpacon-cli/utils"
 	"io"
 	"net/http"
 	"strconv"
+
+	"github.com/alpacanetworks/alpacon-cli/api"
+	"github.com/alpacanetworks/alpacon-cli/client"
+
+	"github.com/alpacanetworks/alpacon-cli/config"
+	"github.com/alpacanetworks/alpacon-cli/utils"
 )
 
 const (
 	loginURL  = "/api/auth/login/"
 	logoutURL = "/api/auth/logout/"
 	tokenURL  = "/api/auth/tokens/"
+	envURL    = "/api/auth/env/?client=cli"
 	statusURL = "/api/status/"
 )
 
@@ -36,7 +39,7 @@ func LoginAndSaveCredentials(loginReq *LoginRequest, token string) error {
 			return err
 		}
 
-		err = config.CreateConfig(loginReq.WorkspaceURL, token, "")
+		err = config.CreateConfig(loginReq.WorkspaceURL, token, "", "", "", 0)
 		if err != nil {
 			return err
 		}
@@ -83,7 +86,7 @@ func LoginAndSaveCredentials(loginReq *LoginRequest, token string) error {
 		return err
 	}
 
-	err = config.CreateConfig(workspaceURL, loginResponse.Token, loginResponse.ExpiresAt)
+	err = config.CreateConfig(workspaceURL, loginResponse.Token, loginResponse.ExpiresAt, "", "", 0)
 	if err != nil {
 		return err
 	}

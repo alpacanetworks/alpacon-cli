@@ -5,25 +5,25 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"time"
 )
-
-// Config describes the configuration for Alpacon-CLI
-type Config struct {
-	WorkspaceURL string `json:"workspace_url"`
-	Token        string `json:"token"`
-	ExpiresAt    string `json:"expires_at"`
-}
 
 const (
 	ConfigFileName = "config.json"
 	ConfigFileDir  = ".alpacon"
 )
 
-func CreateConfig(workspaceURL string, token string, expiresAt string) error {
+func CreateConfig(workspaceURL string, token string, expiresAt string, accessToken string, refreshToken string, expiresIn int) error {
 	config := Config{
 		WorkspaceURL: workspaceURL,
 		Token:        token,
 		ExpiresAt:    expiresAt,
+		AccessToken:  accessToken,
+		RefreshToken: refreshToken,
+	}
+
+	if expiresIn > 0 {
+		config.AccessTokenExpiresAt = time.Now().Add(time.Duration(expiresIn) * time.Second).Format(time.RFC3339)
 	}
 
 	return saveConfig(&config)
@@ -54,6 +54,18 @@ func saveConfig(config *Config) error {
 	}
 
 	return nil
+}
+
+func SaveRefreshedAuth0Token(accessToken string, expiresIn int) error {
+	currentConfig, err := LoadConfig()
+	if err != nil {
+		return fmt.Errorf("failed to load existing config: %w", err)
+	}
+
+	currentConfig.AccessToken = accessToken
+	currentConfig.AccessTokenExpiresAt = time.Now().Add(time.Duration(expiresIn) * time.Second).Format(time.RFC3339)
+
+	return saveConfig(&currentConfig)
 }
 
 func DeleteConfig() error {
