@@ -59,7 +59,7 @@ func saveConfig(config *Config) error {
 func SaveRefreshedAuth0Token(accessToken string, expiresIn int) error {
 	currentConfig, err := LoadConfig()
 	if err != nil {
-		return fmt.Errorf("failed to load existing config: %w", err)
+		return fmt.Errorf("failed to load existing config: %v", err)
 	}
 
 	currentConfig.AccessToken = accessToken

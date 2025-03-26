@@ -10,6 +10,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/alpacanetworks/alpacon-cli/config"
 	"github.com/alpacanetworks/alpacon-cli/utils"
 )
 
@@ -19,40 +20,40 @@ var path = struct {
 	prefetch   string
 	token      string
 }{
-	env:        "/api/auth/env/?client=cli",
+	env:        "/api/auth/env",
 	deviceCode: "/oauth/device/code",
 	prefetch:   "/api/workspaces/workspaces/-/prefetch",
 	token:      "/oauth/token",
 }
 
 func FetchAuthEnv(workspaceURL string) (*AuthEnvResponse, error) {
-	apiURL := workspaceURL + path.env
+	apiURL := utils.BuildURL(workspaceURL, path.env, map[string]string{"client": "cli"})
 
 	req, err := http.NewRequest("GET", apiURL, nil)
 	if err != nil {
-		return nil, fmt.Errorf("failed to create request: %w", err)
+		return nil, err
 	}
 	req.Header.Set("User-Agent", utils.GetUserAgent())
 
 	client := &http.Client{}
 	resp, err := client.Do(req)
 	if err != nil {
-		return nil, fmt.Errorf("failed to send request: %w", err)
+		return nil, err
 	}
 	defer resp.Body.Close()
 
 	if resp.StatusCode < 200 || resp.StatusCode >= 300 {
-		return nil, fmt.Errorf("unexpected status code: %d", resp.StatusCode)
+		return nil, fmt.Errorf("unexpected status code: %v", resp.StatusCode)
 	}
 
 	body, err := io.ReadAll(resp.Body)
 	if err != nil {
-		return nil, fmt.Errorf("failed to read response: %w", err)
+		return nil, err
 	}
 
 	var env AuthEnvResponse
 	if err := json.Unmarshal(body, &env); err != nil {
-		return nil, fmt.Errorf("failed to parse response: %w", err)
+		return nil, err
 	}
 
 	return &env, nil
@@ -63,7 +64,7 @@ func RequestDeviceCode(workspaceURL string, envInfo *AuthEnvResponse) (*DeviceCo
 
 	subDomain, err := extractSubdomain(workspaceURL)
 	if err != nil {
-		return nil, fmt.Errorf("failed to extract schema name: %w", err)
+		return nil, err
 	}
 
 	data := map[string]string{
@@ -74,33 +75,31 @@ func RequestDeviceCode(workspaceURL string, envInfo *AuthEnvResponse) (*DeviceCo
 
 	jsonData, err := json.Marshal(data)
 	if err != nil {
-		return nil, fmt.Errorf("failed to encode request data: %w", err)
+		return nil, err
 	}
 
 	client := &http.Client{}
 
 	req, err := http.NewRequest("POST", apiURL, bytes.NewBuffer(jsonData))
 	if err != nil {
-		return nil, fmt.Errorf("failed to create request: %w", err)
+		return nil, err
 	}
 	req.Header.Set("Content-Type", "application/json")
 
 	resp, err := client.Do(req)
 	if err != nil {
-		return nil, fmt.Errorf("failed to send request: %w", err)
+		return nil, err
 	}
 	defer resp.Body.Close()
 
 	if resp.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf("server returned error: %d", resp.StatusCode)
+		return nil, fmt.Errorf("server returned error: %v", resp.StatusCode)
 	}
 
 	var deviceCode DeviceCodeResponse
 	if err := json.NewDecoder(resp.Body).Decode(&deviceCode); err != nil {
-		return nil, fmt.Errorf("failed to decode response: %w", err)
+		return nil, err
 	}
-
-	fmt.Printf("Received Device Code Response: %+v\n", deviceCode)
 
 	return &deviceCode, nil
 }
@@ -130,14 +129,14 @@ func PollForToken(deviceCodeRes *DeviceCodeResponse, envInfo *AuthEnvResponse) (
 func RefreshAccessToken(workspaceURL string, refreshToken string) (*TokenResponse, error) {
 	envInfo, err := FetchAuthEnv(workspaceURL)
 	if err != nil {
-		utils.CliError("Failed to fetch auth env: %v", err)
+		return nil, err
 	}
 
-	apiURL := "https://" + envInfo.Domain + path.token
+	apiURL := utils.BuildURL("https://"+envInfo.Domain, path.token, nil)
 
 	subDomain, err := extractSubdomain(workspaceURL)
 	if err != nil {
-		return nil, fmt.Errorf("failed to extract schema name: %w", err)
+		return nil, err
 	}
 
 	data := map[string]string{
@@ -149,12 +148,12 @@ func RefreshAccessToken(workspaceURL string, refreshToken string) (*TokenRespons
 
 	jsonData, err := json.Marshal(data)
 	if err != nil {
-		return nil, fmt.Errorf("failed to encode refresh token request: %w", err)
+		return nil, err
 	}
 
 	req, err := http.NewRequest("POST", apiURL, bytes.NewBuffer(jsonData))
 	if err != nil {
-		return nil, fmt.Errorf("failed to create refresh request: %w", err)
+		return nil, err
 	}
 
 	req.Header.Set("Content-Type", "application/json")
@@ -162,30 +161,34 @@ func RefreshAccessToken(workspaceURL string, refreshToken string) (*TokenRespons
 	client := &http.Client{}
 	resp, err := client.Do(req)
 	if err != nil {
-		return nil, fmt.Errorf("failed to send refresh request: %w", err)
+		return nil, err
 	}
 	defer resp.Body.Close()
 
 	body, err := io.ReadAll(resp.Body)
 	if err != nil {
-		return nil, fmt.Errorf("failed to read refresh response: %w", err)
+		return nil, err
 	}
 
 	var tokenRes TokenResponse
 	if err := json.Unmarshal(body, &tokenRes); err != nil {
-		return nil, fmt.Errorf("failed to parse refresh response JSON: %w", err)
+		return nil, err
 	}
 
 	if tokenRes.Error != "" {
-		return nil, fmt.Errorf("Auth0 error: %s - %s", tokenRes.Error, tokenRes.ErrorDesc)
+		return nil, fmt.Errorf("error response from authentication server: %s - %s", tokenRes.Error, tokenRes.ErrorDesc)
+	}
+
+	err = config.SaveRefreshedAuth0Token(tokenRes.AccessToken, tokenRes.ExpiresIn)
+	if err != nil {
+		return nil, err
 	}
 
 	return &tokenRes, nil
 }
 
 func requestAccessToken(deviceCode string, envInfo *AuthEnvResponse) (*TokenResponse, error) {
-
-	apiURL := "https://" + envInfo.Domain + path.token
+	apiURL := utils.BuildURL("https://"+envInfo.Domain, path.token, nil)
 
 	data := map[string]string{
 		"grant_type":  "urn:ietf:params:oauth:grant-type:device_code",
@@ -194,12 +197,12 @@ func requestAccessToken(deviceCode string, envInfo *AuthEnvResponse) (*TokenResp
 	}
 	jsonData, err := json.Marshal(data)
 	if err != nil {
-		return nil, fmt.Errorf("failed to encode JSON: %v", err)
+		return nil, err
 	}
 
 	req, err := http.NewRequest("POST", apiURL, bytes.NewBuffer(jsonData))
 	if err != nil {
-		return nil, fmt.Errorf("failed to create request: %v", err)
+		return nil, err
 	}
 
 	req.Header.Set("Content-Type", "application/json")
@@ -207,32 +210,32 @@ func requestAccessToken(deviceCode string, envInfo *AuthEnvResponse) (*TokenResp
 	client := &http.Client{}
 	resp, err := client.Do(req)
 	if err != nil {
-		return nil, fmt.Errorf("failed to send request: %v", err)
+		return nil, err
 	}
 	defer resp.Body.Close()
 
 	body, err := io.ReadAll(resp.Body)
 	if err != nil {
-		return nil, fmt.Errorf("failed to read response: %v", err)
+		return nil, err
 	}
 
-	var tokenResp TokenResponse
-	err = json.Unmarshal(body, &tokenResp)
+	var tokenRes TokenResponse
+	err = json.Unmarshal(body, &tokenRes)
 	if err != nil {
-		return nil, fmt.Errorf("failed to parse JSON response: %v", err)
+		return nil, err
 	}
 
-	if tokenResp.Error != "" {
-		return nil, fmt.Errorf("Auth0 error: %s - %s", tokenResp.Error, tokenResp.ErrorDesc)
+	if tokenRes.Error != "" {
+		return nil, fmt.Errorf("error response from authentication server: %s - %s", tokenRes.Error, tokenRes.ErrorDesc)
 	}
 
-	return &tokenResp, nil
+	return &tokenRes, nil
 }
 
 func extractSubdomain(workspaceURL string) (string, error) {
 	parsedURL, err := url.Parse(workspaceURL)
 	if err != nil {
-		return "", fmt.Errorf("invalid URL format: %w", err)
+		return "", fmt.Errorf("invalid URL format: %v", err)
 	}
 
 	parts := strings.Split(parsedURL.Host, ".")

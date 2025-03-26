@@ -37,12 +37,12 @@ func NewAlpaconAPIClient() (*AlpaconClient, error) {
 	}
 
 	if isAccessTokenExpired(validConfig) {
-		fmt.Println("Refereshing access token")
+		fmt.Println("Refreshing access token")
 		tokenRes, err := auth0.RefreshAccessToken(validConfig.WorkspaceURL, validConfig.RefreshToken)
 		if err != nil {
-			return nil, fmt.Errorf("failed to refresh access token: %w", err)
+			return nil, fmt.Errorf("failed to refresh access token: %v", err)
 		}
-		config.SaveRefreshedAuth0Token(tokenRes.AccessToken, tokenRes.ExpiresIn)
+
 		client.AccessToken = tokenRes.AccessToken
 	}
 

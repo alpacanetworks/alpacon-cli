@@ -58,28 +58,36 @@ var loginCmd = &cobra.Command{
 		// Check login method
 		envInfo, err := auth0.FetchAuthEnv(workspaceURL)
 		if err != nil {
-			utils.CliError("Failed to fetch auth env: %v", err)
+			utils.CliError("Failed to patch environment variables from workspace. %v", err)
 		}
 
 		username, _ := cmd.Flags().GetString("username")
 		password, _ := cmd.Flags().GetString("password")
 		token, _ := cmd.Flags().GetString("token")
 
-		fmt.Printf("Logging in to %s...\n", workspaceURL)
+		fmt.Printf("Logging in to %s\n", workspaceURL)
 		if envInfo.Method == "auth0" && token == "" {
 			deviceCode, err := auth0.RequestDeviceCode(workspaceURL, envInfo)
 			if err != nil {
-				utils.CliError("Auth0 login failed: %v", err)
+				utils.CliError("Device code request failed. %v", err)
 			}
 
-			fmt.Printf("\nPlease authenticate by visiting the following URL:\n%s\n\n", deviceCode.VerificationURIComplete)
+			highlight := "\033[1;34m" // blue + bold
+			reset := "\033[0m"
+
+			fmt.Println("\n==================== AUTHENTICATION REQUIRED ====================")
+			fmt.Println("\nPlease authenticate by visiting the following URL:")
+			fmt.Printf("%s%s%s\n\n", highlight, deviceCode.VerificationURIComplete, reset)
+			fmt.Print("===============================================================\n\n")
 
 			tokenRes, err := auth0.PollForToken(deviceCode, envInfo)
 			if err != nil {
-				utils.CliError("Error obtaining access token: %v", err)
-				return
+				utils.CliError(err.Error())
 			}
-			config.CreateConfig(workspaceURL, "", "", tokenRes.AccessToken, tokenRes.RefreshToken, tokenRes.ExpiresIn)
+			err = config.CreateConfig(workspaceURL, "", "", tokenRes.AccessToken, tokenRes.RefreshToken, tokenRes.ExpiresIn)
+			if err != nil {
+				utils.CliError("Failed to save config: %v", err)
+			}
 
 		} else {
 
@@ -98,11 +106,10 @@ var loginCmd = &cobra.Command{
 				utils.CliError("Login failed %v. Please check your credentials and try again.\n", err)
 			}
 
-			_, err = client.NewAlpaconAPIClient()
-			if err != nil {
-				utils.CliError("Connection to Alpacon API failed: %s. Consider re-logging.", err)
-			}
-
+		}
+		_, err = client.NewAlpaconAPIClient()
+		if err != nil {
+			utils.CliError("Connection to Alpacon API failed: %s. Consider re-logging.", err)
 		}
 
 		fmt.Println("Login succeeded!")
@@ -146,7 +153,7 @@ func validateAndFormatWorkspaceURL(workspaceURL string) (string, error) {
 
 	resp, err := http.Get(workspaceURL)
 	if err != nil || resp.StatusCode >= 400 {
-		return "", fmt.Errorf("workspace URL is unreachable: %s", workspaceURL)
+		return "", fmt.Errorf("workspace URL is unreachable: %v", workspaceURL)
 	}
 	defer resp.Body.Close()
 
