@@ -18,22 +18,16 @@ var loginCmd = &cobra.Command{
 	Short: "Log in to Alpacon",
 	Long:  "Log in to Alpacon. To access Alpacon, workspace url is must specified",
 	Example: `
-	# Default login (requires WORKSPACE_URL to be saved in config.json)
 	alpacon login
 
-	# Legacy login using workspace URL, username, and password
 	alpacon login [WORKSPACE_URL] -u [USERNAME] -p [PASSWORD]
-	
-	# Example: alpacon login example.alpacon.io
+	alpacon login example.alpacon.io
 	
 	# Include http if using localhost.
-	alppacon login http://localhost:8000
+	alpacon login http://localhost:8000
 	
-	# Login using API Token
+	# Login via API Token
 	alpacon login [WORKSPACE_URL] -t [TOKEN_KEY]
-
-	# Login using Auth0 device authorization flow (interactive browser-based login)
-	alpacon login [WORKSPACE_URL]
 	`,
 	Args: cobra.MaximumNArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
@@ -52,7 +46,7 @@ var loginCmd = &cobra.Command{
 		}
 
 		if workspaceURL == "" {
-			utils.CliError("Workspace URL is required. Please provide a workspace URL.")
+			workspaceURL = utils.PromptForRequiredInput("workspaceURL: ")
 		}
 
 		// Validate workspaceURL
@@ -65,13 +59,10 @@ var loginCmd = &cobra.Command{
 		envInfo, err := auth0.FetchAuthEnv(workspaceURL)
 		if err != nil {
 			if strings.Contains(err.Error(), "404") {
-				fmt.Println("Failed to patch environment variables from workspace.")
-				fmt.Println("Proceeding with the legacy login method.")
 				envInfo = &auth0.AuthEnvResponse{Method: "legacy"}
 			} else {
 				utils.CliError("Failed to patch environment variables from workspace. %v", err)
 			}
-
 		}
 
 		username, _ := cmd.Flags().GetString("username")
