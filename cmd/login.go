@@ -84,13 +84,13 @@ var loginCmd = &cobra.Command{
 			if err != nil {
 				utils.CliError(err.Error())
 			}
+
 			err = config.CreateConfig(workspaceURL, "", "", tokenRes.AccessToken, tokenRes.RefreshToken, tokenRes.ExpiresIn)
 			if err != nil {
 				utils.CliError("Failed to save config: %v", err)
 			}
 
 		} else {
-
 			if (workspaceURL == "" || username == "" || password == "") && token == "" {
 				workspaceURL, username, password = promptForCredentials(workspaceURL, username, password)
 			}
@@ -103,7 +103,7 @@ var loginCmd = &cobra.Command{
 
 			err = auth.LoginAndSaveCredentials(loginRequest, token)
 			if err != nil {
-				utils.CliError("Login failed %v. Please check your credentials and try again.\n", err)
+				utils.CliError("Login failed %v. Please check your credentials and try again.", err)
 			}
 
 		}

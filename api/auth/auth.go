@@ -20,7 +20,6 @@ const (
 	loginURL  = "/api/auth/login/"
 	logoutURL = "/api/auth/logout/"
 	tokenURL  = "/api/auth/tokens/"
-	envURL    = "/api/auth/env/?client=cli"
 	statusURL = "/api/status/"
 )
 
@@ -57,7 +56,7 @@ func LoginAndSaveCredentials(loginReq *LoginRequest, token string) error {
 	httpClient := &http.Client{}
 
 	// Log in to Alpacon server
-	httpReq, err := http.NewRequest("POST", workspaceURL+loginURL, bytes.NewBuffer(reqBody))
+	httpReq, err := http.NewRequest(http.MethodPost, utils.BuildURL(workspaceURL, loginURL, nil), bytes.NewBuffer(reqBody))
 	if err != nil {
 		return err
 	}

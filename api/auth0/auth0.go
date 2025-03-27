@@ -29,7 +29,7 @@ var path = struct {
 func FetchAuthEnv(workspaceURL string) (*AuthEnvResponse, error) {
 	apiURL := utils.BuildURL(workspaceURL, path.env, map[string]string{"client": "cli"})
 
-	req, err := http.NewRequest("GET", apiURL, nil)
+	req, err := http.NewRequest(http.MethodGet, apiURL, nil)
 	if err != nil {
 		return nil, err
 	}
@@ -42,8 +42,8 @@ func FetchAuthEnv(workspaceURL string) (*AuthEnvResponse, error) {
 	}
 	defer resp.Body.Close()
 
-	if resp.StatusCode < 200 || resp.StatusCode >= 300 {
-		return nil, fmt.Errorf("unexpected status code: %v", resp.StatusCode)
+	if resp.StatusCode < http.StatusOK || resp.StatusCode > http.StatusFound {
+		return nil, fmt.Errorf("response status: %s", resp.Status)
 	}
 
 	body, err := io.ReadAll(resp.Body)
@@ -52,7 +52,8 @@ func FetchAuthEnv(workspaceURL string) (*AuthEnvResponse, error) {
 	}
 
 	var env AuthEnvResponse
-	if err := json.Unmarshal(body, &env); err != nil {
+	err = json.Unmarshal(body, &env)
+	if err != nil {
 		return nil, err
 	}
 
@@ -60,8 +61,6 @@ func FetchAuthEnv(workspaceURL string) (*AuthEnvResponse, error) {
 }
 
 func RequestDeviceCode(workspaceURL string, envInfo *AuthEnvResponse) (*DeviceCodeResponse, error) {
-	apiURL := "https://" + envInfo.Domain + path.deviceCode
-
 	subDomain, err := extractSubdomain(workspaceURL)
 	if err != nil {
 		return nil, err
@@ -79,8 +78,8 @@ func RequestDeviceCode(workspaceURL string, envInfo *AuthEnvResponse) (*DeviceCo
 	}
 
 	client := &http.Client{}
-
-	req, err := http.NewRequest("POST", apiURL, bytes.NewBuffer(jsonData))
+	apiURL := utils.BuildURL("https://"+envInfo.Domain, path.deviceCode, nil)
+	req, err := http.NewRequest(http.MethodPost, apiURL, bytes.NewBuffer(jsonData))
 	if err != nil {
 		return nil, err
 	}
@@ -97,7 +96,8 @@ func RequestDeviceCode(workspaceURL string, envInfo *AuthEnvResponse) (*DeviceCo
 	}
 
 	var deviceCode DeviceCodeResponse
-	if err := json.NewDecoder(resp.Body).Decode(&deviceCode); err != nil {
+	err = json.NewDecoder(resp.Body).Decode(&deviceCode)
+	if err != nil {
 		return nil, err
 	}
 
@@ -132,8 +132,6 @@ func RefreshAccessToken(workspaceURL string, refreshToken string) (*TokenRespons
 		return nil, err
 	}
 
-	apiURL := utils.BuildURL("https://"+envInfo.Domain, path.token, nil)
-
 	subDomain, err := extractSubdomain(workspaceURL)
 	if err != nil {
 		return nil, err
@@ -151,6 +149,7 @@ func RefreshAccessToken(workspaceURL string, refreshToken string) (*TokenRespons
 		return nil, err
 	}
 
+	apiURL := utils.BuildURL("https://"+envInfo.Domain, path.token, nil)
 	req, err := http.NewRequest("POST", apiURL, bytes.NewBuffer(jsonData))
 	if err != nil {
 		return nil, err
@@ -171,7 +170,8 @@ func RefreshAccessToken(workspaceURL string, refreshToken string) (*TokenRespons
 	}
 
 	var tokenRes TokenResponse
-	if err := json.Unmarshal(body, &tokenRes); err != nil {
+	err = json.Unmarshal(body, &tokenRes)
+	if err != nil {
 		return nil, err
 	}
 
@@ -188,8 +188,6 @@ func RefreshAccessToken(workspaceURL string, refreshToken string) (*TokenRespons
 }
 
 func requestAccessToken(deviceCode string, envInfo *AuthEnvResponse) (*TokenResponse, error) {
-	apiURL := utils.BuildURL("https://"+envInfo.Domain, path.token, nil)
-
 	data := map[string]string{
 		"grant_type":  "urn:ietf:params:oauth:grant-type:device_code",
 		"device_code": deviceCode,
@@ -200,7 +198,8 @@ func requestAccessToken(deviceCode string, envInfo *AuthEnvResponse) (*TokenResp
 		return nil, err
 	}
 
-	req, err := http.NewRequest("POST", apiURL, bytes.NewBuffer(jsonData))
+	apiURL := utils.BuildURL("https://"+envInfo.Domain, path.token, nil)
+	req, err := http.NewRequest(http.MethodPost, apiURL, bytes.NewBuffer(jsonData))
 	if err != nil {
 		return nil, err
 	}
