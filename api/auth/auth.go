@@ -5,13 +5,15 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"github.com/alpacanetworks/alpacon-cli/api"
-	"github.com/alpacanetworks/alpacon-cli/client"
-	"github.com/alpacanetworks/alpacon-cli/config"
-	"github.com/alpacanetworks/alpacon-cli/utils"
 	"io"
 	"net/http"
 	"strconv"
+
+	"github.com/alpacanetworks/alpacon-cli/api"
+	"github.com/alpacanetworks/alpacon-cli/client"
+
+	"github.com/alpacanetworks/alpacon-cli/config"
+	"github.com/alpacanetworks/alpacon-cli/utils"
 )
 
 const (
@@ -36,7 +38,7 @@ func LoginAndSaveCredentials(loginReq *LoginRequest, token string) error {
 			return err
 		}
 
-		err = config.CreateConfig(loginReq.WorkspaceURL, token, "")
+		err = config.CreateConfig(loginReq.WorkspaceURL, token, "", "", "", 0)
 		if err != nil {
 			return err
 		}
@@ -54,7 +56,7 @@ func LoginAndSaveCredentials(loginReq *LoginRequest, token string) error {
 	httpClient := &http.Client{}
 
 	// Log in to Alpacon server
-	httpReq, err := http.NewRequest("POST", workspaceURL+loginURL, bytes.NewBuffer(reqBody))
+	httpReq, err := http.NewRequest(http.MethodPost, utils.BuildURL(workspaceURL, loginURL, nil), bytes.NewBuffer(reqBody))
 	if err != nil {
 		return err
 	}
@@ -83,7 +85,7 @@ func LoginAndSaveCredentials(loginReq *LoginRequest, token string) error {
 		return err
 	}
 
-	err = config.CreateConfig(workspaceURL, loginResponse.Token, loginResponse.ExpiresAt)
+	err = config.CreateConfig(workspaceURL, loginResponse.Token, loginResponse.ExpiresAt, "", "", 0)
 	if err != nil {
 		return err
 	}

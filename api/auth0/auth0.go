@@ -1,0 +1,246 @@
+package auth0
+
+import (
+	"bytes"
+	"encoding/json"
+	"fmt"
+	"io"
+	"net/http"
+	"net/url"
+	"strings"
+	"time"
+
+	"github.com/alpacanetworks/alpacon-cli/config"
+	"github.com/alpacanetworks/alpacon-cli/utils"
+)
+
+var path = struct {
+	env        string
+	deviceCode string
+	prefetch   string
+	token      string
+}{
+	env:        "/api/auth/env",
+	deviceCode: "/oauth/device/code",
+	prefetch:   "/api/workspaces/workspaces/-/prefetch",
+	token:      "/oauth/token",
+}
+
+func FetchAuthEnv(workspaceURL string) (*AuthEnvResponse, error) {
+	apiURL := utils.BuildURL(workspaceURL, path.env, map[string]string{"client": "cli"})
+
+	req, err := http.NewRequest(http.MethodGet, apiURL, nil)
+	if err != nil {
+		return nil, err
+	}
+	req.Header.Set("User-Agent", utils.GetUserAgent())
+
+	client := &http.Client{}
+	resp, err := client.Do(req)
+	if err != nil {
+		return nil, err
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode < http.StatusOK || resp.StatusCode > http.StatusFound {
+		return nil, fmt.Errorf("response status: %s", resp.Status)
+	}
+
+	body, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return nil, err
+	}
+
+	var env AuthEnvResponse
+	err = json.Unmarshal(body, &env)
+	if err != nil {
+		return nil, err
+	}
+
+	return &env, nil
+}
+
+func RequestDeviceCode(workspaceURL string, envInfo *AuthEnvResponse) (*DeviceCodeResponse, error) {
+	subDomain, err := extractSubdomain(workspaceURL)
+	if err != nil {
+		return nil, err
+	}
+
+	data := map[string]string{
+		"client_id": envInfo.ClientID,
+		"scope":     fmt.Sprintf("openid profile email offline_access cli org:%s", subDomain),
+		"audience":  envInfo.Audience,
+	}
+
+	jsonData, err := json.Marshal(data)
+	if err != nil {
+		return nil, err
+	}
+
+	client := &http.Client{}
+	apiURL := utils.BuildURL("https://"+envInfo.Domain, path.deviceCode, nil)
+	req, err := http.NewRequest(http.MethodPost, apiURL, bytes.NewBuffer(jsonData))
+	if err != nil {
+		return nil, err
+	}
+	req.Header.Set("Content-Type", "application/json")
+
+	resp, err := client.Do(req)
+	if err != nil {
+		return nil, err
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode != http.StatusOK {
+		return nil, fmt.Errorf("server returned error: %v", resp.StatusCode)
+	}
+
+	var deviceCode DeviceCodeResponse
+	err = json.NewDecoder(resp.Body).Decode(&deviceCode)
+	if err != nil {
+		return nil, err
+	}
+
+	return &deviceCode, nil
+}
+
+func PollForToken(deviceCodeRes *DeviceCodeResponse, envInfo *AuthEnvResponse) (*TokenResponse, error) {
+	startTime := time.Now()
+
+	for {
+		if time.Since(startTime).Seconds() > float64(deviceCodeRes.ExpiresIn) {
+			return nil, fmt.Errorf("authentication timed out. Please restart the login process")
+		}
+
+		tokenResponse, err := requestAccessToken(deviceCodeRes.DeviceCode, envInfo)
+		if err != nil {
+			if strings.Contains(err.Error(), "authorization_pending") {
+				fmt.Println("Waiting for user to complete authentication...")
+				time.Sleep(time.Duration(deviceCodeRes.Interval) * time.Second)
+				continue
+			}
+			return nil, err
+		}
+
+		return tokenResponse, nil
+	}
+}
+
+func RefreshAccessToken(workspaceURL string, refreshToken string) (*TokenResponse, error) {
+	envInfo, err := FetchAuthEnv(workspaceURL)
+	if err != nil {
+		return nil, err
+	}
+
+	subDomain, err := extractSubdomain(workspaceURL)
+	if err != nil {
+		return nil, err
+	}
+
+	data := map[string]string{
+		"grant_type":    "refresh_token",
+		"client_id":     envInfo.ClientID,
+		"refresh_token": refreshToken,
+		"scope":         fmt.Sprintf("cli org:%s", subDomain),
+	}
+
+	jsonData, err := json.Marshal(data)
+	if err != nil {
+		return nil, err
+	}
+
+	apiURL := utils.BuildURL("https://"+envInfo.Domain, path.token, nil)
+	req, err := http.NewRequest("POST", apiURL, bytes.NewBuffer(jsonData))
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Set("Content-Type", "application/json")
+
+	client := &http.Client{}
+	resp, err := client.Do(req)
+	if err != nil {
+		return nil, err
+	}
+	defer resp.Body.Close()
+
+	body, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return nil, err
+	}
+
+	var tokenRes TokenResponse
+	err = json.Unmarshal(body, &tokenRes)
+	if err != nil {
+		return nil, err
+	}
+
+	if tokenRes.Error != "" {
+		return nil, fmt.Errorf("error response from authentication server: %s - %s", tokenRes.Error, tokenRes.ErrorDesc)
+	}
+
+	err = config.SaveRefreshedAuth0Token(tokenRes.AccessToken, tokenRes.ExpiresIn)
+	if err != nil {
+		return nil, err
+	}
+
+	return &tokenRes, nil
+}
+
+func requestAccessToken(deviceCode string, envInfo *AuthEnvResponse) (*TokenResponse, error) {
+	data := map[string]string{
+		"grant_type":  "urn:ietf:params:oauth:grant-type:device_code",
+		"device_code": deviceCode,
+		"client_id":   envInfo.ClientID,
+	}
+	jsonData, err := json.Marshal(data)
+	if err != nil {
+		return nil, err
+	}
+
+	apiURL := utils.BuildURL("https://"+envInfo.Domain, path.token, nil)
+	req, err := http.NewRequest(http.MethodPost, apiURL, bytes.NewBuffer(jsonData))
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Set("Content-Type", "application/json")
+
+	client := &http.Client{}
+	resp, err := client.Do(req)
+	if err != nil {
+		return nil, err
+	}
+	defer resp.Body.Close()
+
+	body, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return nil, err
+	}
+
+	var tokenRes TokenResponse
+	err = json.Unmarshal(body, &tokenRes)
+	if err != nil {
+		return nil, err
+	}
+
+	if tokenRes.Error != "" {
+		return nil, fmt.Errorf("error response from authentication server: %s - %s", tokenRes.Error, tokenRes.ErrorDesc)
+	}
+
+	return &tokenRes, nil
+}
+
+func extractSubdomain(workspaceURL string) (string, error) {
+	parsedURL, err := url.Parse(workspaceURL)
+	if err != nil {
+		return "", fmt.Errorf("invalid URL format: %v", err)
+	}
+
+	parts := strings.Split(parsedURL.Host, ".")
+	if len(parts) < 3 {
+		return "", fmt.Errorf("invalid workspace URL: Subdomain is required")
+	}
+
+	return parts[0], nil
+}
