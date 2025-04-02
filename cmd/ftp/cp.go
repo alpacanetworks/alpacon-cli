@@ -27,7 +27,10 @@ var CpCmd = &cobra.Command{
 
 	- To download files from a remote server to a local destination:
 	  alpacon cp [SERVER_NAME]:/remote/path1 /remote/path2 /local/destination/path
-	
+
+	- To specify username:
+	  alpacon cp /local/path/file.txt [USER_NAME]@[SERVER_NAME]:/remote/path/
+
 	- To specify username and groupname:
 	  alpacon cp -u [USER_NAME] -g [GROUP_NAME] /local/path/file.txt [SERVER_NAME]:/remote/path/
 	`,
