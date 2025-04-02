@@ -30,9 +30,10 @@ var CpCmd = &cobra.Command{
 
 	- To specify username:
 	  alpacon cp /local/path/file.txt [USER_NAME]@[SERVER_NAME]:/remote/path/
+      alpacon cp -u [USER_NAME] /local/path/file.txt [SERVER_NAME]:/remote/path/
 
-	- To specify username and groupname:
-	  alpacon cp -u [USER_NAME] -g [GROUP_NAME] /local/path/file.txt [SERVER_NAME]:/remote/path/
+	- To specify groupname:
+	  alpacon cp -g [GROUP_NAME] /local/path/file.txt [SERVER_NAME]:/remote/path/
 	`,
 	Run: func(cmd *cobra.Command, args []string) {
 		username, _ := cmd.Flags().GetString("username")
@@ -44,9 +45,9 @@ var CpCmd = &cobra.Command{
 			return
 		}
 
-		for i := range args {
-			if strings.Contains(args[i], "@") && strings.Contains(args[i], ":") {
-				parts := strings.SplitN(args[i], "@", 2)
+		for i, arg := range args {
+			if strings.Contains(arg, "@") && strings.Contains(arg, ":") {
+				parts := strings.SplitN(arg, "@", 2)
 				if username == "" {
 					username = parts[0]
 				}
