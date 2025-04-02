@@ -22,14 +22,18 @@ var CpCmd = &cobra.Command{
 	  alpacon cp /local/path/file1.txt /local/path/file2.txt [SERVER_NAME]:/remote/path/
 
 	- To upload or download directory:
-      alpacon cp -r /local/path/directory [SERVER_NAME]:/remote/path/
-      alpacon cp -r [SERVER_NAME]:/remote/path/directory /local/path/
+	  alpacon cp -r /local/path/directory [SERVER_NAME]:/remote/path/
+	  alpacon cp -r [SERVER_NAME]:/remote/path/directory /local/path/
 
 	- To download files from a remote server to a local destination:
 	  alpacon cp [SERVER_NAME]:/remote/path1 /remote/path2 /local/destination/path
-	
-	- To specify username and groupname:
-	  alpacon cp -u [USER_NAME] -g [GROUP_NAME] /local/path/file.txt [SERVER_NAME]:/remote/path/
+
+	- To specify username:
+	  alpacon cp /local/path/file.txt [USER_NAME]@[SERVER_NAME]:/remote/path/
+	  alpacon cp -u [USER_NAME] /local/path/file.txt [SERVER_NAME]:/remote/path/
+
+	- To specify groupname:
+	  alpacon cp -g [GROUP_NAME] /local/path/file.txt [SERVER_NAME]:/remote/path/
 	`,
 	Run: func(cmd *cobra.Command, args []string) {
 		username, _ := cmd.Flags().GetString("username")
@@ -39,6 +43,17 @@ var CpCmd = &cobra.Command{
 		if len(args) < 2 {
 			utils.CliError("You must specify at least two arguments.")
 			return
+		}
+
+		for i, arg := range args {
+			if strings.Contains(arg, "@") && strings.Contains(arg, ":") {
+				parts := strings.SplitN(arg, "@", 2)
+				if username == "" {
+					username = parts[0]
+				}
+				// Remove the username@ part from the argument
+				args[i] = parts[1]
+			}
 		}
 
 		sources := args[:len(args)-1]
