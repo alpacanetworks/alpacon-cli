@@ -44,6 +44,17 @@ var CpCmd = &cobra.Command{
 			return
 		}
 
+		for i := range args {
+			if strings.Contains(args[i], "@") && strings.Contains(args[i], ":") {
+				parts := strings.SplitN(args[i], "@", 2)
+				if username == "" {
+					username = parts[0]
+				}
+				// Remove the username@ part from the argument
+				args[i] = parts[1]
+			}
+		}
+
 		sources := args[:len(args)-1]
 		dest := args[len(args)-1]
 
