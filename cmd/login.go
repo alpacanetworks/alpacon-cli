@@ -59,7 +59,12 @@ var loginCmd = &cobra.Command{
 		envInfo, err := auth0.FetchAuthEnv(workspaceURL)
 		if err != nil {
 			if strings.Contains(err.Error(), "404") {
-				envInfo = &auth0.AuthEnvResponse{Method: "legacy"}
+				// envInfo = &auth0.AuthEnvResponse{Method: "legacy"}
+				envInfo = &auth0.AuthEnvResponse{
+					Auth0: auth0.Auth0Config{
+						Method: "legacy",
+					},
+				}
 			} else {
 				utils.CliError("Failed to patch environment variables from workspace. %v", err)
 			}
@@ -70,7 +75,7 @@ var loginCmd = &cobra.Command{
 		token, _ := cmd.Flags().GetString("token")
 
 		fmt.Printf("Logging in to %s\n", workspaceURL)
-		if envInfo.Method == "auth0" && token == "" {
+		if envInfo.Auth0.Method == "auth0" && token == "" {
 			deviceCode, err := auth0.RequestDeviceCode(workspaceURL, envInfo)
 			if err != nil {
 				utils.CliError("Device code request failed. %v", err)
