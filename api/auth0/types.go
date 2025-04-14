@@ -20,9 +20,14 @@ type TokenResponse struct {
 	ErrorDesc    string `json:"error_description,omitempty"`
 }
 
-type AuthEnvResponse struct {
+type Auth0Config struct {
 	Method   string `json:"method"`
-	ClientID string `json:"client_id"`
-	Domain   string `json:"domain"`
-	Audience string `json:"audience"`
+	ClientID string `json:"client_id,omitempty"`
+	Domain   string `json:"domain,omitempty"`
+	Audience string `json:"audience,omitempty"`
+}
+
+type AuthEnvResponse struct {
+	Auth0    Auth0Config `json:"auth0"`
+	Language string      `json:"language"`
 }

@@ -17,12 +17,10 @@ import (
 var path = struct {
 	env        string
 	deviceCode string
-	prefetch   string
 	token      string
 }{
 	env:        "/api/auth/env",
 	deviceCode: "/oauth/device/code",
-	prefetch:   "/api/workspaces/workspaces/-/prefetch",
 	token:      "/oauth/token",
 }
 
@@ -67,9 +65,9 @@ func RequestDeviceCode(workspaceURL string, envInfo *AuthEnvResponse) (*DeviceCo
 	}
 
 	data := map[string]string{
-		"client_id": envInfo.ClientID,
+		"client_id": envInfo.Auth0.ClientID,
 		"scope":     fmt.Sprintf("openid profile email offline_access cli org:%s", subDomain),
-		"audience":  envInfo.Audience,
+		"audience":  envInfo.Auth0.Audience,
 	}
 
 	jsonData, err := json.Marshal(data)
@@ -78,7 +76,7 @@ func RequestDeviceCode(workspaceURL string, envInfo *AuthEnvResponse) (*DeviceCo
 	}
 
 	client := &http.Client{}
-	apiURL := utils.BuildURL("https://"+envInfo.Domain, path.deviceCode, nil)
+	apiURL := utils.BuildURL("https://"+envInfo.Auth0.Domain, path.deviceCode, nil)
 	req, err := http.NewRequest(http.MethodPost, apiURL, bytes.NewBuffer(jsonData))
 	if err != nil {
 		return nil, err
@@ -139,7 +137,7 @@ func RefreshAccessToken(workspaceURL string, refreshToken string) (*TokenRespons
 
 	data := map[string]string{
 		"grant_type":    "refresh_token",
-		"client_id":     envInfo.ClientID,
+		"client_id":     envInfo.Auth0.ClientID,
 		"refresh_token": refreshToken,
 		"scope":         fmt.Sprintf("cli org:%s", subDomain),
 	}
@@ -149,7 +147,7 @@ func RefreshAccessToken(workspaceURL string, refreshToken string) (*TokenRespons
 		return nil, err
 	}
 
-	apiURL := utils.BuildURL("https://"+envInfo.Domain, path.token, nil)
+	apiURL := utils.BuildURL("https://"+envInfo.Auth0.Domain, path.token, nil)
 	req, err := http.NewRequest("POST", apiURL, bytes.NewBuffer(jsonData))
 	if err != nil {
 		return nil, err
@@ -191,14 +189,14 @@ func requestAccessToken(deviceCode string, envInfo *AuthEnvResponse) (*TokenResp
 	data := map[string]string{
 		"grant_type":  "urn:ietf:params:oauth:grant-type:device_code",
 		"device_code": deviceCode,
-		"client_id":   envInfo.ClientID,
+		"client_id":   envInfo.Auth0.ClientID,
 	}
 	jsonData, err := json.Marshal(data)
 	if err != nil {
 		return nil, err
 	}
 
-	apiURL := utils.BuildURL("https://"+envInfo.Domain, path.token, nil)
+	apiURL := utils.BuildURL("https://"+envInfo.Auth0.Domain, path.token, nil)
 	req, err := http.NewRequest(http.MethodPost, apiURL, bytes.NewBuffer(jsonData))
 	if err != nil {
 		return nil, err
