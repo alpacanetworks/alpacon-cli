@@ -2,6 +2,7 @@ package client
 
 import (
 	"bytes"
+	"crypto/tls"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -28,8 +29,16 @@ func NewAlpaconAPIClient() (*AlpaconClient, error) {
 		return nil, err
 	}
 
+	httpClient := &http.Client{
+		Transport: &http.Transport{
+			TLSClientConfig: &tls.Config{
+				InsecureSkipVerify: validConfig.Insecure,
+			},
+		},
+	}
+
 	client := &AlpaconClient{
-		HTTPClient:  &http.Client{},
+		HTTPClient:  httpClient,
 		BaseURL:     validConfig.WorkspaceURL,
 		Token:       validConfig.Token,
 		AccessToken: validConfig.AccessToken,
@@ -38,7 +47,7 @@ func NewAlpaconAPIClient() (*AlpaconClient, error) {
 
 	if isAccessTokenExpired(validConfig) {
 		fmt.Println("Refreshing access token...")
-		tokenRes, err := auth0.RefreshAccessToken(validConfig.WorkspaceURL, validConfig.RefreshToken)
+		tokenRes, err := auth0.RefreshAccessToken(validConfig.WorkspaceURL, httpClient, validConfig.RefreshToken)
 		if err != nil {
 			return nil, fmt.Errorf("failed to refresh access token: %v", err)
 		}

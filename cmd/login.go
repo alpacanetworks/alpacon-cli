@@ -1,16 +1,20 @@
 package cmd
 
 import (
+	"crypto/tls"
 	"fmt"
-	"net/http"
-	"strings"
-
 	"github.com/alpacanetworks/alpacon-cli/api/auth"
 	"github.com/alpacanetworks/alpacon-cli/api/auth0"
 	"github.com/alpacanetworks/alpacon-cli/client"
 	"github.com/alpacanetworks/alpacon-cli/config"
 	"github.com/alpacanetworks/alpacon-cli/utils"
 	"github.com/spf13/cobra"
+	"net/http"
+	"strings"
+)
+
+var (
+	insecure bool
 )
 
 var loginCmd = &cobra.Command{
@@ -28,6 +32,9 @@ var loginCmd = &cobra.Command{
 	
 	# Login via API Token
 	alpacon login [WORKSPACE_URL] -t [TOKEN_KEY]
+
+	# Skip TLS certificate verification
+	alpacon login [WORKSPACE_URL] --insecure
 	`,
 	Args: cobra.MaximumNArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
@@ -49,14 +56,22 @@ var loginCmd = &cobra.Command{
 			workspaceURL = utils.PromptForRequiredInput("workspaceURL: ")
 		}
 
+		httpClient := &http.Client{
+			Transport: &http.Transport{
+				TLSClientConfig: &tls.Config{
+					InsecureSkipVerify: insecure,
+				},
+			},
+		}
+
 		// Validate workspaceURL
-		workspaceURL, err := validateAndFormatWorkspaceURL(workspaceURL)
+		workspaceURL, err := validateAndFormatWorkspaceURL(workspaceURL, httpClient)
 		if err != nil {
 			utils.CliError(err.Error())
 		}
 
 		// Check login method
-		envInfo, err := auth0.FetchAuthEnv(workspaceURL)
+		envInfo, err := auth0.FetchAuthEnv(workspaceURL, httpClient)
 		if err != nil {
 			if strings.Contains(err.Error(), "404") {
 				// envInfo = &auth0.AuthEnvResponse{Method: "legacy"}
@@ -76,7 +91,7 @@ var loginCmd = &cobra.Command{
 
 		fmt.Printf("Logging in to %s\n", workspaceURL)
 		if envInfo.Auth0.Method == "auth0" && token == "" {
-			deviceCode, err := auth0.RequestDeviceCode(workspaceURL, envInfo)
+			deviceCode, err := auth0.RequestDeviceCode(workspaceURL, httpClient, envInfo)
 			if err != nil {
 				utils.CliError("Device code request failed. %v", err)
 			}
@@ -94,7 +109,7 @@ var loginCmd = &cobra.Command{
 				utils.CliError(err.Error())
 			}
 
-			err = config.CreateConfig(workspaceURL, "", "", tokenRes.AccessToken, tokenRes.RefreshToken, tokenRes.ExpiresIn)
+			err = config.CreateConfig(workspaceURL, "", "", tokenRes.AccessToken, tokenRes.RefreshToken, tokenRes.ExpiresIn, insecure)
 			if err != nil {
 				utils.CliError("Failed to save config: %v", err)
 			}
@@ -110,7 +125,7 @@ var loginCmd = &cobra.Command{
 				Password:     password,
 			}
 
-			err = auth.LoginAndSaveCredentials(loginRequest, token)
+			err = auth.LoginAndSaveCredentials(loginRequest, token, insecure)
 			if err != nil {
 				utils.CliError("Login failed %v. Please check your credentials and try again.", err)
 			}
@@ -131,6 +146,7 @@ func init() {
 	loginCmd.Flags().StringVarP(&username, "username", "u", "", "Username for login")
 	loginCmd.Flags().StringVarP(&password, "password", "p", "", "Password for login")
 	loginCmd.Flags().StringVarP(&token, "token", "t", "", "API token for login")
+	loginCmd.Flags().BoolVar(&insecure, "insecure", false, "Skip TLS certificate verification")
 }
 
 func promptForCredentials(workspaceURL, username, password string) (string, string, string) {
@@ -155,12 +171,12 @@ func promptForCredentials(workspaceURL, username, password string) (string, stri
 	return workspaceURL, username, password
 }
 
-func validateAndFormatWorkspaceURL(workspaceURL string) (string, error) {
+func validateAndFormatWorkspaceURL(workspaceURL string, httpClient *http.Client) (string, error) {
 	if !strings.HasPrefix(workspaceURL, "http") {
 		workspaceURL = "https://" + workspaceURL
 	}
 
-	resp, err := http.Get(workspaceURL)
+	resp, err := httpClient.Get(workspaceURL)
 	if err != nil || resp.StatusCode >= 400 {
 		return "", fmt.Errorf("workspace URL is unreachable: %v", workspaceURL)
 	}

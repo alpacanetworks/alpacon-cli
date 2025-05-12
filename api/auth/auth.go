@@ -2,6 +2,7 @@ package auth
 
 import (
 	"bytes"
+	"crypto/tls"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -23,11 +24,18 @@ const (
 	statusURL = "/api/status/"
 )
 
-func LoginAndSaveCredentials(loginReq *LoginRequest, token string) error {
-	if token != "" {
+func LoginAndSaveCredentials(loginReq *LoginRequest, token string, insecure bool) error {
+	httpClient := &http.Client{
+		Transport: &http.Transport{
+			TLSClientConfig: &tls.Config{
+				InsecureSkipVerify: insecure,
+			},
+		},
+	}
 
+	if token != "" {
 		alpaconClient := &client.AlpaconClient{
-			HTTPClient: &http.Client{},
+			HTTPClient: httpClient,
 			BaseURL:    loginReq.WorkspaceURL,
 			Token:      token,
 			UserAgent:  utils.GetUserAgent(),
@@ -38,7 +46,7 @@ func LoginAndSaveCredentials(loginReq *LoginRequest, token string) error {
 			return err
 		}
 
-		err = config.CreateConfig(loginReq.WorkspaceURL, token, "", "", "", 0)
+		err = config.CreateConfig(loginReq.WorkspaceURL, token, "", "", "", 0, insecure)
 		if err != nil {
 			return err
 		}
@@ -52,8 +60,6 @@ func LoginAndSaveCredentials(loginReq *LoginRequest, token string) error {
 	if err != nil {
 		return err
 	}
-
-	httpClient := &http.Client{}
 
 	// Log in to Alpacon server
 	httpReq, err := http.NewRequest(http.MethodPost, utils.BuildURL(workspaceURL, loginURL, nil), bytes.NewBuffer(reqBody))
@@ -85,7 +91,7 @@ func LoginAndSaveCredentials(loginReq *LoginRequest, token string) error {
 		return err
 	}
 
-	err = config.CreateConfig(workspaceURL, loginResponse.Token, loginResponse.ExpiresAt, "", "", 0)
+	err = config.CreateConfig(workspaceURL, loginResponse.Token, loginResponse.ExpiresAt, "", "", 0, insecure)
 	if err != nil {
 		return err
 	}

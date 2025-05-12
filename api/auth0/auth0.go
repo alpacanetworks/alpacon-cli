@@ -24,7 +24,7 @@ var path = struct {
 	token:      "/oauth/token",
 }
 
-func FetchAuthEnv(workspaceURL string) (*AuthEnvResponse, error) {
+func FetchAuthEnv(workspaceURL string, httpClient *http.Client) (*AuthEnvResponse, error) {
 	apiURL := utils.BuildURL(workspaceURL, path.env, map[string]string{"client": "cli"})
 
 	req, err := http.NewRequest(http.MethodGet, apiURL, nil)
@@ -33,8 +33,7 @@ func FetchAuthEnv(workspaceURL string) (*AuthEnvResponse, error) {
 	}
 	req.Header.Set("User-Agent", utils.GetUserAgent())
 
-	client := &http.Client{}
-	resp, err := client.Do(req)
+	resp, err := httpClient.Do(req)
 	if err != nil {
 		return nil, err
 	}
@@ -58,7 +57,7 @@ func FetchAuthEnv(workspaceURL string) (*AuthEnvResponse, error) {
 	return &env, nil
 }
 
-func RequestDeviceCode(workspaceURL string, envInfo *AuthEnvResponse) (*DeviceCodeResponse, error) {
+func RequestDeviceCode(workspaceURL string, httpClient *http.Client, envInfo *AuthEnvResponse) (*DeviceCodeResponse, error) {
 	subDomain, err := extractSubdomain(workspaceURL)
 	if err != nil {
 		return nil, err
@@ -75,7 +74,6 @@ func RequestDeviceCode(workspaceURL string, envInfo *AuthEnvResponse) (*DeviceCo
 		return nil, err
 	}
 
-	client := &http.Client{}
 	apiURL := utils.BuildURL("https://"+envInfo.Auth0.Domain, path.deviceCode, nil)
 	req, err := http.NewRequest(http.MethodPost, apiURL, bytes.NewBuffer(jsonData))
 	if err != nil {
@@ -83,7 +81,7 @@ func RequestDeviceCode(workspaceURL string, envInfo *AuthEnvResponse) (*DeviceCo
 	}
 	req.Header.Set("Content-Type", "application/json")
 
-	resp, err := client.Do(req)
+	resp, err := httpClient.Do(req)
 	if err != nil {
 		return nil, err
 	}
@@ -124,8 +122,8 @@ func PollForToken(deviceCodeRes *DeviceCodeResponse, envInfo *AuthEnvResponse) (
 	}
 }
 
-func RefreshAccessToken(workspaceURL string, refreshToken string) (*TokenResponse, error) {
-	envInfo, err := FetchAuthEnv(workspaceURL)
+func RefreshAccessToken(workspaceURL string, httpClient *http.Client, refreshToken string) (*TokenResponse, error) {
+	envInfo, err := FetchAuthEnv(workspaceURL, httpClient)
 	if err != nil {
 		return nil, err
 	}
@@ -155,8 +153,7 @@ func RefreshAccessToken(workspaceURL string, refreshToken string) (*TokenRespons
 
 	req.Header.Set("Content-Type", "application/json")
 
-	client := &http.Client{}
-	resp, err := client.Do(req)
+	resp, err := httpClient.Do(req)
 	if err != nil {
 		return nil, err
 	}

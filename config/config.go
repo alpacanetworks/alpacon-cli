@@ -13,13 +13,14 @@ const (
 	ConfigFileDir  = ".alpacon"
 )
 
-func CreateConfig(workspaceURL, token, expiresAt, accessToken, refreshToken string, expiresIn int) error {
+func CreateConfig(workspaceURL, token, expiresAt, accessToken, refreshToken string, expiresIn int, insecure bool) error {
 	config := Config{
 		WorkspaceURL: workspaceURL,
 		Token:        token,
 		ExpiresAt:    expiresAt,
 		AccessToken:  accessToken,
 		RefreshToken: refreshToken,
+		Insecure:     insecure,
 	}
 
 	if expiresIn > 0 {
