@@ -27,13 +27,14 @@ type DownloadResponse struct {
 }
 
 type UploadRequest struct {
-	Id         string `json:"id"`
-	Name       string `json:"name"`
-	Path       string `json:"path"`
-	Server     string `json:"server"`
-	Username   string `json:"username"`
-	Groupname  string `json:"groupname"`
-	AllowUnzip string `json:"allow_unzip"`
+	Id             string `json:"id"`
+	Name           string `json:"name"`
+	Path           string `json:"path"`
+	Server         string `json:"server"`
+	Username       string `json:"username"`
+	Groupname      string `json:"groupname"`
+	AllowUnzip     string `json:"allow_unzip"`
+	AllowOverwrite string `json:"allow_overwrite"`
 }
 
 type UploadResponse struct {
