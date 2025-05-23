@@ -82,14 +82,17 @@ func RunCommand(ac *client.AlpaconClient, serverName, command string, username, 
 		return "", err
 	}
 
-	var cmdResponse CommandResponse
+	// TODO: CLI currently supports only single-command response.
+	//       If the response contains a list, we parse only the first command result for now.
+	//       Support for handling multiple responses should be added later.
+	var cmdResponse []CommandResponse
 
 	err = json.Unmarshal(respBody, &cmdResponse)
 	if err != nil {
 		return "", err
 	}
 
-	result, err := PollCommandExecution(ac, cmdResponse.Id)
+	result, err := PollCommandExecution(ac, cmdResponse[0].Id)
 	if err != nil {
 		return "", err
 	}
