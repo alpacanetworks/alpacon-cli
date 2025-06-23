@@ -30,7 +30,7 @@ func JoinWebshSession(ac *client.AlpaconClient, sharedURL, password string) (Ses
 
 	channelID := parsedURL.Query().Get("channel")
 	if channelID == "" {
-		return SessionResponse{}, errors.New("Invalid URL format")
+		return SessionResponse{}, errors.New("invalid URL format")
 	}
 	joinRequest := &JoinRequest{
 		Password: password,
