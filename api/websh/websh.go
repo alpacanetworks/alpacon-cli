@@ -19,6 +19,7 @@ import (
 
 const (
 	createSessionURL = "/api/websh/sessions/"
+	joinSessionURL   = "/api/websh/user-channels/"
 )
 
 func JoinWebshSession(ac *client.AlpaconClient, sharedURL, password string) (SessionResponse, error) {
@@ -27,16 +28,16 @@ func JoinWebshSession(ac *client.AlpaconClient, sharedURL, password string) (Ses
 		return SessionResponse{}, err
 	}
 
-	sessionID := parsedURL.Query().Get("session")
-	if sessionID == "" {
+	channelID := parsedURL.Query().Get("channel")
+	if channelID == "" {
 		return SessionResponse{}, errors.New("Invalid URL format")
 	}
-
 	joinRequest := &JoinRequest{
 		Password: password,
 	}
 
-	responseBody, err := ac.SendPostRequest(utils.BuildURL(createSessionURL, path.Join("", sessionID, "join"), nil), joinRequest)
+	joinPath := path.Join(joinSessionURL, channelID, "join")
+	responseBody, err := ac.SendPostRequest(utils.BuildURL(joinPath, "", nil), joinRequest)
 	if err != nil {
 		return SessionResponse{}, err
 	}
