@@ -186,7 +186,7 @@ func (wsClient *WebsocketClient) writeToServer(inputChan <-chan string) {
 			inputBuffer = append(inputBuffer, []rune(input)...)
 		case <-time.After(time.Millisecond * 5):
 			if len(inputBuffer) > 0 {
-				err := wsClient.conn.WriteMessage(websocket.TextMessage, []byte(string(inputBuffer)))
+				err := wsClient.conn.WriteMessage(websocket.BinaryMessage, []byte(string(inputBuffer)))
 				if err != nil {
 					wsClient.Done <- err
 					return
