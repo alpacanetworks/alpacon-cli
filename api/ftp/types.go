@@ -2,6 +2,16 @@ package ftp
 
 import "time"
 
+type ConnectRequest struct {
+	Server   string `json:"server"`
+	Username string `json:"username"`
+}
+
+type connectResponse struct {
+	WebsocketURL string `json:"websocket_url"`
+	UserChannel  string `json:"user_channel"`
+}
+
 type DownloadRequest struct {
 	Path         string `json:"path"`
 	Name         string `json:"name"`
@@ -35,6 +45,7 @@ type UploadRequest struct {
 	Groupname      string `json:"groupname"`
 	AllowUnzip     string `json:"allow_unzip"`
 	AllowOverwrite string `json:"allow_overwrite"`
+	Channel        string `json:"channel"`
 }
 
 type UploadResponse struct {
@@ -49,4 +60,18 @@ type UploadResponse struct {
 	ExpiresAt time.Time `json:"expires_at"`
 	UploadUrl string    `json:"upload_url"`
 	Command   string    `json:"command"`
+}
+
+var statMsg struct {
+	Command string `json:"command"`
+	Success bool   `json:"success"`
+	Code    int    `json:"code"`
+	Data    struct {
+		ID      string `json:"id"`
+		Type    string `json:"type"`
+		Name    string `json:"name"`
+		Success bool   `json:"success"`
+		Message string `json:"message"`
+		URL     string `json:"url"`
+	} `json:"data"`
 }

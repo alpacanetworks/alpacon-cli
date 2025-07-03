@@ -9,6 +9,7 @@ import (
 	"github.com/alpacanetworks/alpacon-cli/client"
 	"github.com/alpacanetworks/alpacon-cli/utils"
 	"github.com/google/uuid"
+	"github.com/gorilla/websocket"
 	"io"
 	"mime/multipart"
 	"net/http"
@@ -19,9 +20,66 @@ import (
 )
 
 const (
+	connectAPIURL  = "/api/webftp/sessions/"
 	uploadAPIURL   = "/api/webftp/uploads/"
 	downloadAPIURL = "/api/webftp/downloads/"
 )
+
+func connectWebSocket(ac *client.AlpaconClient, serverId, username string) (*websocket.Conn, string, error) {
+	reqBody := &ConnectRequest{
+		Server:   serverId,
+		Username: username,
+	}
+
+	respBody, err := ac.SendPostRequest(connectAPIURL, reqBody)
+	if err != nil {
+		return nil, "", err
+	}
+
+	var cr connectResponse
+	if err := json.Unmarshal(respBody, &cr); err != nil {
+		return nil, "", fmt.Errorf("failed to parse websocket_url: %w", err)
+	}
+
+	wsConn, _, err := websocket.DefaultDialer.Dial(cr.WebsocketURL, ac.SetWebsocketHeader())
+	if err != nil {
+		return nil, "", fmt.Errorf("dial error: %w", err)
+	}
+
+	return wsConn, cr.UserChannel, nil
+}
+
+func ManageWebSocketSession(ac *client.AlpaconClient, serverID, username string) (*websocket.Conn, string, error) {
+
+	// Establish the raw WebSocket connection
+	wsConn, channel, err := connectWebSocket(ac, serverID, username)
+	if err != nil {
+		return nil, "", fmt.Errorf("failed to connect websocket: %w", err)
+	}
+
+	// Read initial handshake message to establish session
+	if _, _, err := wsConn.ReadMessage(); err != nil {
+		wsConn.Close()
+		return nil, "", fmt.Errorf("handshake failed: %w", err)
+	}
+
+	return wsConn, channel, nil
+}
+
+func FinalizeWebSocketSession(wsConn *websocket.Conn) ([]byte, error) {
+	// Read the final message containing status
+	_, msg, err := wsConn.ReadMessage()
+	if err != nil {
+		return nil, fmt.Errorf("failed to read final WS message: %w", err)
+	}
+
+	// Close the connection
+	if err := wsConn.Close(); err != nil {
+		return nil, fmt.Errorf("failed to close WS connection: %w", err)
+	}
+
+	return msg, nil
+}
 
 func uploadToS3(uploadUrl string, file io.Reader) error {
 	req, err := http.NewRequest(http.MethodPut, uploadUrl, file)
@@ -46,6 +104,13 @@ func UploadFile(ac *client.AlpaconClient, src []string, dest, username, groupnam
 	serverName, remotePath := utils.SplitPath(dest)
 
 	serverID, err := server.GetServerIDByName(ac, serverName)
+	if err != nil {
+		return nil, err
+	}
+
+	var wsConn *websocket.Conn
+	var channel string
+	wsConn, channel, err = ManageWebSocketSession(ac, serverID, username)
 	if err != nil {
 		return nil, err
 	}
@@ -77,6 +142,7 @@ func UploadFile(ac *client.AlpaconClient, src []string, dest, username, groupnam
 			Server:         serverID,
 			Username:       username,
 			Groupname:      groupname,
+			Channel:        channel,
 			AllowOverwrite: "true",
 		}
 
@@ -115,6 +181,19 @@ func UploadFile(ac *client.AlpaconClient, src []string, dest, username, groupnam
 		}
 	}
 
+	msg, err := FinalizeWebSocketSession(wsConn)
+	if err != nil {
+		return nil, err
+	}
+
+	if err := json.Unmarshal(msg, &statMsg); err != nil {
+		return nil, err
+	}
+
+	if !statMsg.Data.Success {
+		return nil, fmt.Errorf("%s", statMsg.Data.Message)
+	}
+
 	return result, nil
 }
 
@@ -122,6 +201,13 @@ func UploadFolder(ac *client.AlpaconClient, src []string, dest, username, groupn
 	serverName, remotePath := utils.SplitPath(dest)
 
 	serverID, err := server.GetServerIDByName(ac, serverName)
+	if err != nil {
+		return nil, err
+	}
+
+	var wsConn *websocket.Conn
+	var channel string
+	wsConn, channel, err = ManageWebSocketSession(ac, serverID, username)
 	if err != nil {
 		return nil, err
 	}
@@ -156,6 +242,7 @@ func UploadFolder(ac *client.AlpaconClient, src []string, dest, username, groupn
 			Server:         serverID,
 			Username:       username,
 			Groupname:      groupname,
+			Channel:        channel,
 		}
 
 		respBody, err := ac.SendPostRequest(uploadAPIURL, uploadRequest)
@@ -190,6 +277,19 @@ func UploadFolder(ac *client.AlpaconClient, src []string, dest, username, groupn
 		} else {
 			result = append(result, status.Result)
 		}
+	}
+
+	msg, err := FinalizeWebSocketSession(wsConn)
+	if err != nil {
+		return nil, err
+	}
+
+	if err := json.Unmarshal(msg, &statMsg); err != nil {
+		return nil, err
+	}
+
+	if !statMsg.Data.Success {
+		return nil, fmt.Errorf("%s", statMsg.Data.Message)
 	}
 
 	return result, nil
